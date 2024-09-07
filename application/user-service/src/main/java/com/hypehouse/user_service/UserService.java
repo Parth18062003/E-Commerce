@@ -6,19 +6,19 @@ import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     public List<User> getAllUsers() {
@@ -34,10 +34,15 @@ public class UserService {
             throw new InvalidInputException("Username cannot be null or empty");
         }
 
+        Role userRole = roleRepository.findByName("USER");
+        if (userRole == null) {
+            throw new RuntimeException("USER role not found in the database");
+        }
         // Encode the password before saving
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
+        user.setRoles(new HashSet<>(Collections.singleton(userRole)));
 
         return userRepository.save(user);
     }

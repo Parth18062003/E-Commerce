@@ -5,14 +5,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Collection;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -28,16 +29,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = getJwtFromRequest(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getClaims(token).getSubject();
+            Collection<SimpleGrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
 
-            // Fetch roles from the token if required
-            UserDetails userDetails = new User(username, "", Collections.emptyList()); // Modify to fetch authorities if needed
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            // Create UserDetails with the authorities
+            UserDetails userDetails = new User(username, "", authorities);
+
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
             // Set the details from the request
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             // Set authentication in context
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Debugging statement
+            System.out.println("Authorities: " + authorities);
         }
         filterChain.doFilter(request, response);
     }

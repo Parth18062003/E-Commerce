@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/api/v1/auth/**").permitAll() // Allow unauthenticated access
+                                .requestMatchers("/api/v1/users/**").hasRole("ADMIN") // Require ADMIN role for user management
                                 .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
