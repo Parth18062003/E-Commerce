@@ -1,6 +1,10 @@
 package com.hypehouse.user_service;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,12 +18,19 @@ public class User {
     private UUID id;  // Changed to UUID
 
     @Column(name = "username", unique = true, nullable = false)
+    @NotBlank(message = "Username is mandatory")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;
 
     @Column(name = "email", unique = true, nullable = false)
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password is mandatory")
+    @PasswordConstraint
+    @Size(min = 6, message = "Password must be atleast 6 characters")
     private String password;
 
     @Column(name = "first_name")

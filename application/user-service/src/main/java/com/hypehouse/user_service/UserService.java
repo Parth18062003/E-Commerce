@@ -1,5 +1,6 @@
 package com.hypehouse.user_service;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +24,17 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User saveUser(User user) {
+    public User saveUser(@Valid User user) {
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new InvalidInputException("Username cannot be null or empty");
+        }
         return userRepository.save(user);
     }
 
     public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException(id.toString());
+        }
         userRepository.deleteById(id);
     }
 }

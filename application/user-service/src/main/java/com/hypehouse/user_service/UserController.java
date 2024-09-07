@@ -1,5 +1,6 @@
 package com.hypehouse.user_service;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,29 +26,33 @@ public class UserController {
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return user.map(ResponseEntity::ok).orElseThrow(() -> new UserNotFoundException(id.toString()));
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.saveUser(user);
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user) {
-        if (userService.getUserById(id).isPresent()) {
-            user.setId(id);
-            return ResponseEntity.ok(userService.saveUser(user));
+    public ResponseEntity<User> updateUser(@PathVariable UUID id, @Valid @RequestBody User user) {
+        Optional<User> existingUser = userService.getUserById(id);
+        if (existingUser.isEmpty()) {
+            throw new UserNotFoundException(id.toString());
         }
-        return ResponseEntity.notFound().build();
+
+        user.setId(id); // Make sure the ID of the user being updated is set
+        User updatedUser = userService.saveUser(user); // Save the updated user
+        return ResponseEntity.ok(updatedUser); // Return the updated user with 200 OK status
     }
+
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
-        if (userService.getUserById(id).isPresent()) {
-            userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
+        if (!userService.getUserById(id).isPresent()) {
+            throw new UserNotFoundException(id.toString());
         }
-        return ResponseEntity.notFound().build();
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
