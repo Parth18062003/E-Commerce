@@ -1,5 +1,6 @@
 package com.hypehouse.user_service;
 
+import com.hypehouse.user_service.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

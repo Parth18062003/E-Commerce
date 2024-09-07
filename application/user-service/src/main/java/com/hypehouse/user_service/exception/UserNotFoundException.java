@@ -1,4 +1,4 @@
-package com.hypehouse.user_service;
+package com.hypehouse.user_service.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String id) {
