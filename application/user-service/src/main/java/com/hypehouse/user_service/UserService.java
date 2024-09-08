@@ -12,12 +12,10 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
     }
 
@@ -38,10 +36,7 @@ public class UserService {
         if (userRole == null) {
             throw new RuntimeException("USER role not found in the database");
         }
-        // Encode the password before saving
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
+
         user.setRoles(new HashSet<>(Collections.singleton(userRole)));
 
         return userRepository.save(user);

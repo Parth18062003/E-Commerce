@@ -3,6 +3,7 @@ package com.hypehouse.user_service;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -43,11 +44,14 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     @Column(name = "first_name")
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Name should only contain alphabetic characters and spaces")
     private String firstName;
 
     @Column(name = "last_name")
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Name should only contain alphabetic characters and spaces")
     private String lastName;
 
+    @Pattern(regexp = "\\d{10}", message = "Phone number should be 10 digits")
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -55,15 +59,19 @@ public class User {
     private String address;
 
     @Column(name = "city")
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "City should only contain alphabetic characters and spaces")
     private String city;
 
     @Column(name = "state")
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "State should only contain alphabetic characters and spaces")
     private String state;
 
+    @Pattern(regexp = "\\d{6}", message = "Postal code should be 6 digits")
     @Column(name = "postal_code")
     private String postalCode;
 
     @Column(name = "country")
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Country should only contain alphabetic characters and spaces")
     private String country;
 
     @Column(name = "is_active")
