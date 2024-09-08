@@ -6,13 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(AuthenticationController.class)
+@AutoConfigureMockMvc(addFilters = false) // Disable security filters for the test
 public class AuthenticationControllerTest {
 
     @Autowired
@@ -39,17 +40,21 @@ public class AuthenticationControllerTest {
 
     @Test
     public void testLogin() throws Exception {
-        String username = "jodoe";
+        String usernameOrEmail = "jodoe";
         String password = "Parth@1806";
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2RvZSIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWF0IjoxNzI1ODE0ODI0LCJleHAiOjE3NTczNTA4MjR9.bwL5508qwS-S3juKv0vKB-W5U03xuRHXDQ68z1nNU0Id9nP98D65mhXRltO8u4AwjgnrbafGGbTcesIRw7ytYA";
+        String token = "e8c434c4c2ed4e4e97ccb1af6a2d4998";
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, User.withUsername(username).password(password).roles("ADMIN").build().getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password);
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        when(jwtTokenProvider.generateToken(any(Authentication.class))).thenReturn(token);
+        // Mock the AuthenticationManager and JwtTokenProvider
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(jwtTokenProvider.generateToken(authentication))
+                .thenReturn(token);
 
-        String requestBody = "usernameOrEmail=" + username + "&password=" + password;
+        String requestBody = "usernameOrEmail=" + usernameOrEmail + "&password=" + password;
 
+        // Perform the login request
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
