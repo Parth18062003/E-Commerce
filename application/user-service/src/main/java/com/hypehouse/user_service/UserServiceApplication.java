@@ -12,7 +12,7 @@ public class UserServiceApplication {
 	private static final Logger logger = Logger.getLogger(UserServiceApplication.class.getName());
 	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
-		logger.info("User Service Application Started");
+		logger.info("User Service Application Started Jenkins Test");
 	}
 }
 /*
