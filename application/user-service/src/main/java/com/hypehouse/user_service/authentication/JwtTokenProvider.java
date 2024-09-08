@@ -3,6 +3,8 @@ package com.hypehouse.user_service.authentication;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -33,8 +37,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
-        // Debugging statement
-        System.out.println("Generating token for user: " + username + " with roles: " + roles);
+        logger.debug("Generating token for user: {} with roles: {}", username, roles);
 
         return Jwts.builder()
                 .setSubject(username)
@@ -52,8 +55,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        // Debugging statement
-        System.out.println("Extracted claims from token: " + claims);
+        logger.debug("Extracted claims from token: {}", claims);
 
         return claims;
     }
@@ -63,8 +65,7 @@ public class JwtTokenProvider {
         Claims claims = getClaims(token);
         Object rolesObject = claims.get("roles");
 
-        // Debugging statement
-        System.out.println("Extracted roles from token: " + rolesObject);
+        logger.debug("Extracted roles from token: {}", rolesObject);
 
         if (rolesObject instanceof List<?>) {
             List<?> roles = (List<?>) rolesObject;
@@ -73,8 +74,7 @@ public class JwtTokenProvider {
                 @SuppressWarnings("unchecked")
                 List<String> roleList = (List<String>) roles;
 
-                // Debugging statement
-                System.out.println("Roles list: " + roleList);
+                logger.debug("Roles list: {}", roleList);
 
                 return roleList.stream()
                         .map(SimpleGrantedAuthority::new) // Ensure correct role format
@@ -88,15 +88,22 @@ public class JwtTokenProvider {
     // Validate the JWT token
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
 
-            // Debugging statement
-            System.out.println("Token is valid: " + token);
+            // Check if the token is expired
+            Date expirationDate = claims.getExpiration();
+            if (expirationDate.before(new Date())) {
+                logger.warn("Token is expired: {}", token);
+                return false;
+            }
 
+            logger.debug("Token is valid: {}", token);
             return true;
         } catch (Exception e) {
-            // Debugging statement
-            System.out.println("Token validation failed: " + token + " Exception: " + e.getMessage());
+            logger.error("Token validation failed: {} Exception: {}", token, e.getMessage());
             return false;
         }
     }
