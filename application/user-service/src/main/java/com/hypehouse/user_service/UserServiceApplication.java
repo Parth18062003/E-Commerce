@@ -12,10 +12,11 @@ public class UserServiceApplication {
 	private static final Logger logger = Logger.getLogger(UserServiceApplication.class.getName());
 	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
-		logger.info("User Service Application Started Jenkins Test");
+		logger.info("User Service Application Started");
 	}
 }
 /*
+host.docker.internal
 2. Password Management
 Forgot Password: Implement a password reset mechanism with email verification.
 Password Strength Validation: Ensure that users create strong passwords by validating their complexity.
