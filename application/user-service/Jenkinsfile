@@ -8,19 +8,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-username/your-repo.git'
+                git branch: 'main', url: 'https://github.com/Parth18062003/SpringbootMicroservices.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                dir('application/user-service') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                dir('application/user-service') {
+                    sh 'mvn test'
+                }
             }
         }
 
