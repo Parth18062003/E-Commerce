@@ -33,15 +33,18 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseThrow(() -> new UserNotFoundException(id.toString()));
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users/register")
     public User createUser(@Valid @RequestBody User user) {
+        if(userService.getUserByEmailOrUsername(user.getEmail(), user.getUsername()).isPresent()) {
+            throw new RuntimeException("User with email or username already exists");
+        }
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return userService.saveUser(user);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/users/update-profile/{id}")
     public ResponseEntity<User> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         Optional<User> existingUser = userService.getUserById(id);
         if (existingUser.isEmpty()) {
@@ -50,6 +53,9 @@ public class UserController {
 
         User user = existingUser.get(); // Get the existing user
         user.setId(id);
+        if(userUpdateDTO.getUsername() != null) {
+            user.setUsername(userUpdateDTO.getUsername());
+        }
         if (userUpdateDTO.getFirstName() != null) {
             user.setFirstName(userUpdateDTO.getFirstName());
         }
@@ -76,13 +82,13 @@ public class UserController {
         }
         if (userUpdateDTO.getCountry() != null) {
             user.setCountry(userUpdateDTO.getCountry());
-        }// Make sure the ID of the user being updated is set
-        User updatedUser = userService.saveUser(user); // Save the updated user
-        return ResponseEntity.ok(updatedUser); // Return the updated user with 200 OK status
+        }
+        User updatedUser = userService.saveUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/users/delete-profile/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         if (userService.getUserById(id).isEmpty()) {
             throw new UserNotFoundException(id.toString());

@@ -1,3 +1,4 @@
+
 package com.hypehouse.user_service.authentication;
 
 import jakarta.servlet.FilterChain;
@@ -8,7 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,9 +19,11 @@ import java.util.Collection;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -31,19 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtTokenProvider.getClaims(token).getSubject();
             Collection<SimpleGrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
 
-            // Create UserDetails with the authorities
-            UserDetails userDetails = new User(username, "", authorities);
+            // Load user details from the database
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+            // Create UsernamePasswordAuthenticationToken with user details and authorities
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             // Set the details from the request
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             // Set authentication in context
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // Debugging statement
-            System.out.println("Authorities: " + authorities);
         }
         filterChain.doFilter(request, response);
     }

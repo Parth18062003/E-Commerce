@@ -27,6 +27,10 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public Optional<User> getUserByEmailOrUsername(String email, String username) {
+        return Optional.ofNullable(userRepository.findByUsernameOrEmail(email, username));
+    }
+
     public User saveUser(@Valid User user) {
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
             throw new InvalidInputException("Username cannot be null or empty");
