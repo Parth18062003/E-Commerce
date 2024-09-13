@@ -24,18 +24,4 @@ public class TwoFactorAuthController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-
-    @PostMapping("/verify-2fa")
-    public ResponseEntity<String> verify2FA(@RequestBody TwoFARequest twoFARequest) {
-        try {
-            boolean isValid = twoFactorAuthService.verify2FACode(twoFARequest.getUsernameOrEmail(), twoFARequest.getCode());
-            if (isValid) {
-                return ResponseEntity.ok("2FA verified");
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid or expired code");
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }
-    }
 }

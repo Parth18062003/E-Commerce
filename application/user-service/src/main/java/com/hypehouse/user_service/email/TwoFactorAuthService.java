@@ -28,7 +28,7 @@ public class TwoFactorAuthService {
         }
 
         String code = generate2FACode();
-        TwoFACode twoFACode = new TwoFACode(user, code, LocalDateTime.now().plusMinutes(5));
+        TwoFACode twoFACode = new TwoFACode(user, code, LocalDateTime.now().plusMinutes(15));
         twoFACodeRepository.save(twoFACode);
 
         emailService.send2FAEmail(user.getEmail(), code);
@@ -39,6 +39,7 @@ public class TwoFactorAuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid code or user"));
 
         if (twoFACode.isExpired()) {
+            twoFACodeRepository.delete(twoFACode);
             throw new RuntimeException("Code expired");
         }
 
@@ -50,5 +51,9 @@ public class TwoFactorAuthService {
     private String generate2FACode() {
         Random random = new Random();
         return String.format("%06d", random.nextInt(999999)); // Generates a 6-digit code
+    }
+
+    public void delete2FACode(String usernameOrEmail) {
+        twoFACodeRepository.deleteByUserUsernameOrEmail(usernameOrEmail);
     }
 }

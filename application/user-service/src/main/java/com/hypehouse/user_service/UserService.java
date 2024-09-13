@@ -52,4 +52,18 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
+
+    public void enable2FA(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+        user.setIs2faEnabled(true);
+        userRepository.save(user);
+    }
+
+    public void disable2FA(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+        user.setIs2faEnabled(false);
+        userRepository.save(user);
+    }
 }

@@ -72,6 +72,18 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/users/enable-2fa/{id}")
+    public ResponseEntity<String> enable2FA(@PathVariable UUID id) {
+        userService.enable2FA(id);
+        return ResponseEntity.ok("2FA enabled");
+    }
+
+    @PostMapping("/users/disable-2fa/{id}")
+    public ResponseEntity<String> disable2FA(@PathVariable UUID id) {
+        userService.disable2FA(id);
+        return ResponseEntity.ok("2FA disabled");
+    }
+
     private void updateUserFields(User user, UserUpdateDTO dto) {
         if (dto.getUsername() != null) {
             user.setUsername(dto.getUsername());

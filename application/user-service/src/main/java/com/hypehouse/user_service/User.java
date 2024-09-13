@@ -76,6 +76,9 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "is_2fa_enabled")
+    private Boolean is2faEnabled = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -186,6 +189,10 @@ public class User {
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
+
+    public Boolean getIs2faEnabled() { return is2faEnabled; }
+
+    public void setIs2faEnabled(Boolean is2faEnabled) { this.is2faEnabled = is2faEnabled; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
