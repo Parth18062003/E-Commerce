@@ -159,8 +159,7 @@ public class JwtTokenProvider {
 
         logger.debug("Extracted roles from token: {}", rolesObject);
 
-        if (rolesObject instanceof List<?>) {
-            List<?> roles = (List<?>) rolesObject;
+        if (rolesObject instanceof List<?> roles) {
 
             if (roles.stream().allMatch(role -> role instanceof String)) {
                 @SuppressWarnings("unchecked")
