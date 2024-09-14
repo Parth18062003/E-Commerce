@@ -3,9 +3,11 @@ package com.hypehouse.user_service;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Use auto-increment for the primary key

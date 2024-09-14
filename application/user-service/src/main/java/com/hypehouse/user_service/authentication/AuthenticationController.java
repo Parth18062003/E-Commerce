@@ -51,11 +51,13 @@ public class AuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             User user = userRepository.findByUsernameOrEmail(loginRequest.getUsername(), loginRequest.getUsername());
-            if(user == null) {
+            if (user == null) {
                 log.error("User not found: {}", loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
+            log.info("User found: {}", user.getUsername());
+            log.info("Hashed password: {}", user.getPassword());
             if (user.getIs2faEnabled()) {
                 // Send 2FA code
                 twoFactorAuthService.send2FACode(loginRequest.getUsername());

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -190,9 +191,13 @@ public class User {
         this.isActive = isActive;
     }
 
-    public Boolean getIs2faEnabled() { return is2faEnabled; }
+    public Boolean getIs2faEnabled() {
+        return is2faEnabled;
+    }
 
-    public void setIs2faEnabled(Boolean is2faEnabled) { this.is2faEnabled = is2faEnabled; }
+    public void setIs2faEnabled(Boolean is2faEnabled) {
+        this.is2faEnabled = is2faEnabled;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

@@ -3,6 +3,7 @@ package com.hypehouse.user_service.authentication;
 import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,9 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.error("User not found with username or email: {}", usernameOrEmail);
             throw new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail);
         }
-
-        log.info("Loaded user from DB: {}", user.getUsername());
-        log.info("Stored password (hashed) for user: {}", user.getPassword());
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
                 user.getRoles().stream()

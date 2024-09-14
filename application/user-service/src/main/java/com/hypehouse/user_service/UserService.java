@@ -3,7 +3,7 @@ package com.hypehouse.user_service;
 import com.hypehouse.user_service.exception.InvalidInputException;
 import com.hypehouse.user_service.exception.UserNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,14 +19,17 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
+    @Cacheable(value = "users", key = "'all'")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Cacheable(value = "users", key = "#id")
     public Optional<User> getUserById(UUID id) {
         return userRepository.findById(id);
     }
-
+    
+    @Cacheable(value = "users", key = "{#email, #username}")
     public Optional<User> getUserByEmailOrUsername(String email, String username) {
         return Optional.ofNullable(userRepository.findByUsernameOrEmail(email, username));
     }
