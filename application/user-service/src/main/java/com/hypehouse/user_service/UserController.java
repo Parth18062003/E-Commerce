@@ -1,6 +1,7 @@
 package com.hypehouse.user_service;
 
 import com.hypehouse.user_service.exception.UserNotFoundException;
+import com.hypehouse.user_service.rate_limit.RateLimit;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,12 +23,14 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         return userService.getUserById(id)
@@ -35,6 +38,7 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(id.toString()));
     }
 
+    @RateLimit(limitForPeriod = 3, limitRefreshPeriod = 60)
     @PostMapping("/users/register")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         userService.getUserByEmailOrUsername(user.getEmail(), user.getUsername())
@@ -51,6 +55,7 @@ public class UserController {
         return ResponseEntity.status(201).body(createdUser); // Return 201 Created status
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PutMapping("/users/update-profile/{id}")
     public ResponseEntity<User> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         User user = userService.getUserById(id)
@@ -62,6 +67,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @DeleteMapping("/users/delete-profile/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         if (userService.getUserById(id).isEmpty()) {
@@ -72,12 +78,14 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/users/enable-2fa/{id}")
     public ResponseEntity<String> enable2FA(@PathVariable UUID id) {
         userService.enable2FA(id);
         return ResponseEntity.ok("2FA enabled");
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/users/disable-2fa/{id}")
     public ResponseEntity<String> disable2FA(@PathVariable UUID id) {
         userService.disable2FA(id);

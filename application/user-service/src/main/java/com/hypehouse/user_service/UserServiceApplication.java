@@ -19,18 +19,10 @@ public class UserServiceApplication {
 }
 /*
 host.docker.internal
-2. Password Management
-Forgot Password: Implement a password reset mechanism with email verification.
-Password Strength Validation: Ensure that users create strong passwords by validating their complexity.
-		3. Two-Factor Authentication (2FA)
-Enable 2FA: Provide an option for users to enable two-factor authentication for added security.
-TOTP Integration: Use Time-Based One-Time Password (TOTP) for 2FA.
+
 4. User Activity Logging
 Audit Logs: Maintain logs of user activities for security and auditing purposes.
 Login History: Track and display login history for users.
-5. Role and Permission Management
-Dynamic Roles: Allow dynamic creation and management of roles and permissions.
-Granular Permissions: Implement fine-grained access control to manage specific permissions within roles.
 6. User Notifications
 Email Notifications: Send email notifications for account activities, updates, or alerts.
 		In-App Notifications: Provide in-app notifications for important events.
