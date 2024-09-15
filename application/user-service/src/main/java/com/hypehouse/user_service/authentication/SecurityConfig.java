@@ -21,7 +21,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider,UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
     }
@@ -38,6 +38,10 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/auth/**").permitAll() // Allow unauthenticated access
                                 .requestMatchers("/api/v1/users/**").hasRole("ADMIN") // Require ADMIN role for user management
                                 .anyRequest().authenticated() // Require authentication for all other requests
+                )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/api/v1/auth/login")
+                        .defaultSuccessUrl("/api/v1/users", true)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
