@@ -37,6 +37,7 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers("/api/v1/auth/**").permitAll() // Allow unauthenticated access
                                 .requestMatchers("/api/v1/users/**").hasRole("ADMIN") // Require ADMIN role for user management
+                                .requestMatchers("/api/v1/activity-logs/**").hasRole("ADMIN") // Require authentication for all other requests
                                 .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .oauth2Login(oauth2Login -> oauth2Login

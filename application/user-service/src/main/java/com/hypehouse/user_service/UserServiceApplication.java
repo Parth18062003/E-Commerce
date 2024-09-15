@@ -20,20 +20,11 @@ public class UserServiceApplication {
 /*
 host.docker.internal
 
-4. User Activity Logging
-Audit Logs: Maintain logs of user activities for security and auditing purposes.
-Login History: Track and display login history for users.
 6. User Notifications
 Email Notifications: Send email notifications for account activities, updates, or alerts.
 		In-App Notifications: Provide in-app notifications for important events.
 		7. Security Enhancements
-Rate Limiting: Implement rate limiting to prevent abuse and brute-force attacks.
-Account Lockout: Lock accounts after multiple failed login attempts to enhance security.
-		8. User Data Analytics
-Usage Statistics: Track and analyze user activity patterns and engagement.
-Reporting: Generate reports on user activity, registration trends, and other metrics.
-		9. API Documentation
-Swagger/OpenAPI Integration: Use Swagger or OpenAPI to document your APIs and provide an interactive API explorer.
+
 		10. Microservice Communication
 Service-to-Service Communication: Implement service discovery and load balancing if you have multiple microservices.
 Inter-Service Authentication: Ensure secure communication between microservices, possibly using JWT or OAuth.

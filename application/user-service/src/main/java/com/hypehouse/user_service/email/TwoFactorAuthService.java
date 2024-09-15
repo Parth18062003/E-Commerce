@@ -2,6 +2,7 @@ package com.hypehouse.user_service.email;
 
 import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
+import com.hypehouse.user_service.monitoring.ActivityLogService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,13 @@ public class TwoFactorAuthService {
     private final UserRepository userRepository;
     private final TwoFACodeRepository twoFACodeRepository;
     private final EmailService emailService;
+    private final ActivityLogService activityLogService;
 
-    public TwoFactorAuthService(UserRepository userRepository, TwoFACodeRepository twoFACodeRepository, EmailService emailService) {
+    public TwoFactorAuthService(UserRepository userRepository, TwoFACodeRepository twoFACodeRepository, EmailService emailService, ActivityLogService activityLogService) {
         this.userRepository = userRepository;
         this.twoFACodeRepository = twoFACodeRepository;
         this.emailService = emailService;
+        this.activityLogService = activityLogService;
     }
 
     public void send2FACode(String usernameOrEmail) throws UsernameNotFoundException {
@@ -30,6 +33,13 @@ public class TwoFactorAuthService {
         String code = generate2FACode();
         TwoFACode twoFACode = new TwoFACode(user, code, LocalDateTime.now().plusMinutes(15));
         twoFACodeRepository.save(twoFACode);
+
+        activityLogService.createLog(
+                user.getId().toString(), // UUID to String
+                user.getEmail(),
+                "2FA_CODE_SENT",
+                "2FA code sent to email: " + user.getEmail()
+        );
 
         emailService.send2FAEmail(user.getEmail(), code);
     }
@@ -43,6 +53,13 @@ public class TwoFactorAuthService {
             throw new RuntimeException("Code expired");
         }
 
+        activityLogService.createLog(
+                twoFACode.getUser().getId().toString(), // UUID to String
+                twoFACode.getUser().getEmail(),
+                "2FA_CODE_VERIFIED",
+                "2FA code verified for user with ID: " + twoFACode.getUser().getId()
+        );
+        
         twoFACode.setVerified(true);
         twoFACodeRepository.save(twoFACode);
         return true;

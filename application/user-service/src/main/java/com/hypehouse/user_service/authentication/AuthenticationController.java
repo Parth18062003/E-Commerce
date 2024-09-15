@@ -4,6 +4,7 @@ import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
 import com.hypehouse.user_service.email.TwoFARequest;
 import com.hypehouse.user_service.email.TwoFactorAuthService;
+import com.hypehouse.user_service.monitoring.ActivityLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,17 @@ public class AuthenticationController {
     private final CustomUserDetailsService customUserDetailsService;
     private final TwoFactorAuthService twoFactorAuthService;
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
 
     public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
                                     CustomUserDetailsService customUserDetailsService, TwoFactorAuthService twoFactorAuthService,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository, ActivityLogService activityLogService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.customUserDetailsService = customUserDetailsService;
         this.twoFactorAuthService = twoFactorAuthService;
         this.userRepository = userRepository;
+        this.activityLogService = activityLogService;
     }
 
     @PostMapping("/login")
@@ -52,6 +55,12 @@ public class AuthenticationController {
 
             User user = userRepository.findByUsernameOrEmail(loginRequest.getUsername(), loginRequest.getUsername());
             if (user == null) {
+                activityLogService.createLog(
+                        null, // Or a default value if you don't have the user ID yet
+                        loginRequest.getUsername(),
+                        "LOGIN_FAILED",
+                        "User not found: " + loginRequest.getUsername()
+                );
                 log.error("User not found: {}", loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
@@ -60,18 +69,42 @@ public class AuthenticationController {
             log.info("Hashed password: {}", user.getPassword());
             if (user.getIs2faEnabled()) {
                 // Send 2FA code
+                activityLogService.createLog(
+                        user.getId().toString(), // UUID to String
+                        user.getEmail(),
+                        "2FA_CODE_SENT",
+                        "2FA code sent to email for user: " + user.getUsername()
+                );
                 twoFactorAuthService.send2FACode(loginRequest.getUsername());
                 return ResponseEntity.ok("2FA code sent. Please verify your code.");
             }
 
+            activityLogService.createLog(
+                    user.getId().toString(), // UUID to String
+                    user.getEmail(),
+                    "LOGIN_SUCCESS",
+                    "User logged in successfully: " + user.getUsername()
+            );
             String jwt = jwtTokenProvider.generateToken(authentication);
             return ResponseEntity.ok(new JwtResponse(jwt));
 
         } catch (BadCredentialsException e) {
             log.error("Invalid credentials for user: {}", loginRequest.getUsername(), e);
+            activityLogService.createLog(
+                    null, // Or a default value if you don't have the user ID yet
+                    loginRequest.getUsername(),
+                    "LOGIN_FAILED",
+                    "Invalid credentials for user: " + loginRequest.getUsername()
+            );
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
             log.error("Authentication error for user: {}", loginRequest.getUsername(), e);
+            activityLogService.createLog(
+                    null, // Or a default value if you don't have the user ID yet
+                    loginRequest.getUsername(),
+                    "LOGIN_ERROR",
+                    "Authentication error for user: " + loginRequest.getUsername()
+            );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Authentication error");
         }
     }
