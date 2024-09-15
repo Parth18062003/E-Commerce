@@ -1,19 +1,16 @@
 package com.hypehouse.user_service.email;
 
-
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
-    private final Resend resendClient;
+    private final EmailSender emailSender;
 
-    public EmailService(Resend resendClient) {
-        this.resendClient = resendClient;
+    @Autowired
+    public EmailService(EmailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     public void sendPasswordResetEmail(String toEmail, String token) {
@@ -21,29 +18,21 @@ public class EmailService {
         String body = "<strong>Click the link to reset your password: </strong><br>" +
                 "<a href=\"http://localhost:8081/api/v1/auth/reset-password/" + token + "\">Reset Password</a>";
 
-        sendEmail(toEmail, subject, body);
+        // Instead of directly sending the email, send the message to RabbitMQ
+        String message = createEmailMessage(toEmail, subject, body);
+        emailSender.sendEmailMessage(message); // Send message to RabbitMQ queue
     }
 
     public void send2FAEmail(String toEmail, String otp) {
         String subject = "Your 2FA Code";
         String body = "<strong>Your 2FA code is: </strong>" + otp;
 
-        sendEmail(toEmail, subject, body);
+        // Send the message to RabbitMQ
+        String message = createEmailMessage(toEmail, subject, body);
+        emailSender.sendEmailMessage(message); // Send message to RabbitMQ queue
     }
 
-    private void sendEmail(String toEmail, String subject, String body) {
-        CreateEmailOptions params = CreateEmailOptions.builder()
-                .from("Acme <onboarding@resend.dev>")
-                .to(toEmail)
-                .subject(subject)
-                .html(body)
-                .build();
-
-        try {
-            CreateEmailResponse data = resendClient.emails().send(params);
-            System.out.println("Email sent successfully with ID: " + data.getId());
-        } catch (ResendException e) {
-            System.err.println("Failed to send email: " + e.getMessage());
-        }
+    private String createEmailMessage(String toEmail, String subject, String body) {
+        return "TO: " + toEmail + "\n" + "SUBJECT: " + subject + "\n" + "BODY: " + body;
     }
 }
