@@ -86,7 +86,7 @@ public class AuthenticationController {
                     "User logged in successfully: " + user.getUsername()
             );
             String jwt = jwtTokenProvider.generateToken(authentication);
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            return ResponseEntity.ok(new JwtResponse(jwt, user.getId()));
 
         } catch (BadCredentialsException e) {
             log.error("Invalid credentials for user: {}", loginRequest.getUsername(), e);
@@ -125,7 +125,7 @@ public class AuthenticationController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 twoFactorAuthService.delete2FACode(twoFARequest.getUsernameOrEmail());
                 String jwt = jwtTokenProvider.generateToken(authentication);
-                return ResponseEntity.ok(new JwtResponse(jwt));
+                return ResponseEntity.ok(new JwtResponse(jwt, userRepository.findByUsernameOrEmail(twoFARequest.getUsernameOrEmail(), twoFARequest.getUsernameOrEmail()).getId()));
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid or expired code");
             }
