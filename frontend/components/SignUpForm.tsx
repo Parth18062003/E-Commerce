@@ -110,8 +110,8 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="flex flex-col bg-zinc-900 lg:flex-row lg:min-h-screen">
-      <div className="flex flex-col justify-center translate-y-6 md:translate-y-0 lg:w-1/2 p-4 lg:p-8"><div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-600 opacity-50 blur-[80px]"></div>{/*bg-[rgba(173,109,244,0.5)]*/}
+    <div className="flex flex-col bg-zinc-50 dark:bg-zinc-950 lg:flex-row lg:min-h-screen">
+      <div className="flex flex-col justify-center translate-y-6 md:translate-y-0 lg:w-1/2 p-4 lg:p-8"><div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>{/*bg-[rgba(173,109,244,0.5)]*/}
         <Card className="mx-auto max-w-md w-full shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>

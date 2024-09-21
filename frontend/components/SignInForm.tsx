@@ -102,10 +102,10 @@ export function SignInForm() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row lg:min-h-screen bg-zinc-900">
+    <div className="flex flex-col lg:flex-row lg:min-h-screen bg-zinc-50 dark:bg-zinc-950">
       {/* Login Form Column */}
       <div className="flex flex-col justify-center translate-y-20 md:translate-y-0 lg:w-1/2 p-4 lg:p-8">
-      <div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-500 opacity-50 blur-[80px]"></div>
+      <div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>
         <Card className="mx-auto max-w-md w-full shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
