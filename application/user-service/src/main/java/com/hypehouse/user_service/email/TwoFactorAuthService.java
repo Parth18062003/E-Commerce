@@ -1,5 +1,6 @@
 package com.hypehouse.user_service.email;
 
+import com.hypehouse.common.email.EmailService;
 import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
 import com.hypehouse.user_service.monitoring.ActivityLogService;
@@ -59,7 +60,7 @@ public class TwoFactorAuthService {
                 "2FA_CODE_VERIFIED",
                 "2FA code verified for user with ID: " + twoFACode.getUser().getId()
         );
-        
+
         twoFACode.setVerified(true);
         twoFACodeRepository.save(twoFACode);
         return true;

@@ -55,58 +55,36 @@ public class AuthenticationController {
 
             User user = userRepository.findByUsernameOrEmail(loginRequest.getUsername(), loginRequest.getUsername());
             if (user == null) {
-                activityLogService.createLog(
-                        null, // Or a default value if you don't have the user ID yet
-                        loginRequest.getUsername(),
-                        "LOGIN_FAILED",
-                        "User not found: " + loginRequest.getUsername()
-                );
+                logUserActivity(null, loginRequest.getUsername(), "LOGIN_FAILED", "User not found");
                 log.error("User not found: {}", loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
             log.info("User found: {}", user.getUsername());
-            log.info("Hashed password: {}", user.getPassword());
             if (user.getIs2faEnabled()) {
-                // Send 2FA code
-                activityLogService.createLog(
-                        user.getId().toString(), // UUID to String
-                        user.getEmail(),
-                        "2FA_CODE_SENT",
-                        "2FA code sent to email for user: " + user.getUsername()
-                );
+                logUserActivity(user.getId().toString(), user.getEmail(), "2FA_CODE_SENT", "2FA code sent");
                 twoFactorAuthService.send2FACode(loginRequest.getUsername());
-                return ResponseEntity.ok("2FA code sent. Please verify your code.");
+                return ResponseEntity.ok(new LoginResponse("2FA code sent. Please verify your code.", true));
+            } else {
+                logUserActivity(user.getId().toString(), user.getEmail(), "LOGIN_SUCCESS", "User logged in successfully");
+                String jwt = jwtTokenProvider.generateToken(authentication);
+                // Return user ID with JWT on successful login
+                return ResponseEntity.ok(new JwtResponse(jwt, user.getId()));
             }
-
-            activityLogService.createLog(
-                    user.getId().toString(), // UUID to String
-                    user.getEmail(),
-                    "LOGIN_SUCCESS",
-                    "User logged in successfully: " + user.getUsername()
-            );
-            String jwt = jwtTokenProvider.generateToken(authentication);
-            return ResponseEntity.ok(new JwtResponse(jwt, user.getId()));
 
         } catch (BadCredentialsException e) {
             log.error("Invalid credentials for user: {}", loginRequest.getUsername(), e);
-            activityLogService.createLog(
-                    null, // Or a default value if you don't have the user ID yet
-                    loginRequest.getUsername(),
-                    "LOGIN_FAILED",
-                    "Invalid credentials for user: " + loginRequest.getUsername()
-            );
+            logUserActivity(null, loginRequest.getUsername(), "LOGIN_FAILED", "Invalid credentials");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
             log.error("Authentication error for user: {}", loginRequest.getUsername(), e);
-            activityLogService.createLog(
-                    null, // Or a default value if you don't have the user ID yet
-                    loginRequest.getUsername(),
-                    "LOGIN_ERROR",
-                    "Authentication error for user: " + loginRequest.getUsername()
-            );
+            logUserActivity(null, loginRequest.getUsername(), "LOGIN_ERROR", "Authentication error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Authentication error");
         }
+    }
+
+    private void logUserActivity(String userId, String usernameOrEmail, String action, String description) {
+        activityLogService.createLog(userId, usernameOrEmail, action, description);
     }
 
     @PostMapping("/verify-2fa")

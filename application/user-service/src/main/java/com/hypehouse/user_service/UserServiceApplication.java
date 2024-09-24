@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 import java.util.logging.Logger;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.hypehouse"})
 @EnableCaching
 public class UserServiceApplication {
 
