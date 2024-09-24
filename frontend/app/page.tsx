@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { HorizontalScrollCarousel } from "@/components/ScrollCarousel";
 import HeroBackground from "@/components/ui/custom-grid";
 import HeroText from "@/components/ui/hero-text";
 
@@ -13,6 +14,7 @@ export default function Home() {
           <div className="flex items-end justify-start min-h-screen -translate-y-1/4 -translate-x-10">
             <HeroText />
           </div>
+          <HorizontalScrollCarousel />
         </main>
       </div>
       <Footer />

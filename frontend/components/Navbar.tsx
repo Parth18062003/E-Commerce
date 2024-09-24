@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Logo from "./utils/Logo";
-import { DropdownTabs } from "./ui/dropdown-tabs";
+import { DropdownTabs } from "./ui/dropdown/dropdown-tabs";
 import {
   Heart,
   Mic,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { TransitionLink } from "./utils/TransitionLink";
 import { ThemeToggle } from "./ui/theme-toggle";
+import { DropdownLinks } from "./ui/dropdown/dropdown-links";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,9 +32,9 @@ const Navbar = () => {
         <span>|</span>
         <TransitionLink href="/">Contact</TransitionLink>
       </div>
-      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
+      <div className="max-w-9xl mx-auto flex items-center justify-between p-4">
         {/* Logo on the left */}
-        <div className="flex items-center">
+        <div className="flex items-center px-4">
           <TransitionLink
             href="/"
             className="text-2xl font-bold hover:text-indigo-400 transition"
@@ -43,23 +44,24 @@ const Navbar = () => {
         </div>
 
         {/* Hamburger Menu Button */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <ThemeToggle />
           <button
             onClick={toggleMenu}
             className="text-2xl ml-3 text-zinc-800 dark:text-zinc-400 focus:outline-none"
           >
-            {isOpen ? <X /> : <Menu />}
+            {isOpen ? <X /> : <Menu />}<span className="sr-only">Menu</span>
           </button>
         </div>
 
         {/* TransitionLinks in the middle */}
-        <div className="hidden md:flex space-x-6">
+        <div className="hidden lg:flex space-x-6">
           <DropdownTabs />
+          <DropdownLinks />
         </div>
 
         {/* Search Input and Icons on the right */}
-        <div className="items-center hidden md:flex space-x-4">
+        <div className="items-center hidden lg:flex space-x-4 px-4">
           <div className="relative">
             <input
               type="text"
@@ -120,7 +122,7 @@ const Navbar = () => {
             onClick={toggleMenu}
             className="text-zinc-400 text-2xl self-end mb-4 z-10"
           >
-            <X />
+            <X /><span className="sr-only">Close Menu</span>
           </button>
           <div className="flex flex-col space-y-4 text-white z-10">
             <TransitionLink href="/authentication/sign-up" onClick={toggleMenu}>

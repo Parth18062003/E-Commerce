@@ -2,7 +2,7 @@ import React from "react";
 
 const HeroBackground: React.FC = () => {
   return (
-    <div className="pointer-events-none fixed max-h-screen inset-0 -z-0 grid w-full -rotate-45 transform select-none grid-cols-2 gap-10 md:grid-cols-4">
+    <div className="pointer-events-none absolute max-h-full inset-0 -z-0 grid w-full -rotate-45 transform select-none grid-cols-2 gap-10 md:grid-cols-4" >
       {Array.from({ length: 8 }).map((_, index) => (
         <div key={index} className="relative h-full w-full">
           <div

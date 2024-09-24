@@ -1,8 +1,15 @@
 "use client";
 
 import React, { ReactNode, useEffect, useState } from "react";
-import { ArrowRight, ChartBarDecreasing, ChartPie, ChevronDown, House } from 'lucide-react'
+import {
+  ArrowRight,
+  ChartBarDecreasing,
+  ChartPie,
+  ChevronDown,
+  House,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 
 export const DropdownTabs = () => {
   const [selected, setSelected] = useState<number | null>(null);
@@ -59,10 +66,8 @@ const Tab = ({
       id={`shift-tab-${tab}`}
       onMouseEnter={() => handleSetSelected(tab)}
       onClick={() => handleSetSelected(tab)}
-      className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors ${
-        selected === tab
-          ? " bg-neutral-800 text-neutral-100"
-          : "text-neutral-400"
+      className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors text-zinc-950 dark:text-white ${
+        selected === tab ? " bg-zinc-200 dark:bg-zinc-800 " : ""
       }`}
     >
       <span>{children}</span>
@@ -97,7 +102,7 @@ const Content = ({
         opacity: 0,
         y: 8,
       }}
-      className="absolute left-0 top-[calc(100%_+_24px)] w-96 rounded-lg border border-neutral-600 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-800 p-4"
+      className="absolute left-0 top-[calc(100%_+_24px)] w-96 rounded-lg border border-zinc-400 bg-gradient-to-b from-zinc-200 dark:from-zinc-900 via-zinc-200 dark:via-zinc-900 to-zinc-100 dark:to-zinc-800 transition-all duration-300 backdrop-blur-xl p-4"
     >
       <Bridge />
       <Nub selected={selected} />
@@ -158,7 +163,7 @@ const Nub = ({ selected }: { selected: number | null }) => {
       }}
       animate={{ left }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-tl border border-neutral-600 bg-neutral-900"
+      className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-tl border border-zinc-400 bg-zinc-200 dark:bg-zinc-900"
     />
   );
 };
@@ -166,46 +171,46 @@ const Nub = ({ selected }: { selected: number | null }) => {
 const Products = () => {
   return (
     <div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 text-zinc-700 dark:text-zinc-400">
         <div>
           <h3 className="mb-2 text-sm font-medium">Startup</h3>
-          <a href="#" className="mb-1 block text-sm text-neutral-400">
+          <Link href="/" className="mb-1 block text-sm ">
             Bookkeeping
-          </a>
-          <a href="#" className="block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="block text-sm ">
             Invoicing
-          </a>
+          </Link>
         </div>
         <div>
           <h3 className="mb-2 text-sm font-medium">Scaleup</h3>
-          <a href="#" className="mb-1 block text-sm text-neutral-400">
+          <Link href="/" className="mb-1 block text-sm ">
             Live Coaching
-          </a>
-          <a href="#" className="mb-1 block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="mb-1 block text-sm ">
             Reviews
-          </a>
-          <a href="#" className="block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="block text-sm ">
             Tax/VAT
-          </a>
+          </Link>
         </div>
         <div>
           <h3 className="mb-2 text-sm font-medium">Enterprise</h3>
-          <a href="#" className="mb-1 block text-sm text-neutral-400">
+          <Link href="/" className="mb-1 block text-sm ">
             White glove
-          </a>
-          <a href="#" className="mb-1 block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="mb-1 block text-sm ">
             SOX Compliance
-          </a>
-          <a href="#" className="block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="block text-sm ">
             Staffing
-          </a>
-          <a href="#" className="block text-sm text-neutral-400">
+          </Link>
+          <Link href="/" className="block text-sm ">
             More
-          </a>
+          </Link>
         </div>
       </div>
 
-      <button className="ml-auto mt-4 flex items-center gap-1 text-sm text-indigo-300">
+      <button className="ml-auto mt-4 flex items-center gap-1 text-sm text-indigo-500 dark:text-indigo-300">
         <span>View more</span>
         <ArrowRight />
       </button>
@@ -215,28 +220,28 @@ const Products = () => {
 
 const Pricing = () => {
   return (
-    <div className="grid grid-cols-3 gap-4 divide-x divide-neutral-700">
-      <a
-        href="#"
-        className="flex w-full flex-col items-center justify-center py-2 text-neutral-400 transition-colors hover:text-neutral-50"
+    <div className="grid grid-cols-3 gap-4 divide-x divide-zinc-700 text-zinc-700 dark:text-zinc-400">
+      <Link
+        href="/"
+        className="flex w-full flex-col items-center justify-center py-2 transition-colors hover:text-zinc-50"
       >
-        <House className="mb-2 text-xl text-indigo-300" />
+        <House className="mb-2 text-xl text-indigo-500 dark:text-indigo-300" />
         <span className="text-xs">Startup</span>
-      </a>
-      <a
-        href="#"
-        className="flex w-full flex-col items-center justify-center py-2 text-neutral-400 transition-colors hover:text-neutral-50"
+      </Link>
+      <Link
+        href="/"
+        className="flex w-full flex-col items-center justify-center py-2  transition-colors hover:text-zinc-50"
       >
-        <ChartBarDecreasing  className="mb-2 text-xl text-indigo-300" />
+        <ChartBarDecreasing className="mb-2 text-xl text-indigo-500 dark:text-indigo-300" />
         <span className="text-xs">Scaleup</span>
-      </a>
-      <a
-        href="#"
-        className="flex w-full flex-col items-center justify-center py-2 text-neutral-400 transition-colors hover:text-neutral-50"
+      </Link>
+      <Link
+        href="/"
+        className="flex w-full flex-col items-center justify-center py-2  transition-colors hover:text-zinc-50"
       >
-        <ChartPie className="mb-2 text-xl text-indigo-300" />
+        <ChartPie className="mb-2 text-xl text-indigo-500 dark:text-indigo-300" />
         <span className="text-xs">Enterprise</span>
-      </a>
+      </Link>
     </div>
   );
 };
@@ -244,33 +249,33 @@ const Pricing = () => {
 const Blog = () => {
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2">
-        <a href="#">
+      <div className="grid grid-cols-2 gap-2 text-zinc-700 dark:text-zinc-400">
+        <Link href="/">
           <img
             className="mb-2 h-14 w-full rounded object-cover"
             src="https://static.nike.com/a/images/f_auto/dpr_1.3,cs_srgb/h_700,c_limit/56e7677b-c5b6-4b84-9f09-5db7740fb885/image.png"
             alt="Placeholder image"
           />
           <h4 className="mb-0.5 text-sm font-medium">Lorem ipsum dolor</h4>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet illo
             quidem eos.
           </p>
-        </a>
-        <a href="#">
+        </Link>
+        <Link href="/">
           <img
             className="mb-2 h-14 w-full rounded object-cover"
             src="https://static.nike.com/a/images/f_auto/dpr_1.3,cs_srgb/h_700,c_limit/56e7677b-c5b6-4b84-9f09-5db7740fb885/image.png"
             alt="Placeholder image"
           />
           <h4 className="mb-0.5 text-sm font-medium">Lorem ipsum dolor</h4>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet illo
             quidem eos.
           </p>
-        </a>
+        </Link>
       </div>
-      <button className="ml-auto mt-4 flex items-center gap-1 text-sm text-indigo-300">
+      <button className="ml-auto mt-4 flex items-center gap-1 text-sm text-indigo-500 dark:text-indigo-300">
         <span>View more</span>
         <ArrowRight />
       </button>

@@ -33,7 +33,7 @@ export function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
+  const [notifications, setNotifications] = useState<NotificationType[]>([])
   const router = useRouter();
 
   const {
@@ -50,6 +50,8 @@ export function SignInForm() {
     setLoading(true);
     setApiError(null);
 
+    console.log("Submitting login form with:", data);
+
     try {
       const response = await axios.post(
         "http://localhost:8081/api/v1/auth/login",
@@ -59,21 +61,31 @@ export function SignInForm() {
         }
       );
 
+      console.log("API response:", response.data);
+
       localStorage.removeItem("token");
-      if (response.data.token) {
+
+      if (response.data["2FARequired"]) {
+        // Redirect to the 2FA page if required
+        router.push(
+          `/authentication/2fa?email=${encodeURIComponent(data.email)}`
+        );
+      } else if (response.data.token) {
         localStorage.setItem("token", response.data.token);
         addNotification("Login successful!", "success");
+        console.log("User ID:", response.data.userId);
         router.push(`/dashboard/user/${response.data.userId}`);
       } else {
         addNotification(
-          response.data.message || "An unkown error occurred",
+          response.data.message || "An unknown error occurred",
           "error"
         );
         setApiError(response.data.message || "An unknown error occurred.");
       }
 
-      reset();
+      reset(); // Reset the form at the end of the try block
     } catch (error: any) {
+      console.error("Error during login:", error);
       if (error.response && error.response.data) {
         addNotification(
           error.response.data.message || "An error occurred while logging in.",
@@ -105,7 +117,7 @@ export function SignInForm() {
     <div className="flex flex-col lg:flex-row lg:min-h-screen bg-zinc-50 dark:bg-zinc-950">
       {/* Login Form Column */}
       <div className="flex flex-col justify-center translate-y-20 md:translate-y-0 lg:w-1/2 p-4 lg:p-8">
-      <div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>
+        <div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>
         <Card className="mx-auto max-w-md w-full shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
@@ -214,9 +226,7 @@ export function SignInForm() {
       </div>
       {/* Cover Image Column */}
       <div className="relative lg:w-1/2 flex justify-center items-center">
-        <ImageContainer
-          imageUrl="https://static.nike.com/a/images/f_auto/dpr_1.3,cs_srgb/h_700,c_limit/56e7677b-c5b6-4b84-9f09-5db7740fb885/image.png"
-        />
+        <ImageContainer imageUrl="https://static.nike.com/a/images/f_auto/dpr_1.3,cs_srgb/h_700,c_limit/56e7677b-c5b6-4b84-9f09-5db7740fb885/image.png" />
       </div>
 
       {/* Notifications */}
