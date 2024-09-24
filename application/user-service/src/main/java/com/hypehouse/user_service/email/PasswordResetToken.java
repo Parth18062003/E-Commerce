@@ -32,7 +32,8 @@ public class PasswordResetToken {
     private LocalDateTime expiryDate;
 
     // Default constructor
-    public PasswordResetToken() {}
+    public PasswordResetToken() {
+    }
 
     // Getters and setters
     public UUID getId() {

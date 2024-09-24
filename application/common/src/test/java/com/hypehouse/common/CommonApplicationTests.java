@@ -1,10 +1,10 @@
-package com.hypehouse.application;
+package com.hypehouse.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApplicationTests {
+class CommonApplicationTests {
 
 	@Test
 	void contextLoads() {
