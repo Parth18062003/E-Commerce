@@ -110,8 +110,9 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="flex flex-col bg-zinc-50 dark:bg-zinc-950 lg:flex-row lg:min-h-screen">
-      <div className="flex flex-col justify-center translate-y-6 md:translate-y-0 lg:w-1/2 p-4 lg:p-8"><div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>{/*bg-[rgba(173,109,244,0.5)]*/}
+    <div className="flex flex-col bg-zinc-100 dark:bg-zinc-900 lg:flex-row min-h-screen">
+      <div className="flex flex-col justify-center translate-y-6 md:translate-y-0 lg:w-1/2 p-4 lg:p-8 relative">
+        <div className="absolute bottom-auto -z-10 left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-zinc-800 dark:bg-zinc-600 opacity-50 blur-[80px]"></div>
         <Card className="mx-auto max-w-md w-full shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
@@ -128,7 +129,9 @@ export function SignUpForm() {
                     id="firstName"
                     {...register("firstName")}
                     placeholder="Max"
-                    className={errors.firstName ? "border-red-500" : ""}
+                    className={`border rounded-lg p-2 w-full ${
+                      errors.firstName ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.firstName && (
                     <p className="text-red-500 text-sm">
@@ -142,7 +145,9 @@ export function SignUpForm() {
                     id="lastName"
                     {...register("lastName")}
                     placeholder="Robinson"
-                    className={errors.lastName ? "border-red-500" : ""}
+                    className={`border rounded-lg p-2 w-full ${
+                      errors.lastName ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.lastName && (
                     <p className="text-red-500 text-sm">
@@ -158,13 +163,14 @@ export function SignUpForm() {
                   type="email"
                   {...register("email")}
                   placeholder="m@example.com"
-                  className={errors.email ? "border-red-500" : ""}
+                  className={`border rounded-lg p-2 w-full ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email.message}</p>
                 )}
               </div>
-
               <div className="relative space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -172,8 +178,8 @@ export function SignUpForm() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password")}
-                    className={`pr-12 ${
-                      errors.password ? "border-red-500" : ""
+                    className={`border rounded-lg p-2 w-full pr-12 ${
+                      errors.password ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder={showPassword ? "password" : "●●●●●●"}
                   />
@@ -183,7 +189,7 @@ export function SignUpForm() {
                     className="absolute inset-y-0 right-3 flex items-center text-gray-500"
                   >
                     {showPassword ? <EyeOff /> : <Eye />}
-                    {<div className="sr-only">View Password</div>}
+                    <div className="sr-only">View Password</div>
                   </button>
                 </div>
                 {errors.password && (
