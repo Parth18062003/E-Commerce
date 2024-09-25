@@ -1,7 +1,7 @@
 package com.hypehouse.user_service;
 
+import com.hypehouse.common.rate_limit.RateLimit;
 import com.hypehouse.user_service.exception.UserNotFoundException;
-import com.hypehouse.user_service.rate_limit.RateLimit;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

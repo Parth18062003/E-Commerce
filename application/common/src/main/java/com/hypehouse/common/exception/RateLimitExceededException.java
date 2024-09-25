@@ -1,4 +1,4 @@
-package com.hypehouse.user_service.exception;
+package com.hypehouse.common.exception;
 
 public class RateLimitExceededException extends RuntimeException {
   public RateLimitExceededException(String message) {

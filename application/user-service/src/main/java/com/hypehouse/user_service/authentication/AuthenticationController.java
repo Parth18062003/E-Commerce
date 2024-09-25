@@ -1,5 +1,6 @@
 package com.hypehouse.user_service.authentication;
 
+import com.hypehouse.common.rate_limit.RateLimit;
 import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
 import com.hypehouse.user_service.email.TwoFARequest;
@@ -39,6 +40,7 @@ public class AuthenticationController {
         this.activityLogService = activityLogService;
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         log.info("Attempting to authenticate user: {}", loginRequest.getUsername());
@@ -87,6 +89,7 @@ public class AuthenticationController {
         activityLogService.createLog(userId, usernameOrEmail, action, description);
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/verify-2fa")
     public ResponseEntity<?> verify2FA(@RequestBody TwoFARequest twoFARequest) {
         log.info("Attempting to verify 2FA for user: {}", twoFARequest.getUsernameOrEmail());

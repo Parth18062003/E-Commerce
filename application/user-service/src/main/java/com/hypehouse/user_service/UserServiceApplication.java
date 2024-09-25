@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 
 @SpringBootApplication(scanBasePackages = {"com.hypehouse"})
 @EnableCaching
-public class UserServiceApplication {
+public class
+UserServiceApplication {
 
     private static final Logger logger = Logger.getLogger(UserServiceApplication.class.getName());
 

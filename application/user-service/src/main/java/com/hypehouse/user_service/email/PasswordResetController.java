@@ -1,6 +1,7 @@
 package com.hypehouse.user_service.email;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hypehouse.common.rate_limit.RateLimit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ public class PasswordResetController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/request-password-reset")
     public ResponseEntity<String> requestPasswordReset(@RequestParam String email) {
         try {
@@ -33,6 +35,7 @@ public class PasswordResetController {
         }
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<String> resetPassword(@PathVariable String token, @RequestBody PasswordResetRequest request) {
         try {

@@ -1,6 +1,6 @@
 package com.hypehouse.user_service.monitoring;
 
-import org.springframework.http.HttpStatus;
+import com.hypehouse.common.rate_limit.RateLimit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,24 +17,31 @@ public class ActivityLogsController {
         this.activityLogService = activityLogService;
     }
 
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/login-failures/count")
     public ResponseEntity<Long> getLoginFailuresCount() {
         long count = activityLogService.countByActivityType("LOGIN_FAILED");
         return ResponseEntity.ok(count);
     }
 
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/login-successes/count")
     public ResponseEntity<Long> getLoginSuccessesCount() {
         long count = activityLogService.countByActivityType("LOGIN_SUCCESS");
         return ResponseEntity.ok(count);
     }
 
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/unique-logins/count")
     public ResponseEntity<Long> getUniqueLoginsCount() {
         long count = activityLogService.countUniqueLogins();
         return ResponseEntity.ok(count);
     }
 
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/user/{userId}/activities")
     public ResponseEntity<List<ActivityLog>> getUserLoginActivities(
             @PathVariable String userId,
@@ -43,6 +50,8 @@ public class ActivityLogsController {
         return ResponseEntity.ok(logs);
     }
 
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/daily-logins")
     public ResponseEntity<Long> getDailyLoginsCount(
             @RequestParam(value = "date") String dateString) {
@@ -51,6 +60,8 @@ public class ActivityLogsController {
         return ResponseEntity.ok(count);
     }
 
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/user/{userId}/last-activities")
     public ResponseEntity<List<ActivityLog>> getLast10UserActivities(
             @PathVariable String userId) {

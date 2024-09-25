@@ -8,14 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    // Handle rate limit exceeded exceptions
-    @ExceptionHandler(RateLimitExceededException.class)
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-    public ResponseEntity<String> handleRateLimitException(RateLimitExceededException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
-    }
-
     // Handle user not found exceptions
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -3,7 +3,6 @@ package com.hypehouse.user_service.authentication;
 import com.hypehouse.user_service.User;
 import com.hypehouse.user_service.UserRepository;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
