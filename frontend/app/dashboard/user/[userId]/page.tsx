@@ -1,9 +1,10 @@
+import UserInfo from '@/components/UserInfo'
 import React from 'react'
 
-const page = () => {
+const UserDashboardPage = () => {
   return (
-    <div>page</div>
+    <div><UserInfo /></div>
   )
 }
 
-export default page
+export default UserDashboardPage

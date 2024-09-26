@@ -21,7 +21,8 @@ import { SignInSchema } from "@/schema/schema";
 import { useRouter } from "next/navigation";
 import Notification from "./ui/notification";
 import { TransitionLink } from "./utils/TransitionLink";
-// Define form data type based on schema
+import Cookies from "js-cookie";
+
 type SignInFormData = z.infer<typeof SignInSchema>;
 type NotificationType = {
   id: number;
@@ -33,7 +34,7 @@ export function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<NotificationType[]>([])
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const router = useRouter();
 
   const {
@@ -49,9 +50,9 @@ export function SignInForm() {
   const onSubmit: SubmitHandler<SignInFormData> = async (data) => {
     setLoading(true);
     setApiError(null);
-
+  
     console.log("Submitting login form with:", data);
-
+  
     try {
       const response = await axios.post(
         "http://localhost:8081/api/v1/auth/login",
@@ -60,47 +61,45 @@ export function SignInForm() {
           password: data.password,
         }
       );
-
+  
       console.log("API response:", response.data);
-
-      localStorage.removeItem("token");
-
+  
       if (response.data["2FARequired"]) {
         // Redirect to the 2FA page if required
-        router.push(
-          `/authentication/2fa?email=${encodeURIComponent(data.email)}`
-        );
+        router.push(`/authentication/2fa?email=${encodeURIComponent(data.email)}`);
       } else if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+        // Set the token in cookies
+        Cookies.set("token", response.data.token, { expires: 7, path: '/' });
+  
+        // Dispatch the login action
+  
         addNotification("Login successful!", "success");
         console.log("User ID:", response.data.userId);
         router.push(`/dashboard/user/${response.data.userId}`);
       } else {
-        addNotification(
-          response.data.message || "An unknown error occurred",
-          "error"
-        );
-        setApiError(response.data.message || "An unknown error occurred.");
+        const message = response.data.message || "An unknown error occurred.";
+        addNotification(message, "error");
+        setApiError(message);
       }
-
+  
       reset(); // Reset the form at the end of the try block
     } catch (error: any) {
       console.error("Error during login:", error);
-      if (error.response && error.response.data) {
-        addNotification(
-          error.response.data.message || "An error occurred while logging in.",
-          "error"
-        );
-        setApiError(
-          error.response.data.message || "An error occurred while logging in."
-        );
+      
+      // Improved error handling
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "An error occurred while logging in.";
+        addNotification(errorMessage, "error");
+        setApiError(errorMessage);
       } else {
-        setApiError("An error occurred while logging in.");
+        addNotification("An unexpected error occurred. Please try again.", "error");
+        setApiError("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
     }
   };
+  
 
   const addNotification = (
     text: string,
@@ -168,7 +167,12 @@ export function SignInForm() {
                   </p>
                 )}
               </div>
-              <TransitionLink href="/authentication/forgot-password" className="text-sm dark:text-zinc-300 text-zinc-700 hover:underline">Reset Password</TransitionLink>
+              <TransitionLink
+                href="/authentication/forgot-password"
+                className="text-sm dark:text-zinc-300 text-zinc-700 hover:underline"
+              >
+                Reset Password
+              </TransitionLink>
               {apiError && <p className="text-red-500 text-sm">{apiError}</p>}
 
               <Button type="submit" className="w-full mt-4" disabled={loading}>
