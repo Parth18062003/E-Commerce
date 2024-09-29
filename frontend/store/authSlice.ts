@@ -19,7 +19,12 @@ interface ReduxUser {
   roles: Role[];
   city: string;
   state: string;
+  country: string;
   postalCode: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  is2FAEnabled: boolean;
 }
 
 interface AuthState {
@@ -30,7 +35,9 @@ interface AuthState {
 const isBrowser = () => typeof window !== "undefined";
 
 const initialState: AuthState = {
-  user: isBrowser() ? JSON.parse(localStorage.getItem("userData") || "null") : null,
+  user: isBrowser()
+    ? JSON.parse(localStorage.getItem("userData") || "null")
+    : null,
   token: isBrowser() ? localStorage.getItem("token") : null,
 };
 
@@ -38,12 +45,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login(state, action: PayloadAction<{ user: ReduxUser; token: string }>) {
-      state.user = action.payload.user;
+    login(state, action: PayloadAction<{ token: string }>) {
       state.token = action.payload.token;
       if (isBrowser()) {
-        localStorage.setItem("userData", JSON.stringify(action.payload.user));
-        localStorage.setItem("token", action.payload.token);
+        Cookies.set("token", action.payload.token, { expires: 7, path: "/" });
       }
     },
     logout(state) {
@@ -60,8 +65,25 @@ const authSlice = createSlice({
         localStorage.setItem("userData", JSON.stringify(action.payload));
       }
     },
+    updateUser(state, action: PayloadAction<Partial<ReduxUser>>) {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload }; // Merge existing user with new fields
+        if (isBrowser()) {
+          localStorage.setItem("userData", JSON.stringify(state.user));
+        }
+      }
+    },
+    // In your authSlice.js
+    update2FAStatus(state, action: PayloadAction<boolean>) {
+      if (state.user) {
+        state.user.is2FAEnabled = action.payload;
+        if (isBrowser()) {
+          localStorage.setItem("userData", JSON.stringify(state.user));
+        }
+      }
+    },
   },
 });
 
-export const { login, logout, setUser } = authSlice.actions;
+export const { login, logout, setUser, updateUser, update2FAStatus } = authSlice.actions;
 export default authSlice.reducer;

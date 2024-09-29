@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import Notification from "./ui/notification";
 import { TransitionLink } from "./utils/TransitionLink";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { login } from "@/store/authSlice";
 
 type SignInFormData = z.infer<typeof SignInSchema>;
 type NotificationType = {
@@ -36,6 +38,7 @@ export function SignInForm() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -66,11 +69,13 @@ export function SignInForm() {
   
       if (response.data["2FARequired"]) {
         // Redirect to the 2FA page if required
+        addNotification("2fa code has been sent. Please check your email.", "info");
+        setLoading(true);
         router.push(`/authentication/2fa?email=${encodeURIComponent(data.email)}`);
       } else if (response.data.token) {
         // Set the token in cookies
         Cookies.set("token", response.data.token, { expires: 7, path: '/' });
-  
+        dispatch(login({ token: response.data.token })); // Dispatch the login action
         // Dispatch the login action
   
         addNotification("Login successful!", "success");
@@ -96,6 +101,7 @@ export function SignInForm() {
         setApiError("An unexpected error occurred.");
       }
     } finally {
+      reset();
       setLoading(false);
     }
   };

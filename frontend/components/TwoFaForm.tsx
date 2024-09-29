@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Label } from "./ui/label";
+import Cookies from "js-cookie";
 
 type TwoFAFormData = z.infer<typeof TwoFASchema>;
 
@@ -56,7 +57,7 @@ export default function TwoFAForm() {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
+      Cookies.set("token", response.data.token, { expires: 7, path: '/' });
       // Redirect to dashboard or wherever you need
       router.push(`/dashboard/user/${response.data.userId}`);
       reset();

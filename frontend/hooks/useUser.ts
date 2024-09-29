@@ -25,7 +25,12 @@ interface User {
   roles: Role[]; 
   city: string;
   state: string;
+  country: string;
   postalCode: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  is2FAEnabled: boolean;
 }
 
 const useUser = () => {
@@ -70,6 +75,8 @@ const useUser = () => {
           }
         );
 
+        
+    console.log("reduxUser", response.data);
         dispatch(setUser(response.data)); // Set user in Redux
       } catch (error) {
         if (axios.isAxiosError(error)) {

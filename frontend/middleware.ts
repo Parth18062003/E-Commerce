@@ -18,8 +18,8 @@ const AUTHENTICATION_ROUTES = [
 // Define the protected routes
 const PROTECTED_ROUTES = ["/dashboard", "/dashboard/user"];
 
-const ADMIN_ROUTES = ["/dashboard/admin/"];
-const USER_ROUTES = ["/dashboard/user/", "/user/profile"];
+const ADMIN_ROUTES = ["/dashboard/adminsken/"];
+const USER_ROUTES = ["/dashboard/user/", "/user/profile","/dashboard/admin/"];
 
 export function middleware(request: NextRequest) {
   const tokenCookie = request.cookies.get("token");
