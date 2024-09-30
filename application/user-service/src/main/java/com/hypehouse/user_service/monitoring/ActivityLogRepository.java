@@ -17,7 +17,14 @@ public interface ActivityLogRepository extends MongoRepository<ActivityLog, Stri
 
     List<String> findDistinctUserIdsByActivityType(String activityType);
 
+    long countByActivityTypeAndTimestampAfter(String activityType, LocalDateTime start);
+
     long countByActivityTypeAndTimestampBetween(String activityType, LocalDateTime start, LocalDateTime end);
 
     List<ActivityLog> findByUserIdOrderByTimestampDesc(String userId);
+
+    long countByUserIdAndActivityTypeAndTimestampBetween(String userId, String activityType, LocalDateTime start, LocalDateTime end);
+
+    long countByActivityTypeAndDetailsContaining(String activityType, String details);
+
 }

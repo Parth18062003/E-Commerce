@@ -63,7 +63,7 @@ public class UserController {
 
         updateUserFields(user, userUpdateDTO);
 
-        User updatedUser = userService.saveUser(user);
+        User updatedUser = userService.updateUser(user);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -80,16 +80,23 @@ public class UserController {
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/users/enable-2fa/{id}")
-    public ResponseEntity<String> enable2FA(@PathVariable UUID id) {
-        userService.enable2FA(id);
-        return ResponseEntity.ok("2FA enabled");
+    public ResponseEntity<User> enable2FA(@PathVariable UUID id) {
+        User user = userService.enable2FA(id);
+        return ResponseEntity.ok(user);
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/users/disable-2fa/{id}")
-    public ResponseEntity<String> disable2FA(@PathVariable UUID id) {
-        userService.disable2FA(id);
-        return ResponseEntity.ok("2FA disabled");
+    public ResponseEntity<User> disable2FA(@PathVariable UUID id) {
+        User user = userService.disable2FA(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @PostMapping("/users/update-2fa/{id}")
+    public ResponseEntity<User> update2FA(@PathVariable UUID id, @RequestParam boolean enable) {
+        User user = enable ? userService.enable2FA(id) : userService.disable2FA(id);
+        return ResponseEntity.ok(user);
     }
 
     private void updateUserFields(User user, UserUpdateDTO dto) {

@@ -4,6 +4,8 @@ import com.hypehouse.user_service.exception.InvalidInputException;
 import com.hypehouse.user_service.exception.UserNotFoundException;
 import com.hypehouse.user_service.monitoring.ActivityLogService;
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,7 @@ public class UserService {
         return Optional.ofNullable(userRepository.findByUsernameOrEmail(email, username));
     }
 
+    @CachePut(value = "users", key = "#user.id")
     public User saveUser(@Valid User user) {
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
             throw new InvalidInputException("Username cannot be null or empty");
@@ -57,9 +60,34 @@ public class UserService {
                 "User created with email: " + savedUser.getEmail()
         );
 
-        return userRepository.save(user);
+        return savedUser; // Return the saved user
     }
 
+    @CachePut(value = "users", key = "#user.id")
+    public User updateUser(@Valid User user) {
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new InvalidInputException("Username cannot be null or empty");
+        }
+
+        Role userRole = roleRepository.findByName("USER");
+        if (userRole == null) {
+            throw new RuntimeException("USER role not found in the database");
+        }
+
+        user.setRoles(new HashSet<>(Collections.singleton(userRole)));
+
+        User savedUser = userRepository.save(user);
+        activityLogService.createLog(
+                savedUser.getId().toString(), // Convert UUID to String
+                savedUser.getEmail(),
+                "USER_UPDATED",
+                "User updated with email: " + savedUser.getEmail()
+        );
+
+        return savedUser; // Return the saved user
+    }
+    
+    @CacheEvict(value = "users", key = "#id")
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id.toString());
@@ -75,7 +103,8 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public void enable2FA(UUID userId) {
+    @CachePut(value = "users", key = "#userId")
+    public User enable2FA(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
         user.setIs2faEnabled(true);
@@ -87,10 +116,11 @@ public class UserService {
                 "2FA enabled for user with ID: " + userId
         );
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
-    public void disable2FA(UUID userId) {
+    @CachePut(value = "users", key = "#userId")
+    public User disable2FA(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
         user.setIs2faEnabled(false);
@@ -102,6 +132,6 @@ public class UserService {
                 "2FA disabled for user with ID: " + userId
         );
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
