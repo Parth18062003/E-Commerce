@@ -1,12 +1,14 @@
 // store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
-import activityLogRedcer from './activityLogSlice';
+import activityLogReducer from './activityLogSlice';
+import deviceLogSliceReducer from './deviceLogSlice';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    activityLog: activityLogRedcer, 
+    activityLog: activityLogReducer, 
+    deviceLog: deviceLogSliceReducer,
   },
 });
 

@@ -12,6 +12,10 @@ interface ActivityLog {
   timestamp: string;
 }
 
+interface ActivitySummary {
+  [key: string]: number;
+}
+
 interface ActivityLogState {
   loginFailuresCount: number;
   loginSuccessesCount: number;
@@ -20,6 +24,11 @@ interface ActivityLogState {
   lastUserActivities: ActivityLog[];
   loading: boolean;
   error: string | null;
+  dailyLoginsCount: number;
+  registrationsCount: number;
+  updatesCount: number;
+  deletionsCount: number;
+  activityTrends: Map<string, number>;
 }
 
 const initialState: ActivityLogState = {
@@ -30,6 +39,11 @@ const initialState: ActivityLogState = {
   lastUserActivities: [],
   loading: false,
   error: null,
+  dailyLoginsCount: 0,
+  registrationsCount: 0,
+  updatesCount: 0,
+  deletionsCount: 0,
+  activityTrends: new Map(),
 };
 
 // Create async thunk actions
@@ -37,7 +51,7 @@ export const fetchActivityCounts = createAsyncThunk<{
   loginFailuresCount: number; 
   loginSuccessesCount: number; 
   uniqueLoginsCount: number;
-}, void>('activityLog/fetchCounts', async () => {
+}, void>('activityLog/fetchActivityCounts', async () => {
   const [failures, successes, uniqueLogins] = await Promise.all([
     axios.get(`${API_BASE_URL}/login-failures/count`),
     axios.get(`${API_BASE_URL}/login-successes/count`),
@@ -66,6 +80,54 @@ export const fetchLastUserActivities = createAsyncThunk<ActivityLog[], string>(
   }
 );
 
+export const fetchDailyLoginsCount = createAsyncThunk<number, string>(
+  'activityLog/fetchDailyLoginsCount',
+  async (dateString) => {
+    const response = await axios.get(`${API_BASE_URL}/daily-logins`, { params: { date: dateString } });
+    return response.data;
+  }
+);
+
+export const fetchRegistrationsCount = createAsyncThunk<number, { startDate: string; endDate: string }>(
+  'activityLog/fetchRegistrationsCount',
+  async ({ startDate, endDate }) => {
+    const response = await axios.get(`${API_BASE_URL}/registrations/count`, { params: { startDate, endDate } });
+    return response.data;
+  }
+);
+
+export const fetchUpdatesCount = createAsyncThunk<number, { startDate: string; endDate: string }>(
+  'activityLog/fetchUpdatesCount',
+  async ({ startDate, endDate }) => {
+    const response = await axios.get(`${API_BASE_URL}/updates/count`, { params: { startDate, endDate } });
+    return response.data;
+  }
+);
+
+export const fetchDeletionsCount = createAsyncThunk<number, { startDate: string; endDate: string }>(
+  'activityLog/fetchDeletionsCount',
+  async ({ startDate, endDate }) => {
+    const response = await axios.get(`${API_BASE_URL}/deletions/count`, { params: { startDate, endDate } });
+    return response.data;
+  }
+);
+
+export const fetchActivitySummary = createAsyncThunk<ActivitySummary, string>(
+  'activityLog/fetchActivitySummary',
+  async (userId) => {
+    const response = await axios.get(`${API_BASE_URL}/user/${userId}/activity-summary`);
+    return response.data;
+  }
+);
+
+export const fetchDailyActivityTrends = createAsyncThunk<Map<string, number>, string>(
+  'activityLog/fetchDailyActivityTrends',
+  async (activityType) => {
+    const response = await axios.get(`${API_BASE_URL}/activity-trends/daily`, { params: { activityType } });
+    return new Map(Object.entries(response.data));
+  }
+);
+
 // Create the slice
 const activityLogSlice = createSlice({
   name: 'activityLog',
@@ -85,9 +147,35 @@ const activityLogSlice = createSlice({
       })
       .addCase(fetchUserActivities.fulfilled, (state, action: PayloadAction<ActivityLog[]>) => {
         state.userActivities = action.payload;
+        state.loading = false;
       })
       .addCase(fetchLastUserActivities.fulfilled, (state, action: PayloadAction<ActivityLog[]>) => {
         state.lastUserActivities = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchDailyLoginsCount.fulfilled, (state, action: PayloadAction<number>) => {
+        state.dailyLoginsCount = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchRegistrationsCount.fulfilled, (state, action: PayloadAction<number>) => {
+        state.registrationsCount = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUpdatesCount.fulfilled, (state, action: PayloadAction<number>) => {
+        state.updatesCount = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchDeletionsCount.fulfilled, (state, action: PayloadAction<number>) => {
+        state.deletionsCount = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchActivitySummary.fulfilled, (state, action: PayloadAction<ActivitySummary>) => {
+        // handle activity summary if needed
+        state.loading = false;
+      })
+      .addCase(fetchDailyActivityTrends.fulfilled, (state, action: PayloadAction<Map<string, number>>) => {
+        state.activityTrends = action.payload;
+        state.loading = false;
       })
       .addMatcher(
         (action): action is { type: string; error: { message: string } } => action.type.endsWith('/pending'),
@@ -106,5 +194,6 @@ const activityLogSlice = createSlice({
   },
 });
 
-// Export the reducer
+// Export the actions and reducer
+export const activityLogActions = activityLogSlice.actions;
 export default activityLogSlice.reducer;

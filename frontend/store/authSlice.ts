@@ -57,6 +57,8 @@ const authSlice = createSlice({
       if (isBrowser()) {
         localStorage.removeItem("userData");
         Cookies.remove("token");
+        localStorage.removeItem("deviceLogs");  
+        localStorage.removeItem("lastDeviceInfo");
       }
     },
     setUser(state, action: PayloadAction<ReduxUser>) {

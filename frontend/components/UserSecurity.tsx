@@ -6,6 +6,7 @@ import { update2FAStatus } from "@/store/authSlice"; // Import your action
 import Cookies from "js-cookie";
 import axios from "axios"; // Import axios
 import Notification from "./ui/notification";
+import DeviceLogsComponent from "./DeviceLog";
 
 type NotificationType = {
     id: number;
@@ -103,6 +104,8 @@ const UserSecurity = () => {
             </>
           )
         )}
+        {reduxUser && 
+        <DeviceLogsComponent userId={reduxUser?.id || ""} firstName={reduxUser?.firstName || ""} />}
       </div>
     </>
   );
