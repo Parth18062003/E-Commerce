@@ -13,6 +13,10 @@ public class DeviceLog {
     private String os;
     private String browser;
     private String device;
+    private String osVersion;
+    private String browserVersion;
+    private String deviceVendor;
+    private String deviceModel;
     private LocalDateTime timestamp;
 
     // Getters and Setters
@@ -54,6 +58,38 @@ public class DeviceLog {
 
     public void setDevice(String device) {
         this.device = device;
+    }
+
+    public String getOsVersion() {
+        return osVersion;
+    }
+
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
+
+    public String getBrowserVersion() {
+        return browserVersion;
+    }
+
+    public void setBrowserVersion(String browserVersion) {
+        this.browserVersion = browserVersion;
+    }
+
+    public String getDeviceVendor() {
+        return deviceVendor;
+    }
+
+    public void setDeviceVendor(String deviceVendor) {
+        this.deviceVendor = deviceVendor;
+    }
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
     }
 
     public LocalDateTime getTimestamp() {

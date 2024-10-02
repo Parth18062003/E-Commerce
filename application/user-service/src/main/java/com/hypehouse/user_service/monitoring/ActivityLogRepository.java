@@ -1,5 +1,7 @@
 package com.hypehouse.user_service.monitoring;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +11,11 @@ import java.util.List;
 @Repository
 public interface ActivityLogRepository extends MongoRepository<ActivityLog, String> {
 
-    List<ActivityLog> findAllByUserId(String userId);
+    // Pagination support for user logs
+    Page<ActivityLog> findAllByUserId(String userId, Pageable pageable);
 
-    List<ActivityLog> findByUserIdAndActivityTypeIn(String userId, List<String> activityTypes);
+    // Pagination support for user activity types
+    Page<ActivityLog> findByUserIdAndActivityTypeIn(String userId, List<String> activityTypes, Pageable pageable);
 
     long countByActivityType(String activityType);
 
@@ -26,5 +30,4 @@ public interface ActivityLogRepository extends MongoRepository<ActivityLog, Stri
     long countByUserIdAndActivityTypeAndTimestampBetween(String userId, String activityType, LocalDateTime start, LocalDateTime end);
 
     long countByActivityTypeAndDetailsContaining(String activityType, String details);
-
 }

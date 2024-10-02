@@ -1,10 +1,11 @@
 package com.hypehouse.user_service.monitoring;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,11 @@ public class ActivityLogService {
         activityLogRepository.save(log);
     }
 
-    public List<ActivityLog> getLogsByUserId(String userId, List<String> activityTypes) {
+    public Page<ActivityLog> getLogsByUserId(String userId, List<String> activityTypes, Pageable pageable) {
         if (activityTypes == null || activityTypes.isEmpty()) {
-            return activityLogRepository.findAllByUserId(userId);
+            return activityLogRepository.findAllByUserId(userId, pageable);
         } else {
-            return activityLogRepository.findByUserIdAndActivityTypeIn(userId, activityTypes);
+            return activityLogRepository.findByUserIdAndActivityTypeIn(userId, activityTypes, pageable);
         }
     }
 
@@ -140,14 +141,23 @@ public class ActivityLogService {
         return activityLogRepository.countByActivityTypeAndDetailsContaining(activityType, detailsCriteria);
     }
 
-    public void logDeviceInfo(String userId, String os, String browser, String device) {
+    public void logDeviceInfo(String userId, String os, String browser, String device, String osVersion, String browserVersion, String deviceVendor, String deviceModel) {
         DeviceLog log = new DeviceLog();
         log.setUserId(userId);
         log.setOs(os);
         log.setBrowser(browser);
         log.setDevice(device);
+        log.setOsVersion(osVersion);
+        log.setBrowserVersion(browserVersion);
+        log.setDeviceVendor(deviceVendor);
+        log.setDeviceModel(deviceModel);
         log.setTimestamp(LocalDateTime.now());
         deviceLogRepository.save(log);
+    }
+
+    public boolean deviceInfoExists(String userId, String os, String browser, String device) {
+        // Check if a log entry exists
+        return deviceLogRepository.findFirstByUserIdAndOsAndBrowserAndDevice(userId, os, browser, device).isPresent();
     }
 
     public void logGeolocation(String userId, double latitude, double longitude) {
@@ -159,11 +169,11 @@ public class ActivityLogService {
         geolocationLogRepository.save(log);
     }
 
-    public List<DeviceLog> getAllDeviceLogs(String userId) {
-        return deviceLogRepository.findByUserId(userId);
+    public Page<DeviceLog> getAllDeviceLogs(String userId, Pageable pageable) {
+        return deviceLogRepository.findByUserId(userId, pageable);
     }
 
-    public List<GeolocationLog> getAllGeolocationLogs(String userId) {
-        return geolocationLogRepository.findByUserId(userId);
+    public Page<GeolocationLog> getAllGeolocationLogs(String userId, Pageable pageable) {
+        return geolocationLogRepository.findByUserId(userId, pageable);
     }
 }

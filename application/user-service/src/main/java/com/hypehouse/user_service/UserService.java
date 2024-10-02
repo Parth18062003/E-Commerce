@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,9 +26,9 @@ public class UserService {
         this.activityLogService = activityLogService;
     }
 
-    @Cacheable(value = "users", key = "'all'")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @Cacheable(value = "users", key = "#pageable.pageNumber")
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Cacheable(value = "users", key = "#id")
@@ -86,7 +88,7 @@ public class UserService {
 
         return savedUser; // Return the saved user
     }
-    
+
     @CacheEvict(value = "users", key = "#id")
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
