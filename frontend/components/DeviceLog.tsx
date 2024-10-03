@@ -2,12 +2,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchDeviceLogs,
-  logDeviceInfo,
-} from "../store/deviceLogSlice";
+import { fetchDeviceLogs, logDeviceInfo } from "../store/deviceLogSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import UAParser from "ua-parser-js";
+import { Globe, MonitorCog, MonitorSmartphone } from "lucide-react";
 
 interface DeviceLog {
   id: string;
@@ -61,7 +59,7 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
     const logDeviceInformation = async () => {
       const parser = new UAParser();
       const result = parser.getResult();
-      
+
       const os = result.os.name || DEFAULT_DEVICE_INFO.os;
       const osVersion = result.os.version || "Unknown OS Version";
       const browser = result.browser.name || DEFAULT_DEVICE_INFO.browser;
@@ -70,7 +68,9 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
       const deviceModel = result.device.model || "Unknown Model";
 
       const lastDeviceInfo = localStorage.getItem("lastDeviceInfo");
-      const parsedLastDeviceInfo = lastDeviceInfo ? JSON.parse(lastDeviceInfo) : {};
+      const parsedLastDeviceInfo = lastDeviceInfo
+        ? JSON.parse(lastDeviceInfo)
+        : {};
 
       const hasDeviceChanged =
         os !== parsedLastDeviceInfo.os ||
@@ -93,7 +93,18 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
               deviceModel,
             })
           );
-          localStorage.setItem("lastDeviceInfo", JSON.stringify({ os, osVersion, browser, device, deviceVendor, deviceModel, userId }));
+          localStorage.setItem(
+            "lastDeviceInfo",
+            JSON.stringify({
+              os,
+              osVersion,
+              browser,
+              device,
+              deviceVendor,
+              deviceModel,
+              userId,
+            })
+          );
         } catch (err) {
           console.error("Error logging device info:", err);
         }
@@ -120,15 +131,17 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
           {deviceLogs.map((log) => (
             <li
               key={log.id}
-              className="p-4 bg-zinc-100 dark:bg-zinc-700 border border-zinc-700 dark:border-zinc-300 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition"
+              className="p-4 bg-zinc-100 dark:bg-zinc-700 border border-zinc-700 dark:border-zinc-300 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition "
             >
-              <div className="text-zinc-800 dark:text-zinc-200">
-                <strong>Device:</strong> {log.device}
+              <div className="text-zinc-800 dark:text-zinc-200 flex gap-x-1">
+                <MonitorSmartphone /> <strong>Device:</strong> {log.device}
               </div>
-              <div className="text-zinc-800 dark:text-zinc-200">
+              <div className="text-zinc-800 dark:text-zinc-200 flex gap-x-1">
+                <MonitorCog />
                 <strong>OS:</strong> {log.os}
-              </div>
-              <div className="text-zinc-800 dark:text-zinc-200">
+              </div> 
+              <div className="text-zinc-800 dark:text-zinc-200 flex gap-x-1">
+                <Globe />
                 <strong>Browser:</strong> {log.browser}
               </div>
               <div className="text-zinc-800 dark:text-zinc-200">
@@ -141,7 +154,8 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
                 <strong>Device Model:</strong> {log.deviceModel}
               </div>
               <div className="text-zinc-800 dark:text-zinc-200">
-                <strong>Timestamp:</strong> {new Date(log.timestamp).toLocaleString()}
+                <strong>Timestamp:</strong>{" "}
+                {new Date(log.timestamp).toLocaleString()}
               </div>
             </li>
           ))}

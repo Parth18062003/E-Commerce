@@ -2,42 +2,69 @@
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store/store'; // Adjust the import path accordingly
+import { AppDispatch, RootState } from '@/store/store'; 
 import { fetchUserActivities } from '../store/activityLogSlice';
+import { Button } from './ui/button'; // Ensure you have a button component from ShadCN
+import { Card } from './ui/card'; // Example of a card component from ShadCN
 
 const UserActivitiesComponent: React.FC<{ userId: string }> = ({ userId }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { userActivities, loading, error } = useSelector((state: RootState) => state.activityLog);
+  const { userActivities, loading, error, pagination } = useSelector((state: RootState) => state.activityLog);
 
   useEffect(() => {
     if (userId) {
-      dispatch(fetchUserActivities(userId) as any); // Type assertion if needed
+      dispatch(fetchUserActivities({ userId, page: 0 }) as any); // Fetch the first page of activities
     }
   }, [dispatch, userId]);
 
-  // Loading state
-  if (loading) return <p>Loading user activities...</p>;
-
-  // Error handling
-  if (error) return <p>Error: {error}</p>;
-
-  // Check if userActivities is an array and render appropriately
   return (
-    <div>
-      <h3>User Activities</h3>
-      <ul>
+    <div className="p-4 bg-zinc-900 rounded-lg shadow-md">
+      <h3 className="text-2xl font-semibold mb-4">User Activities</h3>
+
+      {loading && <p className="text-zinc-500">Loading user activities...</p>}
+
+      {error && <p className="text-red-500">Error: {error}</p>}
+
+      <Card className="mt-4 p-4">
         {Array.isArray(userActivities) && userActivities.length > 0 ? (
-          userActivities.map((activity) => (
-            <li key={activity.timestamp}>
-              <p>
-                {activity.activityType}: {activity.details} at {activity.timestamp}
-              </p>
-            </li>
-          ))
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto bg-zinc-800">
+              <thead>
+                <tr className="bg-zinc-700">
+                  <th className="px-4 py-2 text-left text-zinc-300">Activity Type</th>
+                  <th className="px-4 py-2 text-left text-zinc-300">Details</th>
+                  <th className="px-4 py-2 text-left text-zinc-300">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userActivities.map((activity) => (
+                  <tr key={activity.timestamp} className="border-b border-zinc-600">
+                    <td className="px-4 py-2 text-zinc-200">{activity.activityType}</td>
+                    <td className="px-4 py-2 text-zinc-200">{activity.details}</td>
+                    <td className="px-4 py-2 text-zinc-200">{new Date(activity.timestamp).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
-          <li>No user activities found.</li>
+          <p className="text-zinc-500">No user activities found.</p>
         )}
-      </ul>
+      </Card>
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-4 flex justify-between items-center">
+          <p className="text-zinc-600">Page {pagination.currentPage + 1} of {pagination.totalPages}</p>
+          <div>
+            <Button onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage - 1 }))} disabled={pagination.currentPage === 0}>
+              Previous
+            </Button>
+            <Button onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage + 1 }))} disabled={pagination.currentPage >= pagination.totalPages - 1}>
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

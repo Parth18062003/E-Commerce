@@ -1,35 +1,43 @@
+"use client";
+
 import React, { useState } from "react";
 import { TransitionLink } from "./utils/TransitionLink";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
-import { update2FAStatus } from "@/store/authSlice"; // Import your action
+import { update2FAStatus } from "@/store/authSlice";
 import Cookies from "js-cookie";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import Notification from "./ui/notification";
 import DeviceLogsComponent from "./DeviceLog";
+import DeleteConfirmDialog from "./ui/deleteDialog";
+import { useRouter } from "next/navigation";
 
 type NotificationType = {
-    id: number;
-    text: string;
-    type: "info" | "success" | "error";
-  };
+  id: number;
+  text: string;
+  type: "info" | "success" | "error";
+};
+
 const UserSecurity = () => {
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
-  const loading = !reduxUser; // Handle loading based on your app's state
+  const loading = !reduxUser;
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog
+  const router = useRouter();
 
   const toggle2FA = async () => {
     if (!reduxUser) return;
 
     const userId = reduxUser.id;
     const token = Cookies.get("token");
-    const enable = !reduxUser.is2FAEnabled; // Toggle the current state
+    const enable = !reduxUser.is2FAEnabled;
 
     try {
       const response = await axios.post(
         `http://localhost:8081/api/v1/users/update-2fa/${userId}`,
-        null, // No body is needed for this request
+        null,
         {
           params: { enable },
           headers: {
@@ -39,31 +47,63 @@ const UserSecurity = () => {
         }
       );
 
-      // If the response status is not OK, throw an error
       if (response.status !== 200) {
         addNotification("Failed to update 2FA status", "error");
         throw new Error("Failed to update 2FA status");
       }
 
-      // Dispatch Redux action to update the 2FA status
       dispatch(update2FAStatus(enable));
-      addNotification(`2FA has been ${enable ? "enabled" : "disabled"}  successfully.`, "success");
+      addNotification(`2FA has been ${enable ? "enabled" : "disabled"} successfully.`, "success");
     } catch (error) {
       console.error(error);
       addNotification("There was an error updating the 2FA status. Please try again.", "error");
     }
   };
 
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
+  const deleteUserAccount = async () => {
+    if (!reduxUser) return;
+
+    const userId = reduxUser.id;
+    const token = Cookies.get("token");
+    setIsDeleting(true);
+
+    try {
+      const response = await axios.delete(`http://localhost:8081/api/v1/users/delete-profile/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 204) {
+        dispatch({ type: "auth/logout" });
+        addNotification("Your account has been deleted successfully.", "success");
+        router.push("/authentication/sign-up");
+      } else {
+        addNotification("Failed to delete account.", "error");
+      }
+    } catch (error) {
+      console.error(error);
+      addNotification("There was an error deleting your account. Please try again.", "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteConfirm = (confirmText: string) => {
+    if (confirmText === "delete") {
+      deleteUserAccount();
+      setIsDialogOpen(false);
+    }
+  };
+
+  const addNotification = (text: string, type: "info" | "success" | "error") => {
     setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
   };
 
   const removeNotification = (id: number) => {
     setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
+
   return (
     <>
       <div className="flex justify-start mt-10">
@@ -101,37 +141,52 @@ const UserSecurity = () => {
                   </button>
                 </div>
               </div>
+              <div className="mt-4">
+                <button
+                  onClick={() => setIsDialogOpen(true)} // Open dialog
+                  className={`inline-flex h-10 items-center justify-center rounded-md bg-red-500 text-white px-6 font-medium transition active:scale-95`}
+                >
+                  Delete My Account
+                </button>
+              </div>
             </>
           )
         )}
         {reduxUser && 
-        <DeviceLogsComponent userId={reduxUser?.id || ""} firstName={reduxUser?.firstName || ""} />}
+          <DeviceLogsComponent userId={reduxUser?.id || ""} firstName={reduxUser?.firstName || ""} />
+        }
       </div>
+      <Notifications notifications={notifications} removeNotification={removeNotification} />
+      <DeleteConfirmDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 };
 
-export default UserSecurity;
-
 // Notifications component with type annotations
 interface NotificationsProps {
-    notifications: NotificationType[];
-    removeNotification: (id: number) => void;
-  }
-  
-  const Notifications: React.FC<NotificationsProps> = ({
-    notifications,
-    removeNotification,
-  }) => (
-    <div className="fixed top-2 right-2 z-50 pointer-events-none">
-      {notifications.map((notif) => (
-        <Notification
-          key={notif.id}
-          id={notif.id}
-          text={notif.text}
-          type={notif.type}
-          removeNotif={removeNotification}
-        />
-      ))}
-    </div>
-  );
+  notifications: NotificationType[];
+  removeNotification: (id: number) => void;
+}
+
+const Notifications: React.FC<NotificationsProps> = ({
+  notifications,
+  removeNotification,
+}) => (
+  <div className="fixed top-2 right-2 z-50 pointer-events-none">
+    {notifications.map((notif) => (
+      <Notification
+        key={notif.id}
+        id={notif.id}
+        text={notif.text}
+        type={notif.type}
+        removeNotif={removeNotification}
+      />
+    ))}
+  </div>
+);
+
+export default UserSecurity;

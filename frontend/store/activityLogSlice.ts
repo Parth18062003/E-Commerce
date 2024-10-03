@@ -158,6 +158,11 @@ const activityLogSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchActivityCounts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      }
+      )
       .addCase(fetchActivityCounts.fulfilled, (state, action: PayloadAction<{
         loginFailuresCount: number; 
         loginSuccessesCount: number; 
