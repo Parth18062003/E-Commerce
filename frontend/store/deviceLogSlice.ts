@@ -14,7 +14,7 @@ interface DeviceLog {
   browserVersion?: string;
   deviceVendor?: string;
   deviceModel?: string;
-  timestamp: string; // Ensure this is included if your API returns it
+  timestamp: string; 
 }
 
 // Define the payload for logging device info
@@ -47,10 +47,8 @@ const initialState: DeviceLogState = {
 export const fetchDeviceLogs = createAsyncThunk<DeviceLog[], string>(
   "deviceLog/fetchDeviceLogs",
   async (userId) => {
-    const response = await axios.get(
-      `${API_BASE_URL}/user/${userId}/device-logs`
-    );
-    return response.data;
+    const response = await axios.get(`${API_BASE_URL}/user/device-logs/${userId}`);
+    return response.data.content; // Extracting the content array from the response
   }
 );
 

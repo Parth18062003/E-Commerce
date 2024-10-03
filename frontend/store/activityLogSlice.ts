@@ -16,11 +16,22 @@ interface ActivitySummary {
   [key: string]: number;
 }
 
+interface PaginatedResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    totalElements: number;
+    totalPages: number;
+    // Add other pagination fields if needed
+  };
+}
+
 interface ActivityLogState {
   loginFailuresCount: number;
   loginSuccessesCount: number;
   uniqueLoginsCount: number;
-  userActivities: ActivityLog[];
+  userActivities: ActivityLog[]; // This will hold the current page data
   lastUserActivities: ActivityLog[];
   loading: boolean;
   error: string | null;
@@ -28,7 +39,13 @@ interface ActivityLogState {
   registrationsCount: number;
   updatesCount: number;
   deletionsCount: number;
-  activityTrends: Map<string, number>;
+  activityTrends: { [key: string]: number }; // Changed to an object
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+    totalElements: number;
+  };
 }
 
 const initialState: ActivityLogState = {
@@ -43,7 +60,13 @@ const initialState: ActivityLogState = {
   registrationsCount: 0,
   updatesCount: 0,
   deletionsCount: 0,
-  activityTrends: new Map(),
+  activityTrends: {}, // Changed to an object
+  pagination: {
+    currentPage: 0,
+    totalPages: 0,
+    pageSize: 10,
+    totalElements: 0,
+  },
 };
 
 // Create async thunk actions
@@ -64,10 +87,10 @@ export const fetchActivityCounts = createAsyncThunk<{
   };
 });
 
-export const fetchUserActivities = createAsyncThunk<ActivityLog[], string>(
+export const fetchUserActivities = createAsyncThunk<PaginatedResponse<ActivityLog>, { userId: string; page: number }>(
   'activityLog/fetchUserActivities',
-  async (userId) => {
-    const response = await axios.get(`${API_BASE_URL}/user/${userId}/activities`);
+  async ({ userId, page }) => {
+    const response = await axios.get(`${API_BASE_URL}/user/${userId}/activities`, { params: { page } });
     return response.data;
   }
 );
@@ -120,11 +143,11 @@ export const fetchActivitySummary = createAsyncThunk<ActivitySummary, string>(
   }
 );
 
-export const fetchDailyActivityTrends = createAsyncThunk<Map<string, number>, string>(
+export const fetchDailyActivityTrends = createAsyncThunk<{ [key: string]: number }, string>(
   'activityLog/fetchDailyActivityTrends',
   async (activityType) => {
     const response = await axios.get(`${API_BASE_URL}/activity-trends/daily`, { params: { activityType } });
-    return new Map(Object.entries(response.data));
+    return response.data; // Assuming the API returns an object
   }
 );
 
@@ -145,8 +168,12 @@ const activityLogSlice = createSlice({
         state.uniqueLoginsCount = action.payload.uniqueLoginsCount;
         state.loading = false;
       })
-      .addCase(fetchUserActivities.fulfilled, (state, action: PayloadAction<ActivityLog[]>) => {
-        state.userActivities = action.payload;
+      .addCase(fetchUserActivities.fulfilled, (state, action: PayloadAction<PaginatedResponse<ActivityLog>>) => {
+        state.userActivities = action.payload.content; // Store current page of activities
+        state.pagination.currentPage = action.payload.pageable.pageNumber;
+        state.pagination.totalPages = action.payload.pageable.totalPages;
+        state.pagination.pageSize = action.payload.pageable.pageSize;
+        state.pagination.totalElements = action.payload.pageable.totalElements;
         state.loading = false;
       })
       .addCase(fetchLastUserActivities.fulfilled, (state, action: PayloadAction<ActivityLog[]>) => {
@@ -173,8 +200,8 @@ const activityLogSlice = createSlice({
         // handle activity summary if needed
         state.loading = false;
       })
-      .addCase(fetchDailyActivityTrends.fulfilled, (state, action: PayloadAction<Map<string, number>>) => {
-        state.activityTrends = action.payload;
+      .addCase(fetchDailyActivityTrends.fulfilled, (state, action: PayloadAction<{ [key: string]: number }>) => {
+        state.activityTrends = action.payload; // Assuming the API returns an object
         state.loading = false;
       })
       .addMatcher(

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchDeviceLogs,
   logDeviceInfo,
-  setDeviceLogs,
 } from "../store/deviceLogSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import UAParser from "ua-parser-js";
@@ -16,6 +15,10 @@ interface DeviceLog {
   os: string;
   browser: string;
   device: string;
+  osVersion?: string;
+  browserVersion?: string;
+  deviceVendor?: string;
+  deviceModel?: string;
   timestamp: string;
 }
 
@@ -39,29 +42,9 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const storedLogs = localStorage.getItem("deviceLogs");
-      const parsedLogs: DeviceLog[] = storedLogs ? JSON.parse(storedLogs) : [];
-
-      if (
-        !hasFetchedLogs.current &&
-        deviceLogs.length === 0 &&
-        parsedLogs.length === 0
-      ) {
+      if (!hasFetchedLogs.current && deviceLogs.length === 0) {
         hasFetchedLogs.current = true;
-        const fetchedLogs = await dispatch(fetchDeviceLogs(userId));
-        if (fetchedLogs.payload) {
-          localStorage.setItem(
-            "deviceLogs",
-            JSON.stringify(fetchedLogs.payload)
-          );
-        }
-      } else {
-        const uniqueLogs = parsedLogs.filter(
-          (log) => !deviceLogs.some((existingLog) => existingLog.id === log.id)
-        );
-        if (uniqueLogs.length > 0) {
-          dispatch(setDeviceLogs([...deviceLogs, ...uniqueLogs]));
-        }
+        await dispatch(fetchDeviceLogs(userId));
       }
     };
 
@@ -69,102 +52,62 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
   }, [dispatch, userId, deviceLogs]);
 
   useEffect(() => {
+    if (error) {
+      console.error("Error fetching logs:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
     const logDeviceInformation = async () => {
       const parser = new UAParser();
-      const userAgent = navigator.userAgent;
-      console.log("User Agent: ", userAgent);
-
-      // Get detailed results from UAParser
       const result = parser.getResult();
-
-      // Destructure and capture detailed device information
-      const os = result.os.name || DEFAULT_DEVICE_INFO.os; // OS name
-      const osVersion = result.os.version || "Unknown OS Version"; // OS version
-      const browser = result.browser.name || DEFAULT_DEVICE_INFO.browser; // Browser name
-      const browserVersion =
-        result.browser.version || "Unknown Browser Version"; // Browser version
-      const device = result.device.type || DEFAULT_DEVICE_INFO.device; // Device type (mobile, tablet, desktop)
-      const deviceVendor = result.device.vendor || "Unknown Vendor"; // Device vendor (Apple, Samsung, etc.)
-      const deviceModel = result.device.model || "Unknown Model"; // Device model (iPhone, Galaxy S21, etc.)
-
-      // Log all extracted information
-      console.log("Device Information: ", {
-        os,
-        osVersion,
-        browser,
-        browserVersion,
-        device,
-        deviceVendor,
-        deviceModel,
-      });
+      
+      const os = result.os.name || DEFAULT_DEVICE_INFO.os;
+      const osVersion = result.os.version || "Unknown OS Version";
+      const browser = result.browser.name || DEFAULT_DEVICE_INFO.browser;
+      const device = result.device.type || DEFAULT_DEVICE_INFO.device;
+      const deviceVendor = result.device.vendor || "Unknown Vendor";
+      const deviceModel = result.device.model || "Unknown Model";
 
       const lastDeviceInfo = localStorage.getItem("lastDeviceInfo");
-      const parsedLastDeviceInfo: {
-        os?: string;
-        osVersion?: string;
-        browser?: string;
-        browserVersion?: string;
-        device?: string;
-        deviceVendor?: string;
-        deviceModel?: string;
-        userId?: string;
-      } = lastDeviceInfo ? JSON.parse(lastDeviceInfo) : {};
+      const parsedLastDeviceInfo = lastDeviceInfo ? JSON.parse(lastDeviceInfo) : {};
 
-      // Check for changes in device information
       const hasDeviceChanged =
         os !== parsedLastDeviceInfo.os ||
         osVersion !== parsedLastDeviceInfo.osVersion ||
         browser !== parsedLastDeviceInfo.browser ||
-        browserVersion !== parsedLastDeviceInfo.browserVersion ||
-        device !== parsedLastDeviceInfo.device ||
-        deviceVendor !== parsedLastDeviceInfo.deviceVendor ||
-        deviceModel !== parsedLastDeviceInfo.deviceModel;
+        device !== parsedLastDeviceInfo.device;
 
-      // Check if userId has changed
       const hasUserChanged = userId !== parsedLastDeviceInfo.userId;
 
-      // If device or user information has changed and the user is logged in, log the new information
       if ((hasDeviceChanged || hasUserChanged) && hasLoggedIn) {
-        await dispatch(
-          logDeviceInfo({
-            userId,
-            os,
-            osVersion,
-            browser,
-            browserVersion,
-            device,
-            deviceVendor,
-            deviceModel,
-          })
-        );
-        localStorage.setItem(
-          "lastDeviceInfo",
-          JSON.stringify({
-            os,
-            osVersion,
-            browser,
-            browserVersion,
-            device,
-            deviceVendor,
-            deviceModel,
-            userId,
-          })
-        );
+        try {
+          await dispatch(
+            logDeviceInfo({
+              userId,
+              os,
+              osVersion,
+              browser,
+              device,
+              deviceVendor,
+              deviceModel,
+            })
+          );
+          localStorage.setItem("lastDeviceInfo", JSON.stringify({ os, osVersion, browser, device, deviceVendor, deviceModel, userId }));
+        } catch (err) {
+          console.error("Error logging device info:", err);
+        }
       }
     };
 
     if (userId) {
       logDeviceInformation();
-      setHasLoggedIn(true); // Set logged-in state
+      if (!hasLoggedIn) setHasLoggedIn(true);
     }
   }, [dispatch, userId, hasLoggedIn]);
 
   if (loading) {
     return <p className="text-red-500 font-bold">Loading device logs...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-500 font-bold">Error: {error}</p>;
   }
 
   return (
@@ -192,14 +135,13 @@ const DeviceLogsComponent: React.FC<{ userId: string; firstName: string }> = ({
                 <strong>OS Version:</strong> {log.osVersion}
               </div>
               <div className="text-zinc-800 dark:text-zinc-200">
-                <strong>Device Version:</strong> {log.deviceVendor}
+                <strong>Device Vendor:</strong> {log.deviceVendor}
               </div>
               <div className="text-zinc-800 dark:text-zinc-200">
                 <strong>Device Model:</strong> {log.deviceModel}
               </div>
               <div className="text-zinc-800 dark:text-zinc-200">
-                <strong>Timestamp:</strong>{" "}
-                {new Date(log.timestamp).toLocaleString()}
+                <strong>Timestamp:</strong> {new Date(log.timestamp).toLocaleString()}
               </div>
             </li>
           ))}

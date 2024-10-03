@@ -59,6 +59,8 @@ const authSlice = createSlice({
         Cookies.remove("token");
         localStorage.removeItem("deviceLogs");  
         localStorage.removeItem("lastDeviceInfo");
+        localStorage.removeItem("users");
+        localStorage.removeItem("currentPage");
       }
     },
     setUser(state, action: PayloadAction<ReduxUser>) {
