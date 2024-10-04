@@ -23,12 +23,13 @@ public class UserUpdateDTO {
     private String postalCode;
     @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Country should only contain alphabetic characters and spaces")
     private String country;
+    private String profileImageUrl;
 
     public UserUpdateDTO() {
     }
 
-    public UserUpdateDTO(String username,String firstName, String lastName, String email, String phoneNumber,
-                         String address, String city, String state, String postalCode, String country) {
+    public UserUpdateDTO(String username, String firstName, String lastName, String email, String phoneNumber,
+                         String address, String city, String state, String postalCode, String country, String profileImageUrl) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -39,6 +40,7 @@ public class UserUpdateDTO {
         this.state = state;
         this.postalCode = postalCode;
         this.country = country;
+        this.profileImageUrl = profileImageUrl;
     }
 
     // Getters and setters for all fields
@@ -120,5 +122,13 @@ public class UserUpdateDTO {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

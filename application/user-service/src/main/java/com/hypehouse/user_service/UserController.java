@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -41,6 +42,14 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(id.toString()));
     }
 
+    private static final List<String> DEFAULT_PROFILE_IMAGES = List.of(
+            "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062880/4979e4e2-2e81-4e86-9fbb-4cb1b022b556.png",
+            "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062846/5472f0a4-1ec2-4832-b8e0-c684c8584a91.png",
+            "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062803/25298582-4e22-4ee1-98da-c1e7519eb84c.png",
+            "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062618/924bc637-8879-41cc-afc9-5cf150680bfc.png",
+            "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062515/16413442-3d33-46c4-ad5e-c72d170a5e50.png"
+    );
+
     @RateLimit(limitForPeriod = 3, limitRefreshPeriod = 60)
     @PostMapping("/users/register")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
@@ -53,9 +62,15 @@ public class UserController {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
+        user.setProfileImageUrl(getRandomProfileImage());
         log.info("PasswordEncoder instance: {}", passwordEncoder);
         User createdUser = userService.saveUser(user);
         return ResponseEntity.status(201).body(createdUser); // Return 201 Created status
+    }
+
+    private String getRandomProfileImage() {
+        Random random = new Random();
+        return DEFAULT_PROFILE_IMAGES.get(random.nextInt(DEFAULT_PROFILE_IMAGES.size()));
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -100,6 +115,15 @@ public class UserController {
     public ResponseEntity<User> update2FA(@PathVariable UUID id, @RequestParam boolean enable) {
         User user = enable ? userService.enable2FA(id) : userService.disable2FA(id);
         return ResponseEntity.ok(user);
+    }
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60) // Rate limiting annotation
+    @PostMapping("/users/upload-profile-image/{id}")
+    public ResponseEntity<User> uploadProfileImage(@PathVariable UUID id, @RequestBody ImageUpdateRequest request) {
+        String imageUrl = request.getImageUrl();
+        // Update the user's profile image URL and log the activity
+        User updatedUser = userService.updateProfileImage(id, imageUrl);
+        return ResponseEntity.ok(updatedUser);
     }
 
     private void updateUserFields(User user, UserUpdateDTO dto) {

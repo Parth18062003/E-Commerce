@@ -89,7 +89,7 @@ public class UserService {
         return savedUser; // Return the saved user
     }
 
-    @CacheEvict(value = "users", key = "#id")
+    @CacheEvict(value = "users", allEntries = true)
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id.toString());
@@ -132,6 +132,22 @@ public class UserService {
                 user.getEmail(),
                 "2FA_DISABLED",
                 "2FA disabled for user with ID: " + userId
+        );
+
+        return userRepository.save(user);
+    }
+
+    @CachePut(value = "users", key = "#userId")
+    public User updateProfileImage(UUID userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+        user.setProfileImageUrl(imageUrl);
+
+        activityLogService.createLog(
+                userId.toString(), // Convert UUID to String
+                user.getEmail(),
+                "PROFILE_IMAGE_UPDATED",
+                "Profile image updated for user with ID: " + userId
         );
 
         return userRepository.save(user);
