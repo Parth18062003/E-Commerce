@@ -20,8 +20,6 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import Image from "next/image";
-import { Camera } from "lucide-react";
 import { z } from "zod";
 import { UpdateUserSchema } from "@/schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +27,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Notification from "./ui/notification";
 import axios from "axios";
 import UserSecurity from "./UserSecurity";
+import ProfileImageUpload from "./ProfileImageUpload";
 
 type UpdateUserData = z.infer<typeof UpdateUserSchema>;
 type NotificationType = {
@@ -45,9 +44,7 @@ const UserInfo = () => {
   const reduxUser = useSelector((state: RootState) => state.auth.user);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [profileImage, setProfileImage] = useState(
-    "https://images.pexels.com/photos/733745/pexels-photo-733745.jpeg?auto=compress&cs=tinysrgb&w=600"
-  );
+
 
   const {
     register,
@@ -75,6 +72,7 @@ const UserInfo = () => {
         state,
         country,
         postalCode,
+        profileImageUrl,
       } = reduxUser;
 
       reset({
@@ -104,16 +102,6 @@ const UserInfo = () => {
     }
   }, [reduxUser, reset]);
 
-  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const onSubmit: SubmitHandler<UpdateUserData> = async (data) => {
     if (JSON.stringify(data) === JSON.stringify(originalData)) {
@@ -206,10 +194,7 @@ const UserInfo = () => {
           <CardTitle className="text-3xl font-bold text-left text-zinc-900 dark:text-zinc-200">
             {reduxUser.username}'s Profile
           </CardTitle>
-          <ProfileImage
-            profileImage={profileImage}
-            handleProfilePicChange={handleProfilePicChange}
-          />
+          <ProfileImageUpload defaultImageUrl={reduxUser?.profileImageUrl || "https://res.cloudinary.com/dvl7demzb/image/upload/v1728065940/dtedxomd0tz5qml3ger3.jpg"} userId={reduxUser?.id} />
         </CardHeader>
 
         <CardContent className="mt-2 p-4 dark rounded-lg text-zinc-950 dark:text-zinc-200">
@@ -263,30 +248,6 @@ interface ProfileImageProps {
   handleProfilePicChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ProfileImage: React.FC<ProfileImageProps> = ({
-  profileImage,
-  handleProfilePicChange,
-}) => (
-  <div className="relative mb-4 md:mb-0">
-    <label htmlFor="profile-pic-upload" className="cursor-pointer">
-      <Image
-        src={profileImage}
-        alt="Profile Picture"
-        height={100}
-        width={100}
-        className="w-24 h-24 rounded-full object-cover border-2 border-zinc-800 dark:border-zinc-200"
-      />
-      <Camera className="absolute right-0 bottom-0 w-6 h-6 rounded-full" />
-    </label>
-    <input
-      id="profile-pic-upload"
-      type="file"
-      accept="image/*"
-      onChange={handleProfilePicChange}
-      className="hidden"
-    />
-  </div>
-);
 
 // UserDetails component with type annotations
 interface UserDetailsProps {

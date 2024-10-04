@@ -17,6 +17,7 @@ const UserActivitiesComponent: React.FC<{ userId: string }> = ({ userId }) => {
     }
   }, [dispatch, userId]);
 
+  console.log(pagination.totalPages, pagination.currentPage);
   return (
     <div className="p-4 bg-zinc-900 rounded-lg shadow-md">
       <h3 className="text-2xl font-semibold mb-4">User Activities</h3>
@@ -55,11 +56,19 @@ const UserActivitiesComponent: React.FC<{ userId: string }> = ({ userId }) => {
       {pagination && pagination.totalPages > 1 && (
         <div className="mt-4 flex justify-between items-center">
           <p className="text-zinc-600">Page {pagination.currentPage + 1} of {pagination.totalPages}</p>
-          <div>
-            <Button onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage - 1 }))} disabled={pagination.currentPage === 0}>
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage - 1 }))} 
+              disabled={pagination.currentPage === 0}
+              className={pagination.currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""}
+            >
               Previous
             </Button>
-            <Button onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage + 1 }))} disabled={pagination.currentPage >= pagination.totalPages - 1}>
+            <Button
+              onClick={() => dispatch(fetchUserActivities({ userId, page: pagination.currentPage + 1 }))} 
+              disabled={pagination.currentPage >= pagination.totalPages - 1}
+              className={pagination.currentPage >= pagination.totalPages - 1 ? "opacity-50 cursor-not-allowed" : ""}
+            >
               Next
             </Button>
           </div>

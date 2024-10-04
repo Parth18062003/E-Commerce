@@ -25,6 +25,7 @@ interface ReduxUser {
   createdAt: string;
   updatedAt: string;
   is2FAEnabled: boolean;
+  profileImageUrl: string;
 }
 
 interface AuthState {
@@ -77,7 +78,6 @@ const authSlice = createSlice({
         }
       }
     },
-    // In your authSlice.js
     update2FAStatus(state, action: PayloadAction<boolean>) {
       if (state.user) {
         state.user.is2FAEnabled = action.payload;
@@ -86,8 +86,25 @@ const authSlice = createSlice({
         }
       }
     },
+    // New action to update the profile image URL
+    updateProfileImageUrl(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.profileImageUrl = action.payload;
+        if (isBrowser()) {
+          localStorage.setItem("userData", JSON.stringify(state.user));
+        }
+      }
+    },
   },
 });
 
-export const { login, logout, setUser, updateUser, update2FAStatus } = authSlice.actions;
+export const { 
+  login, 
+  logout, 
+  setUser, 
+  updateUser, 
+  update2FAStatus, 
+  updateProfileImageUrl // Export the new action
+} = authSlice.actions;
+
 export default authSlice.reducer;

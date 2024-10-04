@@ -21,10 +21,10 @@ interface PaginatedResponse<T> {
   pageable: {
     pageNumber: number;
     pageSize: number;
-    totalElements: number;
-    totalPages: number;
     // Add other pagination fields if needed
   };
+  totalElements: number;
+  totalPages: number;
 }
 
 interface ActivityLogState {
@@ -176,11 +176,11 @@ const activityLogSlice = createSlice({
       .addCase(fetchUserActivities.fulfilled, (state, action: PayloadAction<PaginatedResponse<ActivityLog>>) => {
         state.userActivities = action.payload.content; // Store current page of activities
         state.pagination.currentPage = action.payload.pageable.pageNumber;
-        state.pagination.totalPages = action.payload.pageable.totalPages;
-        state.pagination.pageSize = action.payload.pageable.pageSize;
-        state.pagination.totalElements = action.payload.pageable.totalElements;
+        state.pagination.totalPages = action.payload.totalPages; // Use totalPages directly from the response
+        state.pagination.pageSize = action.payload.pageable.pageSize; // Use pageSize from pageable
+        state.pagination.totalElements = action.payload.totalElements; // Use totalElements directly from the response
         state.loading = false;
-      })
+      })      
       .addCase(fetchLastUserActivities.fulfilled, (state, action: PayloadAction<ActivityLog[]>) => {
         state.lastUserActivities = action.payload;
         state.loading = false;
