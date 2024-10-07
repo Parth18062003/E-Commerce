@@ -3,9 +3,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store'; 
-import { fetchUserActivities } from '../store/activityLogSlice';
-import { Button } from './ui/button'; // Ensure you have a button component from ShadCN
-import { Card } from './ui/card'; // Example of a card component from ShadCN
+import { fetchUserActivities } from '@/store/activityLogSlice';
+import { Card } from '../ui/card';
+import { Button } from '../ui/button';
 
 const UserActivitiesComponent: React.FC<{ userId: string }> = ({ userId }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -17,7 +17,6 @@ const UserActivitiesComponent: React.FC<{ userId: string }> = ({ userId }) => {
     }
   }, [dispatch, userId]);
 
-  console.log(pagination.totalPages, pagination.currentPage);
   return (
     <div className="p-4 bg-zinc-900 rounded-lg shadow-md">
       <h3 className="text-2xl font-semibold mb-4">User Activities</h3>

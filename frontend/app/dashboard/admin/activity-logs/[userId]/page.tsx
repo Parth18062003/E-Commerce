@@ -1,18 +1,40 @@
-import ActivityCountsComponent from "@/components/ActivityCountsComponent";
-import ActivityLogs from "@/components/ActivityLogs";
-import ActivitySummaryComponent from "@/components/ActivitySummaryComponent";
-import ListUsers from "@/components/ListUsers";
-import UserActivitiesComponent from "@/components/UserActivitiesComponent";
-import React from "react";
+"use client";
 
-const ActivityLogsPage = () => {
-  const userId = "b0c03b40-e11f-4bfa-9120-316b88349d46"; // Get the user ID from the URL
+import ActivityCountsComponent from "@/components/ActivityLogs/ActivityCountsComponent";
+import ActivitySummaryComponent from "@/components/ActivityLogs/ActivitySummaryComponent";
+import { DailyActivityTrendsComponent } from "@/components/ActivityLogs/DailyActivityTrendsComponent";
+
+import DailyLoginsCountComponent from "@/components/ActivityLogs/DailyLoginsComponent";
+import RegistrationsCountComponent from "@/components/ActivityLogs/RegistrationsCountComponent";
+import UpdatesCountComponent from "@/components/ActivityLogs/UpdatesCountComponent";
+import UserActivitiesComponent from "@/components/ActivityLogs/UserActivitiesComponent";
+import UserSearchComponent from "@/components/UserSearchComponent";
+import React, { useState } from "react";
+
+const ActivityLogsPage: React.FC = () => {
+  const [userId, setUserId] = useState<string | null>(null); // State to hold user ID
+
+  const handleUserIdFetched = (id: string) => {
+    setUserId(id); // Update user ID state
+  };
+
   return (
-    <div className="translate-x-20 max-w-7xl"> 
+    <div className="max-w-7xl mx-auto p-4 lg:p-8 translate-x-20">
+      <h1 className="text-2xl font-bold mb-6">Activity Logs</h1>
+      
       <ActivityCountsComponent />
-      <ActivitySummaryComponent userId={userId} />
-      <UserActivitiesComponent userId={userId} /> 
-      <ListUsers />
+      <DailyLoginsCountComponent />
+      <UpdatesCountComponent />
+      <RegistrationsCountComponent />
+      <UserSearchComponent onUserIdFetched={handleUserIdFetched} />
+      {userId && (
+        <>
+          <ActivitySummaryComponent userId={userId} />
+          <div className="mt-6">
+            <UserActivitiesComponent userId={userId} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

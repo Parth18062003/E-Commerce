@@ -15,10 +15,13 @@ import {
 import { TransitionLink } from "./utils/TransitionLink";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { DropdownLinks } from "./ui/dropdown/dropdown-links";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const reduxUser = useSelector((state: RootState) => state.auth.user);
+  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -93,7 +96,7 @@ const Navbar = () => {
             <span className="sr-only">Cart</span>
           </TransitionLink>
           <TransitionLink
-            href="/cart"
+            href={dashboardLink}
             className="text-zinc-600 dark:text-zinc-400 hover:text-indigo-400 transition"
           >
             <UserRound />

@@ -158,6 +158,7 @@ const ListUsers: React.FC = () => {
       ) : (
         <p>No users found.</p>
       )}
+      <p className="mt-4 text-zinc-600">Page {page + 1} of {totalPages}</p>
       <div className="flex justify-between mt-4">
         <Button onClick={() => handlePageChange(page - 1)} disabled={page === 0} className="mr-2">
           Previous

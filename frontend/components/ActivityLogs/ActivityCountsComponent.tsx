@@ -3,8 +3,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
-import { fetchActivityCounts } from '../store/activityLogSlice';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { fetchActivityCounts } from '@/store/activityLogSlice';
 
 const ActivityCountsComponent: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();

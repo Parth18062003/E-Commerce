@@ -5,7 +5,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <RetractingSidebar />
-      {children}
+      <div className="translate-x-40 max-w-7xl">{children}</div>
     </>
   );
 };

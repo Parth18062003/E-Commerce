@@ -15,17 +15,22 @@ import {
   UsersRound,
   Menu,
   X,
+  ContactRound,
 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/authSlice";
 import { useRouter } from "next/navigation";
+import { RootState } from "@/store/store";
 
 export const RetractingSidebar = () => {
   const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState("Dashboard");
+  const [selected, setSelected] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const reduxUser = useSelector((state: RootState) => state.auth.user);
+  
+  const role = reduxUser?.roles[0]?.name; // Extract the role name from the roles array
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -41,9 +46,27 @@ export const RetractingSidebar = () => {
       handleLogout();
     } else {
       setSelected(title);
+      if (role === "ADMIN" && title === "Analytics") {
+        setSelected("Analytics");
+        router.push(`/dashboard/admin/activity-logs/${reduxUser?.id}`);
+      } else if (title === "Dashboard") {
+        setSelected("Dashboard");
+        router.push(`/dashboard/user/${reduxUser?.id}`);
+      } else if (title === "Home") {
+        setSelected("Home");
+        router.push("/");
+      } else if (title === "Users") {
+        setSelected("Users");
+        router.push("/dashboard/admin/users");
+      }
+      else {
+        console.log("Title:" +title) // Default case
+      }
     }
-    setIsOpen(false); // Close the mobile menu after selection
+    setIsOpen(false);
   };
+
+  const menuItems = getMenuItems(role);
 
   return (
     <>
@@ -75,16 +98,9 @@ export const RetractingSidebar = () => {
           <Menu />
         </button>
         {isOpen && (
-          <div
-            className={`fixed top-0 right-0 w-full h-full bg-zinc-100 dark:bg-zinc-950 bg-opacity-90 z-50 flex flex-col p-4 transition-opacity duration-300 opacity-100 pointer-events-auto`}
-          >
-            <div
-              className={`absolute inset-0 backdrop-blur-md transition-opacity duration-300 opacity-100`}
-            ></div>
-            <button
-              onClick={toggleMenu}
-              className="text-zinc-700 dark:text-zinc-400 text-2xl self-start mb-4 z-10"
-            >
+          <div className={`fixed top-0 right-0 w-full h-full bg-zinc-100 dark:bg-zinc-950 bg-opacity-90 z-50 flex flex-col p-4 transition-opacity duration-300 opacity-100 pointer-events-auto`}>
+            <div className={`absolute inset-0 backdrop-blur-md transition-opacity duration-300 opacity-100`}></div>
+            <button onClick={toggleMenu} className="text-zinc-700 dark:text-zinc-400 text-2xl self-start mb-4 z-10">
               <X /><span className="sr-only">Close Menu</span>
             </button>
             <div className="flex flex-col space-y-4 text-zinc-800 dark:text-zinc-300 z-10">
@@ -95,7 +111,7 @@ export const RetractingSidebar = () => {
                   title={title}
                   selected={selected}
                   setSelected={() => handleTabClick(title)}
-                  open={true} // Always true for mobile
+                  open={true}
                   notifs={notifs}
                 />
               ))}
@@ -107,16 +123,32 @@ export const RetractingSidebar = () => {
   );
 };
 
-const menuItems = [
-  { Icon: Home, title: "Dashboard" },
-  { Icon: DollarSign, title: "Sales", notifs: 3 },
-  { Icon: Monitor, title: "View Site" },
-  { Icon: ShoppingCart, title: "Products" },
-  { Icon: Tag, title: "Tags" },
-  { Icon: BarChart, title: "Analytics" },
-  { Icon: UsersRound, title: "Members" },
-  { Icon: LogOut, title: "Logout" },
-];
+const getMenuItems = (role: string | undefined) => {
+  if (role === "ADMIN") {
+    return [
+      { Icon: Home, title: "Home" },
+      { Icon: ContactRound, title: "Dashboard" },
+      { Icon: DollarSign, title: "Sales", notifs: 3 },
+      { Icon: Monitor, title: "View Site" },
+      { Icon: ShoppingCart, title: "Products" },
+      { Icon: Tag, title: "Tags" },
+      { Icon: BarChart, title: "Analytics" },
+      { Icon: UsersRound, title: "Users" },
+      { Icon: LogOut, title: "Logout" },
+    ];
+  } else if (role === "USER") {
+    return [
+      { Icon: Home, title: "Home" },
+      { Icon: ContactRound, title: "Dashboard" },
+      { Icon: ShoppingCart, title: "My Products" },
+      { Icon: Tag, title: "My Tags" },
+      { Icon: Monitor, title: "View Site" },
+      { Icon: LogOut, title: "Logout" },
+    ];
+  } else {
+    return []; // Default case, no items
+  }
+};
 
 const Option = ({
   Icon,
