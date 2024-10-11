@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
+import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
 interface Product {
@@ -33,19 +34,23 @@ export const SpringModal = ({
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-gradient-to-br from-violet-600 to-indigo-600 text-white p-6 rounded-lg w-full max-w-lg shadow-xl cursor-default relative overflow-hidden"
+            className="bg-gradient-to-br from-violet-600 to-indigo-600 text-white p-6 rounded-lg w-full max-w-2xl shadow-xl cursor-default relative overflow-hidden flex flex-col md:flex-row items-center"
           >
             <AlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
-            <div className="relative z-10">
-              <img
+            <div className="relative z-10 flex-shrink-0 mb-4 md:mb-0 md:mr-4">
+              <Image
                 src={product.imageUrl}
                 alt={product.name}
-                className="w-full h-auto mb-4 rounded-lg"
+                className="w-60 h-60 md:w-72 md:h-72 object-cover rounded-lg"
+                height={256}
+                width={256}
               />
-              <h3 className="text-2xl font-bold text-center mb-2">{product.name}</h3>
-              <p className="text-center text-lg text-zinc-200 mb-1">{product.brand}</p>
-              <p className="text-center text-xl font-semibold mb-4">{product.price}</p>
-              <div className="flex gap-2">
+            </div>
+            <div className="relative z-10 text-center md:text-left flex-1">
+              <h3 className="text-2xl font-bold mb-2">{product.name}</h3>
+              <p className="text-lg text-zinc-200 mb-1">{product.brand}</p>
+              <p className="text-xl font-semibold mb-4">{product.price}</p>
+              <div className="flex flex-col gap-2">
                 <button
                   onClick={() => {
                     // Handle add to cart action
