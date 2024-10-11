@@ -28,7 +28,7 @@ const Card = ({ card }: { card: CardType }) => {
   return (
     <div
       key={card.id}
-      className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl"
+      className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl"
     >
       <div
         style={{
@@ -38,8 +38,8 @@ const Card = ({ card }: { card: CardType }) => {
         }}
         className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110"
       ></div>
-      <div className="absolute inset-0 z-10 grid place-content-center">
-        <p className="bg-gradient-to-br from-white/20 to-white/0 p-8 text-6xl font-black uppercase text-indigo-300">
+      <div className="relative inset-0 translate-y-10 z-10 grid place-content-center">
+        <p className="bg-gradient-to-br from-white/20 to-white/0 p-8 text-4xl font-black uppercase text-indigo-400 text-center italic">
           {card.title}
         </p>
       </div>
@@ -56,7 +56,7 @@ type CardType = {
 const cards: CardType[] = [
   {
     url: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/8722be57-c8e4-468a-9f81-bb7aa52043e7/WMNS+AIR+FORCE+1+%2707+LX.png",
-    title: "Title 1",
+    title: "AIR JORDAN 6 RETRO",
     id: 1,
   },
   {
