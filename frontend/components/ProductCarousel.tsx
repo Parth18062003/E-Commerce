@@ -144,6 +144,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
             </CarouselItem>
           ))}
         </CarouselContent>
+        <div className="block md:hidden text-zinc-500 text-sm text-end">swipe</div>
         <div className="hidden md:block">
           <CarouselPrevious
             className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"

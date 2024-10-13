@@ -2,6 +2,7 @@
 
 import { motion, useTransform, useScroll } from "framer-motion";
 import { useRef } from "react";
+import Image from "next/image";
 
 export const HorizontalScrollCarousel = () => {
   const targetRef = useRef<HTMLDivElement | null>(null);
@@ -30,14 +31,16 @@ const Card = ({ card }: { card: CardType }) => {
       key={card.id}
       className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl"
     >
-      <div
-        style={{
-          backgroundImage: `url(${card.url})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110"
-      ></div>
+      <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110">
+        <Image
+          src={card.url}
+          alt={card.title}
+          width={512}
+          height={512}
+          loading="lazy"
+          className="rounded-2xl object-cover"
+        />
+      </div>
       <div className="relative inset-0 translate-y-10 z-10 grid place-content-center">
         <p className="bg-gradient-to-br from-white/20 to-white/0 p-8 text-4xl font-black uppercase text-zinc-700 text-center italic">
           {card.title}
