@@ -18,7 +18,10 @@ public class TwoFactorAuthService {
     private final EmailService emailService;
     private final ActivityLogService activityLogService;
 
-    public TwoFactorAuthService(UserRepository userRepository, TwoFACodeRepository twoFACodeRepository, EmailService emailService, ActivityLogService activityLogService) {
+    public TwoFactorAuthService(UserRepository userRepository,
+                                TwoFACodeRepository twoFACodeRepository,
+                                EmailService emailService,
+                                ActivityLogService activityLogService) {
         this.userRepository = userRepository;
         this.twoFACodeRepository = twoFACodeRepository;
         this.emailService = emailService;
@@ -26,17 +29,15 @@ public class TwoFactorAuthService {
     }
 
     public void send2FACode(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String code = generate2FACode();
         TwoFACode twoFACode = new TwoFACode(user, code, LocalDateTime.now().plusMinutes(15));
         twoFACodeRepository.save(twoFACode);
 
         activityLogService.createLog(
-                user.getId().toString(), // UUID to String
+                user.getId().toString(),
                 user.getEmail(),
                 "2FA_CODE_SENT",
                 "2FA code sent to email: " + user.getEmail()
@@ -55,7 +56,7 @@ public class TwoFactorAuthService {
         }
 
         activityLogService.createLog(
-                twoFACode.getUser().getId().toString(), // UUID to String
+                twoFACode.getUser().getId().toString(),
                 twoFACode.getUser().getEmail(),
                 "2FA_CODE_VERIFIED",
                 "2FA code verified for user with ID: " + twoFACode.getUser().getId()

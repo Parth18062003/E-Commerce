@@ -164,6 +164,11 @@
             <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.algolia</groupId>
+            <artifactId>algoliasearch</artifactId>
+            <version>4.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>

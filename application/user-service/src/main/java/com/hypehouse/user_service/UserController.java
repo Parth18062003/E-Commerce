@@ -8,9 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -40,6 +42,41 @@ public class UserController {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new UserNotFoundException(id.toString()));
+    }
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @GetMapping("/users/username/{username}")
+    public ResponseEntity<String> getUserIdByUsername(@PathVariable String username) {
+        return userService.findByUsername(username)
+                .map(User::getId)  // Assuming User has a getId() method
+                .map(id -> ResponseEntity.ok("id:" + id.toString())) // Convert UUID to String
+                .orElseThrow(() -> new UserNotFoundException(username));
+    }
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @GetMapping("/users/email/{email}")
+    public ResponseEntity<String> getUserIdByEmail(@PathVariable String email) {
+        return userService.findByEmail(email)
+                .map(User::getId)  // Assuming User has a getId() method
+                .map(id -> ResponseEntity.ok("id:" + id.toString())) // Convert UUID to String
+                .orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @GetMapping("/users/username-or-email")
+    public ResponseEntity<User> getUserByUsernameOrEmail(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String username) {
+
+        // Check if at least one parameter is provided
+        if (email == null && username == null) {
+            throw new IllegalArgumentException("Either email or username must be provided");
+        }
+
+        // Call the service method to find the user
+        return userService.getUserByEmailOrUsername(email, username)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new UserNotFoundException(email != null ? email : username));
     }
 
     private static final List<String> DEFAULT_PROFILE_IMAGES = List.of(

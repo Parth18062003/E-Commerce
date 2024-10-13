@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 @EnableCaching
 public class
 UserServiceApplication {
+    
 
     private static final Logger logger = Logger.getLogger(UserServiceApplication.class.getName());
 

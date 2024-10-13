@@ -28,7 +28,10 @@ public class PasswordResetService {
     private final ActivityLogService activityLogService;
 
     @Autowired
-    public PasswordResetService(UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, EmailService emailService, ActivityLogService activityLogService) {
+    public PasswordResetService(UserRepository userRepository,
+                                PasswordResetTokenRepository passwordResetTokenRepository,
+                                EmailService emailService,
+                                ActivityLogService activityLogService) {
         this.userRepository = userRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.emailService = emailService;
@@ -36,17 +39,15 @@ public class PasswordResetService {
     }
 
     public void generateResetTokenAndSendEmail(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token = UUID.randomUUID().toString();
         PasswordResetToken resetToken = new PasswordResetToken(user, token, LocalDateTime.now().plusHours(1));
         passwordResetTokenRepository.save(resetToken);
 
         activityLogService.createLog(
-                user.getId().toString(), // UUID to String
+                user.getId().toString(),
                 user.getEmail(),
                 "PASSWORD_RESET_REQUEST",
                 "Password reset token generated and sent to email: " + user.getEmail()
@@ -55,7 +56,6 @@ public class PasswordResetService {
         emailService.sendPasswordResetEmail(user.getEmail(), token);
     }
 
-    @Transactional
     public void resetPassword(String token, String hashedPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
@@ -67,14 +67,12 @@ public class PasswordResetService {
 
         User user = resetToken.getUser();
         log.info("Resetting password for user: {}", user.getUsername());
-        log.info("New password: {}", hashedPassword);
         user.setPassword(hashedPassword);
         userRepository.save(user);
         passwordResetTokenRepository.delete(resetToken);
-        SecurityContextHolder.clearContext();
 
         activityLogService.createLog(
-                user.getId().toString(), // UUID to String
+                user.getId().toString(),
                 user.getEmail(),
                 "PASSWORD_RESET",
                 "Password reset successful for user with ID: " + user.getId()

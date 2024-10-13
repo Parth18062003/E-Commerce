@@ -36,9 +36,21 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    @Cacheable(value = "users", key = "#username")
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username); // Directly return the Optional<User>
+    }
+
+
+    @Cacheable(value = "users", key = "#email")
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email); // Directly return the Optional<User>
+    }
+
+
     @Cacheable(value = "users", key = "{#email, #username}")
     public Optional<User> getUserByEmailOrUsername(String email, String username) {
-        return Optional.ofNullable(userRepository.findByUsernameOrEmail(email, username));
+        return userRepository.findByUsernameOrEmail(email, username); // Directly return the Optional<User>
     }
 
     @CachePut(value = "users", key = "#user.id")

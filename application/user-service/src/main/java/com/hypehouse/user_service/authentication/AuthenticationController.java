@@ -6,6 +6,8 @@ import com.hypehouse.user_service.UserRepository;
 import com.hypehouse.user_service.email.TwoFARequest;
 import com.hypehouse.user_service.email.TwoFactorAuthService;
 import com.hypehouse.user_service.monitoring.ActivityLogService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -55,23 +59,22 @@ public class AuthenticationController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            User user = userRepository.findByUsernameOrEmail(loginRequest.getUsername(), loginRequest.getUsername());
-            if (user == null) {
+            Optional<User> user = userRepository.findByUsernameOrEmail(loginRequest.getUsername(), loginRequest.getUsername());
+            if (user.isEmpty()) {
                 logUserActivity(null, loginRequest.getUsername(), "LOGIN_FAILED", "User not found");
                 log.error("User not found: {}", loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            log.info("User found: {}", user.getUsername());
-            if (user.getIs2faEnabled()) {
-                logUserActivity(user.getId().toString(), user.getEmail(), "2FA_CODE_SENT", "2FA code sent");
+            log.info("User found: {}", user.get());
+            if (user.get().getIs2faEnabled()) {
+                logUserActivity(user.get().getId().toString(), user.get().getEmail(), "2FA_CODE_SENT", "2FA code sent");
                 twoFactorAuthService.send2FACode(loginRequest.getUsername());
                 return ResponseEntity.ok(new LoginResponse("2FA code sent. Please verify your code.", true));
             } else {
-                logUserActivity(user.getId().toString(), user.getEmail(), "LOGIN_SUCCESS", "User logged in successfully");
+                logUserActivity(user.get().getId().toString(), user.get().getEmail(), "LOGIN_SUCCESS", "User logged in successfully");
                 String jwt = jwtTokenProvider.generateToken(authentication);
-                // Return user ID with JWT on successful login
-                return ResponseEntity.ok(new JwtResponse(jwt, user.getId()));
+                return ResponseEntity.ok(new JwtResponse(jwt, user.get().getId()));
             }
 
         } catch (BadCredentialsException e) {
@@ -105,8 +108,14 @@ public class AuthenticationController {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 twoFactorAuthService.delete2FACode(twoFARequest.getUsernameOrEmail());
-                String jwt = jwtTokenProvider.generateToken(authentication);
-                return ResponseEntity.ok(new JwtResponse(jwt, userRepository.findByUsernameOrEmail(twoFARequest.getUsernameOrEmail(), twoFARequest.getUsernameOrEmail()).getId()));
+
+                Optional<User> userOpt = userRepository.findByUsernameOrEmail(twoFARequest.getUsernameOrEmail(), twoFARequest.getUsernameOrEmail());
+                if (userOpt.isPresent()) {
+                    String jwt = jwtTokenProvider.generateToken(authentication);
+                    return ResponseEntity.ok(new JwtResponse(jwt, userOpt.get().getId()));
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found after 2FA verification");
+                }
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid or expired code");
             }
@@ -117,5 +126,19 @@ public class AuthenticationController {
             log.error("2FA verification error for user: {}", twoFARequest.getUsernameOrEmail(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("2FA verification error");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Create a cookie with the same name and set its max age to 0
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true); // Prevent JavaScript access
+        cookie.setPath("/"); // Make it accessible to all routes
+        cookie.setMaxAge(0); // Set max age to 0 to delete the cookie
+        response.addCookie(cookie); // Add the cookie to the response
+
+        log.info("User logged out, token cookie cleared.");
+
+        return ResponseEntity.ok("Logged out successfully");
     }
 }

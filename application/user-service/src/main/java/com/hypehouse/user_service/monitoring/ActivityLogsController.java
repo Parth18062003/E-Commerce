@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -54,15 +55,13 @@ public class ActivityLogsController {
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @GetMapping("/daily-logins")
     public ResponseEntity<Long> getDailyLoginsCount(@RequestParam("date") String dateString) {
-        LocalDate date = LocalDate.parse(dateString);
-        return ResponseEntity.ok(activityLogService.countDailyLogins(date));
-    }
-
-    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
-    @GetMapping("/user/{userId}/last-activities")
-    public ResponseEntity<List<ActivityLog>> getLastNUserActivities(@PathVariable String userId) {
-        List<ActivityLog> logs = activityLogService.getLastNUserActivities(userId, 10);
-        return ResponseEntity.ok(logs);
+        try {
+            LocalDate date = LocalDate.parse(dateString);
+            return ResponseEntity.ok(activityLogService.countDailyLogins(date));
+        } catch (DateTimeParseException e) {
+            // Return a specific value to indicate an error (e.g., -1)
+            return ResponseEntity.ok(-1L);
+        }
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -70,7 +69,14 @@ public class ActivityLogsController {
     public ResponseEntity<Long> countRegistrations(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString) {
-        return ResponseEntity.ok(activityLogService.countRegistrations(LocalDate.parse(startDateString), LocalDate.parse(endDateString)));
+        try {
+            LocalDate startDate = LocalDate.parse(startDateString);
+            LocalDate endDate = LocalDate.parse(endDateString);
+            return ResponseEntity.ok(activityLogService.countRegistrations(startDate, endDate));
+        } catch (DateTimeParseException e) {
+            // Return a specific value to indicate an error (e.g., -1)
+            return ResponseEntity.ok(-1L);
+        }
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -78,7 +84,14 @@ public class ActivityLogsController {
     public ResponseEntity<Long> countUpdates(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString) {
-        return ResponseEntity.ok(activityLogService.countUpdates(LocalDate.parse(startDateString), LocalDate.parse(endDateString)));
+        try {
+            LocalDate startDate = LocalDate.parse(startDateString);
+            LocalDate endDate = LocalDate.parse(endDateString);
+            return ResponseEntity.ok(activityLogService.countUpdates(startDate, endDate));
+        } catch (DateTimeParseException e) {
+            // Return a specific value to indicate an error (e.g., -1)
+            return ResponseEntity.ok(-1L);
+        }
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -86,7 +99,14 @@ public class ActivityLogsController {
     public ResponseEntity<Long> countDeletions(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString) {
-        return ResponseEntity.ok(activityLogService.countDeletions(LocalDate.parse(startDateString), LocalDate.parse(endDateString)));
+        try {
+            LocalDate startDate = LocalDate.parse(startDateString);
+            LocalDate endDate = LocalDate.parse(endDateString);
+            return ResponseEntity.ok(activityLogService.countDeletions(startDate, endDate));
+        } catch (DateTimeParseException e) {
+            // Return a specific value to indicate an error (e.g., -1)
+            return ResponseEntity.ok(-1L);
+        }
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -136,12 +156,10 @@ public class ActivityLogsController {
         }
     }
 
-
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     @PostMapping("/geolocation")
     public ResponseEntity<ApiResponse> logGeolocation(@Valid @RequestBody GeolocationLogRequest request) {
-        if (request.getLatitude() <
-                -90 || request.getLatitude() > 90 || request.getLongitude() < -180 || request.getLongitude() > 180) {
+        if (request.getLatitude() < -90 || request.getLatitude() > 90 || request.getLongitude() < -180 || request.getLongitude() > 180) {
             return ResponseEntity.badRequest().body(new ApiResponse("Invalid latitude or longitude"));
         }
         try {
@@ -172,10 +190,9 @@ public class ActivityLogsController {
 
     private ResponseEntity<ApiResponse> handleException(Exception e) {
         // Log the exception (optional)
-        return ResponseEntity.status(500).body(new ApiResponse("Failed to log info: " + e.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Failed to log info: " + e.getMessage()));
     }
 
     public record ApiResponse(String message) {
     }
 }
-

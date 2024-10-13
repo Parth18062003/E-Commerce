@@ -11,6 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -35,25 +38,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Set session policy
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Keep the session management strategy as required
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/api/v1/users/**", "/api/v1/activity-logs/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .authorizeHttpRequests(authorize ->
-                        authorize
-                                .requestMatchers("/api/v1/auth/**").permitAll() // Allow unauthenticated access
-                                //.requestMatchers("/api/v1/users/**").hasAnyRole("USER", "ADMIN") // Require ADMIN role for user management
-                                .requestMatchers("/api/v1/users/**").permitAll() // Require authentication for all other requests
-                                .requestMatchers("/api/v1/activity-logs/**").permitAll() // Require authentication for all other requests
-                                .anyRequest().authenticated() // Require authentication for all other requests
-                )
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .loginPage("/api/v1/auth/login")
-                        .defaultSuccessUrl("/api/v1/users", true)
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/google")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(this.oauth2UserService()) // OAuth2UserService instead of OidcUserService
+                        )
+                        .defaultSuccessUrl("/api/v1/oauth2/login/success", true)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .cors(); // Add CORS configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
         return http.build();
+    }
+
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+        return new CustomOAuth2UserService(); // Replace with your custom OAuth2UserService
     }
 
     @Bean
@@ -69,7 +76,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Your frontend base URL
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
