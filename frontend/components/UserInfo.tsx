@@ -45,7 +45,6 @@ const UserInfo = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-
   const {
     register,
     handleSubmit,
@@ -101,7 +100,6 @@ const UserInfo = () => {
       });
     }
   }, [reduxUser, reset]);
-
 
   const onSubmit: SubmitHandler<UpdateUserData> = async (data) => {
     if (JSON.stringify(data) === JSON.stringify(originalData)) {
@@ -192,9 +190,14 @@ const UserInfo = () => {
       <Card className="w-full max-w-3xl shadow-md rounded-lg">
         <CardHeader className="flex flex-col md:flex-row justify-between items-center">
           <CardTitle className="text-3xl font-bold text-left text-zinc-900 dark:text-zinc-200">
-            {reduxUser.username}'s Profile
+            {reduxUser.firstName}'s Profile
           </CardTitle>
-          <ProfileImageUpload defaultImageUrl={reduxUser?.profileImageUrl || "https://res.cloudinary.com/dvl7demzb/image/upload/v1728065940/dtedxomd0tz5qml3ger3.jpg"} userId={reduxUser?.id} />
+          <ProfileImageUpload
+            defaultImageUrl={
+              reduxUser?.profileImageUrl
+            }
+            userId={reduxUser?.id}
+          />
         </CardHeader>
 
         <CardContent className="mt-2 p-4 dark rounded-lg text-zinc-950 dark:text-zinc-200">
@@ -204,7 +207,6 @@ const UserInfo = () => {
             errors={errors}
             isEditing={isEditing}
           />
-          <UserSecurity />
         </CardContent>
 
         <CardFooter className="flex justify-end space-x-4 p-6">
@@ -215,7 +217,9 @@ const UserInfo = () => {
             setIsEditing={setIsEditing}
           />
         </CardFooter>
-
+        <div className="p-3">
+          <UserSecurity />
+        </div>
         {apiError && <p className="text-red-500 text-center">{apiError}</p>}
       </Card>
       <Notifications
@@ -247,7 +251,6 @@ interface ProfileImageProps {
   profileImage: string;
   handleProfilePicChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
 
 // UserDetails component with type annotations
 interface UserDetailsProps {

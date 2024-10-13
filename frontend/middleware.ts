@@ -49,7 +49,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url)); // Redirect if not admin
   }
 
-  if (isUserRoute && !userRoles.includes("ROLE_USER") && !userRoles.includes("ROLE_ADMIN")) {
+  if (isUserRoute && !userRoles.includes("ROLE_USER") && !userRoles.includes("ROLE_ADMIN") && !userRoles.includes("USER")) {
     return NextResponse.redirect(new URL("/", request.url)); // Redirect if not user
   }
   // Allow the request to continue for all other cases

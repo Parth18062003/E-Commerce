@@ -99,6 +99,15 @@ export function SignUpForm() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      window.location.href = "http://localhost:8081/oauth2/authorization/google";
+    } catch (error: any) {
+      console.error("Error during Google login:", error);
+      addNotification("An error occurred while logging in with Google. Please try again.", "error");
+    }
+  }
+
   const addNotification = (
     text: string,
     type: "info" | "success" | "error"
@@ -211,7 +220,7 @@ export function SignUpForm() {
                   "Create an account"
                 )}
               </Button>
-              <Button variant="outline" className="w-full mt-2">
+              <Button variant="outline" className="w-full mt-2" onClick={handleGoogleLogin}>
                 Sign up with Google{" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

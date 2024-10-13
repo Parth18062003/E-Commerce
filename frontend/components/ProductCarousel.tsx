@@ -11,7 +11,7 @@ import {
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
 import { Heart } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SpringModal } from "./SpringModal";
 
 interface Product {
@@ -21,7 +21,7 @@ interface Product {
   brand: string;
   name: string;
   price: string;
-  description: string; 
+  description: string;
 }
 
 interface ProductCarouselProps {
@@ -33,13 +33,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollLeft += e.deltaY; // Adjust scroll speed if needed
-    }
-    e.preventDefault(); // Prevent default scroll behavior
-  };
-
+  // Handle mouse move for swipe-like behavior
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (carouselRef.current) {
       const { clientX } = e;
@@ -54,6 +48,24 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
       }
     }
   };
+
+  // Use effect to add a wheel event listener with passive set to false
+  useEffect(() => {
+    const handleWheelEvent = (e: WheelEvent) => {
+      if (carouselRef.current) {
+        carouselRef.current.scrollLeft += e.deltaY; // Adjust scroll speed if needed
+      }
+      e.preventDefault(); // Prevent default scroll behavior
+    };
+
+    const currentRef = carouselRef.current;
+
+    currentRef?.addEventListener("wheel", handleWheelEvent, { passive: false });
+
+    return () => {
+      currentRef?.removeEventListener("wheel", handleWheelEvent);
+    };
+  }, []);
 
   const handleHeartClick = (product: Product, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent the click from propagating to the card link
@@ -70,12 +82,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
           loop: true,
           align: "start",
         }}
-        onWheel={handleWheel}
-        onMouseMove={handleMouseMove}
+        onMouseMove={handleMouseMove} // Keep this
       >
         <CarouselContent>
           {products.map((product) => (
-            <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+            <CarouselItem
+              key={product.id}
+              className="md:basis-1/2 lg:basis-1/3"
+            >
               <div className="relative cursor-pointer rounded-xl">
                 <Card className="p-0 shadow-md hover:shadow-lg transition-shadow duration-300">
                   <Link href={`/products/${product.id}`} passHref>
@@ -101,7 +115,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
                         />
                       </div>
                       <div className="flex justify-between items-center mt-2 px-3">
-                        <span className="text-sm text-zinc-500">{product.brand}</span>
+                        <span className="text-sm text-zinc-500">
+                          {product.brand}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center mt-1 px-3 gap-8">
                         <h2 className="text-lg text-indigo-500 font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
@@ -111,7 +127,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
                           {product.price}
                         </span>
                       </div>
-                      <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden whitespace-nowrap text-ellipsis">
+                      <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden overflow-ellipsis line-clamp-2">
                         {product.description}
                       </p>
                     </CardContent>
@@ -129,19 +145,23 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products }) => {
           ))}
         </CarouselContent>
         <div className="hidden md:block">
-        <CarouselPrevious
-          className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"
-          aria-label="Previous item"
-        />
-        <CarouselNext
-          className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"
-          aria-label="Next item"
-        />
+          <CarouselPrevious
+            className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"
+            aria-label="Previous item"
+          />
+          <CarouselNext
+            className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"
+            aria-label="Next item"
+          />
         </div>
       </Carousel>
 
       {/* Render the modal here */}
-      <SpringModal isOpen={isOpen} setIsOpen={setIsOpen} product={selectedProduct}/>
+      <SpringModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        product={selectedProduct}
+      />
     </div>
   );
 };

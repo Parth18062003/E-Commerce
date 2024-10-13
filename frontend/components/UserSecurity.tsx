@@ -141,7 +141,7 @@ const UserSecurity = () => {
                   </button>
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="my-4">
                 <button
                   onClick={() => setIsDialogOpen(true)} // Open dialog
                   className={`inline-flex h-10 items-center justify-center rounded-md bg-red-500 text-white px-6 font-medium transition active:scale-95`}

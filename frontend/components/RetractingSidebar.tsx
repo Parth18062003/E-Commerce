@@ -18,14 +18,14 @@ import {
   ContactRound,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/store/authSlice";
+import { logout, logoutUser } from "@/store/authSlice";
 import { useRouter } from "next/navigation";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 
 export const RetractingSidebar = () => {
   const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
@@ -36,8 +36,8 @@ export const RetractingSidebar = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = () => {   
+    dispatch(logoutUser());
     router.push("/authentication/sign-in");
   };
 

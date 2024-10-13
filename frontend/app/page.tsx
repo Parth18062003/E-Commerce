@@ -83,7 +83,7 @@ const products = [
     hoverImageUrl:
       "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/21d38052-598b-44f6-a857-123c9f72b015/AIR+FORCE+1+%2707.png",
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit lorem ipsum dolor sit amet consectetur adipisicing elit lorem ipsum dolor sit amet consectetur adipisicing elit",
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit lorem ipsum ",
   },
 ];
 export default function Home() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
 interface Role {
@@ -41,6 +41,18 @@ const initialState: AuthState = {
     : null,
   token: isBrowser() ? localStorage.getItem("token") : null,
 };
+
+export const logoutUser = createAsyncThunk<void, void>(
+  'auth/logout',
+  async (_, { dispatch }) => {
+    await fetch('http://localhost:8081/api/v1/auth/logout', {
+      method: 'POST',
+      credentials: 'include', // Include cookies in the request if necessary
+    });
+    dispatch(logout());
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",
