@@ -74,6 +74,7 @@ const authSlice = createSlice({
         localStorage.removeItem("lastDeviceInfo");
         localStorage.removeItem("users");
         localStorage.removeItem("currentPage");
+        localStorage.removeItem("hasLoggedDeviceInfo");
       }
     },
     setUser(state, action: PayloadAction<ReduxUser>) {

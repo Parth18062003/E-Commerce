@@ -186,8 +186,8 @@ const UserInfo = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-100 dark:bg-zinc-950">
-      <Card className="w-full max-w-3xl shadow-md rounded-lg">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-3xl shadow-xl rounded-lg">
         <CardHeader className="flex flex-col md:flex-row justify-between items-center">
           <CardTitle className="text-3xl font-bold text-left text-zinc-900 dark:text-zinc-200">
             {reduxUser.firstName}'s Profile

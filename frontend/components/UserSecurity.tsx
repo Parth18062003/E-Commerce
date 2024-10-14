@@ -11,6 +11,7 @@ import Notification from "./ui/notification";
 import DeviceLogsComponent from "./DeviceLog";
 import DeleteConfirmDialog from "./ui/deleteDialog";
 import { useRouter } from "next/navigation";
+import TestGeolocation from "./GeoLocation";
 
 type NotificationType = {
   id: number;
@@ -152,6 +153,7 @@ const UserSecurity = () => {
             </>
           )
         )}
+        <TestGeolocation />
         {reduxUser && 
           <DeviceLogsComponent userId={reduxUser?.id || ""} firstName={reduxUser?.firstName || ""} />
         }
