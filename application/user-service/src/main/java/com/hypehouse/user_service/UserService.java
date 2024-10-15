@@ -1,5 +1,6 @@
 package com.hypehouse.user_service;
 
+import com.hypehouse.common.cache.BloomFilterService;
 import com.hypehouse.user_service.exception.InvalidInputException;
 import com.hypehouse.user_service.exception.UserNotFoundException;
 import com.hypehouse.user_service.monitoring.ActivityLogService;
@@ -19,11 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ActivityLogService activityLogService;
+    private final BloomFilterService bloomFilterService;
+    private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, ActivityLogService activityLogService) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, ActivityLogService activityLogService, BloomFilterService bloomFilterService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.activityLogService = activityLogService;
+        this.bloomFilterService = bloomFilterService;
     }
 
     @Cacheable(value = "users", key = "#pageable.pageNumber")
@@ -59,6 +63,18 @@ public class UserService {
             throw new InvalidInputException("Username cannot be null or empty");
         }
 
+        // Check Bloom Filter first
+        boolean emailMightExist = bloomFilterService.mightContain(user.getEmail());
+        boolean usernameMightExist = bloomFilterService.mightContain(user.getUsername());
+
+        // If Bloom Filter indicates potential existence, check the database
+        if (emailMightExist || usernameMightExist) {
+            Optional<User> existingUser = userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail());
+            if (existingUser.isPresent()) {
+                throw new InvalidInputException("Email or username already exists");
+            }
+        }
+
         Role userRole = roleRepository.findByName("USER");
         if (userRole == null) {
             throw new RuntimeException("USER role not found in the database");
@@ -67,14 +83,24 @@ public class UserService {
         user.setRoles(new HashSet<>(Collections.singleton(userRole)));
 
         User savedUser = userRepository.save(user);
+
+        // Add email and username to Bloom Filter
+        try {
+            bloomFilterService.add(savedUser.getEmail());
+            bloomFilterService.add(savedUser.getUsername());
+        } catch (Exception e) {
+            // Log the error but don't fail the user registration
+            log.error("Failed to add user to Bloom Filter: " + e.getMessage(), e);
+        }
+
         activityLogService.createLog(
-                savedUser.getId().toString(), // Convert UUID to String
+                savedUser.getId().toString(),
                 savedUser.getEmail(),
                 "USER_CREATION",
                 "User created with email: " + savedUser.getEmail()
         );
 
-        return savedUser; // Return the saved user
+        return savedUser;
     }
 
     @CachePut(value = "users", key = "#user.id")
@@ -82,30 +108,49 @@ public class UserService {
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
             throw new InvalidInputException("Username cannot be null or empty");
         }
+        User existingUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getId().toString()));
+
+        // Check if new email or username might already exist (excluding the current user)
+        if (!existingUser.getEmail().equals(user.getEmail()) && bloomFilterService.mightContain(user.getEmail())) {
+            if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+                throw new InvalidInputException("Email already exists");
+            }
+        }
+        if (!existingUser.getUsername().equals(user.getUsername()) && bloomFilterService.mightContain(user.getUsername())) {
+            if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+                throw new InvalidInputException("Username already exists");
+            }
+        }
 
         Role userRole = roleRepository.findByName("USER");
         if (userRole == null) {
             throw new RuntimeException("USER role not found in the database");
         }
-
         user.setRoles(new HashSet<>(Collections.singleton(userRole)));
 
         User savedUser = userRepository.save(user);
+
+        // Update Bloom Filter if email or username changed
+        if (!existingUser.getEmail().equals(savedUser.getEmail())) {
+            bloomFilterService.add(savedUser.getEmail());
+        }
+        if (!existingUser.getUsername().equals(savedUser.getUsername())) {
+            bloomFilterService.add(savedUser.getUsername());
+        }
+
         activityLogService.createLog(
-                savedUser.getId().toString(), // Convert UUID to String
+                savedUser.getId().toString(),
                 savedUser.getEmail(),
                 "USER_UPDATED",
                 "User updated with email: " + savedUser.getEmail()
         );
 
-        return savedUser; // Return the saved user
+        return savedUser;
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public void deleteUser(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id.toString());
-        }
 
         activityLogService.createLog(
                 id.toString(), // Convert UUID to String

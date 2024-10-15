@@ -1,5 +1,6 @@
 package com.hypehouse.user_service;
 
+import com.hypehouse.common.cache.BloomFilterService;
 import com.hypehouse.common.rate_limit.RateLimit;
 import com.hypehouse.user_service.exception.UserNotFoundException;
 import jakarta.validation.Valid;
@@ -22,11 +23,13 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final BloomFilterService bloomFilterService;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, BloomFilterService bloomFilterService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.bloomFilterService = bloomFilterService;
     }
 
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
@@ -161,6 +164,12 @@ public class UserController {
         // Update the user's profile image URL and log the activity
         User updatedUser = userService.updateProfileImage(id, imageUrl);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/users/bloom/contains/{key}")
+    public ResponseEntity<Boolean> checkBloomFilter(@PathVariable String key) {
+        boolean contains = bloomFilterService.mightContain(key);
+        return ResponseEntity.ok(contains);
     }
 
     private void updateUserFields(User user, UserUpdateDTO dto) {

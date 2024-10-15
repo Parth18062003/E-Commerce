@@ -1,5 +1,6 @@
 package com.hypehouse.user_service.monitoring;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,6 +18,7 @@ public class DeviceLog {
     private String browserVersion;
     private String deviceVendor;
     private String deviceModel;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime timestamp;
 
     // Getters and Setters
