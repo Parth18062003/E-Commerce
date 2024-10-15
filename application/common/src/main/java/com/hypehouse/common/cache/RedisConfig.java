@@ -18,7 +18,7 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName("");
-        configuration.setPort(16176);
+        configuration.setPort(19376);
         configuration.setPassword(""); // Replace with your actual Redis password
         return new LettuceConnectionFactory(configuration);
     }

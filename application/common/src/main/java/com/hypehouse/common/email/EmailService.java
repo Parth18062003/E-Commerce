@@ -43,35 +43,36 @@ public class EmailService {
     private String generate2faEmailBody(String otp) {
         return "<html>" +
                 "<head>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "<style>" +
                 "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }" +
-                ".container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }" +
+                ".container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); border: 1px solid #e1e1e1;}" +
                 ".header { text-align: center; border-bottom: 2px solid #4f46e5; padding-bottom: 20px; }" +
-                ".otp-container { background-color: #f0f4ff; border: 2px solid #4f46e5; border-radius: 8px; text-align: center; margin: 20px 0; padding: 15px; cursor: pointer; }" +
+                ".otp-container { background-color: #f0f4ff; border: 2px solid #4f46e5; border-radius: 8px; text-align: center; margin: 20px 0; padding: 15px; cursor: pointer; transition: background-color 0.3s; }" +
+                ".otp-container:hover { background-color: #e0eaff; }" +
                 ".footer { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }" +
-                "h1 { font-size: 24px; color: #4f46e5; }" +
+                "h1 { font-size: 36px; color: #4f46e5; margin: 0; }" +
+                "h2 { font-size: 20px; color: #333; }" +
                 "p { line-height: 1.6; }" +
                 "textarea { opacity: 0; position: absolute; }" +
+                "@media (max-width: 600px) { " +
+                ".container { padding: 15px; } " +
+                "h1 { font-size: 28px; } " +
+                "h2 { font-size: 18px; } " +
+                ".otp-container { font-size: 18px; padding: 10px; }" +
+                "}" +
                 "</style>" +
-                "<script>" +
-                "function copyToClipboard() { " +
-                "const otp = document.getElementById('otpCode'); " +
-                "otp.select(); " +
-                "document.execCommand('copy'); " +
-                "alert('OTP copied to clipboard!'); " +
-                "} " +
-                "</script>" +
                 "</head>" +
                 "<body>" +
                 "<div class='container'>" +
                 "<div class='header'>" +
-                "<h1>Hype House</h1>" +
+                "<h1>HYPE HOUSE</h1>" +
                 "<h2>Verify Your Identity</h2>" +
                 "</div>" +
                 "<p>Hello,</p>" +
                 "<p>To ensure your account's security, please use the following 2FA code:</p>" +
                 "<textarea id='otpCode'>" + otp + "</textarea>" +
-                "<div class='otp-container' onclick='copyToClipboard()'>" +
+                "<div class='otp-container'>" +
                 "<strong style='font-size: 28px; color: #4f46e5;'>" + otp + "</strong>" +
                 "</div>" +
                 "<p>If you did not request this code, please ignore this email.</p>" +
@@ -87,24 +88,33 @@ public class EmailService {
     private String generatePasswordResetEmailBody(String resetLink) {
         return "<html>" +
                 "<head>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "<style>" +
                 "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }" +
-                ".container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }" +
+                ".container { max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); border: 1px solid #e1e1e1; }" +
                 ".header { text-align: center; border-bottom: 2px solid #4f46e5; padding-bottom: 20px; }" +
-                ".reset-link { background-color: #4f46e5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; }" +
+                ".reset-link { display: inline-block; background-color: #4f46e5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; transition: background-color 0.3s; }" +
+                ".reset-link:hover { background-color: #3b3f8f; }" +
                 ".footer { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }" +
-                "h1 { font-size: 24px; color: #4f46e5; }" +
+                "h1 { font-size: 36px; color: #4f46e5; margin: 0; }" +
+                "h2 { font-size: 20px; color: #333; }" +
                 "p { line-height: 1.6; }" +
+                "@media (max-width: 600px) { " +
+                ".container { padding: 15px; } " +
+                "h1 { font-size: 28px; } " +
+                "h2 { font-size: 18px; } " +
+                ".reset-link { padding: 8px 15px; font-size: 16px; }" +
+                "}" +
                 "</style>" +
                 "</head>" +
                 "<body>" +
                 "<div class='container'>" +
                 "<div class='header'>" +
-                "<h1>Hype House</h1>" +
+                "<h1>HYPE HOUSE</h1>" +
                 "<h2>Password Reset Request</h2>" +
                 "</div>" +
                 "<p>Hello,</p>" +
-                "<p>You requested a password reset for your account. Please click the link below to reset your password:</p>" +
+                "<p>You requested a password reset for your account. Please click the button below to reset your password:</p>" +
                 "<p><a href='" + resetLink + "' class='reset-link'>Reset Your Password</a></p>" +
                 "<p>If you did not request this change, please ignore this email.</p>" +
                 "<div class='footer'>" +
