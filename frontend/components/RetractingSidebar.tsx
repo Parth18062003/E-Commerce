@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   BarChart,
@@ -29,8 +29,14 @@ export const RetractingSidebar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
+  const [role, setRole] = useState<string | undefined>();
   
-  const role = reduxUser?.roles[0]?.name; // Extract the role name from the roles array
+  useEffect(() => {
+    // Ensure role is set on the client side
+    if (reduxUser) {
+      setRole(reduxUser.roles[0]?.name);
+    }
+  }, [reduxUser]);// Extract the role name from the roles array
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -173,9 +179,9 @@ const Option = ({
         selected === title ? "bg-indigo-300 dark:bg-indigo-700 text-indigo-600 dark:text-indigo-200" : "text-zinc-800 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
       }`}
     >
-      <motion.div layout className="grid h-full w-10 place-content-center text-lg">
+      <motion.span layout className="grid h-full w-10 place-content-center text-lg">
         <Icon />
-      </motion.div>
+      </motion.span>
       {open && (
         <motion.span
           layout
@@ -248,9 +254,9 @@ const ToggleClose = ({
       className="absolute bottom-0 left-0 right-0 border-t border-zinc-300 transition-colors hover:bg-zinc-400 dark:hover:bg-zinc-100"
     >
       <div className="flex items-center p-2">
-        <motion.div layout className="grid h-10 w-10 place-content-center text-lg text-zinc-700">
+        <motion.span layout className="grid h-10 w-10 place-content-center text-lg text-zinc-700">
           <ChevronRight className={`transition-transform ${open ? "rotate-180" : ""}`} />
-        </motion.div>
+        </motion.span>
         {open && (
           <motion.span
             layout

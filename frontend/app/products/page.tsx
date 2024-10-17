@@ -1,13 +1,12 @@
-import ProductList from "@/components/ProductList";
 import React from "react";
+import FilterAndSort from "@/components/FilterAndSort";
+import ProductList from "@/components/ProductList";
 
-const ProductPage = () => {
+const ProductPage: React.FC = () => {
   return (
-    <>
-      <div className="w-full">
-        <ProductList />
-      </div>
-    </>
+    <div className="min-h-screen w-full flex">
+      <FilterAndSort />
+    </div>
   );
 };
 
