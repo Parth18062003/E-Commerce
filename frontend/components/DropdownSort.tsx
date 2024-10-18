@@ -11,10 +11,10 @@ import {
 import { ArrowDownWideNarrow } from "lucide-react";
 import { useState } from "react";
 
-type SortOrder = "default" | "asc" | "desc" | "popular";
+type SortOrder = "featured" | "asc" | "desc" | "popular";
 
 const sortOptions: Record<SortOrder, string> = {
-  default: "All",
+  featured: "Featured",
   asc: "Price [Low - High]",
   desc: "Price [High - Low]",
   popular: "Most Popular",

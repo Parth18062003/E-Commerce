@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "./card";
 import Image from "next/image";
-import { color } from "framer-motion";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: {
@@ -23,19 +23,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false); // Track hover state
 
   return (
+    <Link href={`/products/${product.name}/${product.id}`}>
     <Card
       className="max-w-3xl shadow-lg"
       onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
       onMouseLeave={() => setIsHovered(false)} // Reset hover state on mouse leave
     >
       <CardHeader className="overflow-hidden p-0">
-        <div className="relative w-full h-80">
+        <div className="relative w-full h-96">
           <Image
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 rounded-t-xl"
             src={mainImage}
             alt={product.name}
             height={512}
             width={512}
+            loading="eager"
           />
         </div>
       </CardHeader>
@@ -74,7 +76,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         >
           {product.name}
         </h2>
-        
         <p className="text-gray-700">{product.brand}</p>
         {!isHovered && (
           <>
@@ -88,6 +89,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Additional footer content can go here, like an "Add to Cart" button */}
       </CardFooter>
     </Card>
+    </Link>
   );
 };
 

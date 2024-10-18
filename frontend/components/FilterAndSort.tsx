@@ -44,7 +44,7 @@ const FilterAndSort = () => {
 
       {/* Mobile Filter Sidebar */}
       <aside
-        className={`absolute bg-white z-20 w-3/5 text-black min-h-screen border-r border-zinc-500 shadow-xl transition-transform duration-300 lg:hidden ${
+        className={`fixed bg-white z-20 w-full text-black min-h-screen border-r border-zinc-500 shadow-xl transition-transform duration-300 lg:hidden ${
           isFilterVisible ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -54,7 +54,7 @@ const FilterAndSort = () => {
             className="text-black font-bold"
             onClick={toggleFilterSidebar}
           >
-            <X />
+            <X aria-label="Close Filters"/>
           </button>
         </div>
         <div className="p-4">

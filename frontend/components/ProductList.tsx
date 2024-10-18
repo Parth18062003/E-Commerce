@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import ProductCard from './ui/product-card';
 import { ChevronLeft, ChevronRight, Dot } from 'lucide-react';
-import { color } from 'framer-motion';
 
 const baseProducts = [
   {
@@ -44,7 +43,7 @@ const baseProducts = [
 ];
 
 // Generate an array of unique products
-const products = Array.from({ length: 40 }, (_, index) => {
+const products = Array.from({ length: 80 }, (_, index) => {
   const baseProduct = baseProducts[index % baseProducts.length]; // Loop through base products
   return {
     id: index + 1,
@@ -59,7 +58,7 @@ const products = Array.from({ length: 40 }, (_, index) => {
 
 const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 12; // Display 12 products per page
+  const productsPerPage = 40; // Display 12 products per page
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
