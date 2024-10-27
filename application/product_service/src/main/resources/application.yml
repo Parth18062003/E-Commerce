@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: product_service
+  server:
+    port: 8082
+  data:
+    mongodb:
+      uri: mongodb+srv://:@cluster0.oc0ol.mongodb.net/product_service
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
+  logging:
+    level:
+      org:
+        springframework:
+          web: DEBUG
+      com:
+        hypehouse: DEBUG
+  mongodb:
+    repositories:
+      enabled: true
