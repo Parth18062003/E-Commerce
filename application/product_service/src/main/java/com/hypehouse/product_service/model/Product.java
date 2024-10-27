@@ -1,11 +1,13 @@
 package com.hypehouse.product_service.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,12 +15,15 @@ import java.util.Map;
 import java.util.UUID;
 
 @Document(collection = "products")
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @NotNull(message = "Product ID is mandatory")
     @Field(name = "id")
     private String id;
+
+    @JsonProperty("objectID")
+    private String ObjectID;
 
     @NotBlank(message = "Product name is mandatory")
     @Length(max = 100, message = "Product name must not exceed 100 characters")
@@ -84,6 +89,7 @@ public class Product {
 
     public Product() {
         this.id = UUID.randomUUID().toString();; // Automatically generate a new UUID
+        this.ObjectID = this.id; // Set ObjectId to the same value as ID
         this.createdAt = LocalDateTime.now(); // Set created timestamp
         this.updatedAt = LocalDateTime.now(); // Set updated timestamp
     }
@@ -96,6 +102,14 @@ public class Product {
 
     public void setId(UUID id) {
         this.id = id.toString();
+    }
+
+    public String getObjectID() {
+        return ObjectID;
+    }
+
+    public void setObjectID(String ObjectID) {
+        this.ObjectID = ObjectID;
     }
 
     public String getName() {

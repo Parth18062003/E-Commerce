@@ -1,8 +1,9 @@
 package com.hypehouse.product_service;
 
 import com.hypehouse.common.rate_limit.RateLimit;
+import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.UpdateProductDTO;
-import com.hypehouse.product_service.model.Product;;
+import com.hypehouse.product_service.model.Product;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -37,34 +40,66 @@ public class ProductController {
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
         log.debug("Fetching product with ID: {}", id);
-        Optional<Product> product = productService.getProductById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PostMapping("/create-product")
+    @PostMapping
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        log.debug("Creating new product");
+        log.debug("Creating new product: {}", product);
         Product savedProduct = productService.saveProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
-    @PutMapping("/update-product/{id}")
+    @PutMapping("/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> updateProduct(
             @PathVariable String id,
             @Valid @RequestBody UpdateProductDTO updateProductDTO) {
         log.debug("Updating product with ID: {}", id);
-        Product updatedProduct = productService.updateProduct(id, updateProductDTO);
-        return ResponseEntity.ok(updatedProduct);
+        try {
+            Product updatedProduct = productService.updateProduct(id, updateProductDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (ProductNotFoundException e) {
+            log.warn("Product with ID: {} not found", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @DeleteMapping("/delete-product/{id}")
+    @DeleteMapping("/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.debug("Deleting product with ID: {}", id);
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (ProductNotFoundException e) {
+            log.warn("Product with ID: {} not found", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> search(@RequestParam String query) {
+        log.debug("Search request received for query: {}", query);
+
+        if (query == null || query.trim().isEmpty()) {
+            log.warn("Empty search query received");
+            return ResponseEntity.badRequest().body(List.of()); // Return empty list for bad requests
+        }
+
+        try {
+            List<Product> products = productService.searchProducts(query);
+            if (products.isEmpty()) {
+                log.info("No products found for query: {}", query);
+            }
+            return ResponseEntity.ok(products);
+        } catch (ExecutionException | InterruptedException e) {
+            log.error("Error searching for products with query: {}", query, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
