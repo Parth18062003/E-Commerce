@@ -5,7 +5,7 @@ spring:
     port: 8082
   data:
     mongodb:
-      uri: mongodb+srv://:@cluster0.oc0ol.mongodb.net/product_service
+      uri: mongodb+srv://2021parthkadam:VfwwJ3uV0l0C6l1O@cluster0.oc0ol.mongodb.net/product_service
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
@@ -21,5 +21,5 @@ spring:
       enabled: true
 
 algolia:
-  application-id:
-  api-key:
+  application-id: G66MRCQA66
+  api-key: d27560c743bf7452ca8240669dd9ddb1

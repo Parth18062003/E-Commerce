@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -31,7 +30,7 @@ public class ProductController {
     @GetMapping
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
-        log.debug("Fetching all products");
+        log.info("Fetching all products");
         Page<Product> products = productService.getAllProducts(pageable);
         return ResponseEntity.ok(products);
     }
@@ -39,21 +38,22 @@ public class ProductController {
     @GetMapping("/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
-        log.debug("Fetching product with ID: {}", id);
+        log.info("Fetching product with ID: {}", id);
         return productService.getProductById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PostMapping
+    @PostMapping("/create-product")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         log.debug("Creating new product: {}", product);
         Product savedProduct = productService.saveProduct(product);
+        log.info("Product created successfully with ID: {}", savedProduct.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update-product/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> updateProduct(
             @PathVariable String id,
@@ -61,6 +61,7 @@ public class ProductController {
         log.debug("Updating product with ID: {}", id);
         try {
             Product updatedProduct = productService.updateProduct(id, updateProductDTO);
+            log.info("Product with ID: {} updated successfully", id);
             return ResponseEntity.ok(updatedProduct);
         } catch (ProductNotFoundException e) {
             log.warn("Product with ID: {} not found", id);
@@ -68,12 +69,13 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-product/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.debug("Deleting product with ID: {}", id);
         try {
             productService.deleteProduct(id);
+            log.info("Product with ID: {} deleted successfully", id);
             return ResponseEntity.noContent().build();
         } catch (ProductNotFoundException e) {
             log.warn("Product with ID: {} not found", id);

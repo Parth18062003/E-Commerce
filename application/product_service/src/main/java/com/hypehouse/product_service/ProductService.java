@@ -49,19 +49,19 @@ public class ProductService {
         productIndex.deleteObject(objectId).waitTask();
     }
 
-    @Cacheable(value = "products", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    //@Cacheable(value = "products", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<Product> getAllProducts(Pageable pageable) {
         log.debug("Fetching all products with pagination: {}", pageable);
         return productRepository.findAll(pageable);
     }
 
-    @Cacheable(value = "products", key = "#id")
+    //@Cacheable(value = "products", key = "#id")
     public Optional<Product> getProductById(String id) {
         log.debug("Fetching product with ID: {}", id);
         return productRepository.findById(UUID.fromString(id));
     }
 
-    @CachePut(value = "products", key = "#product.id")
+    //@CachePut(value = "products", key = "#product.id")
     public Product saveProduct(@Valid Product product) {
         log.debug("Inserting product with details: {}", product);
         Product savedProduct = productRepository.save(product);
@@ -73,7 +73,7 @@ public class ProductService {
         return savedProduct;
     }
 
-    @CachePut(value = "products", key = "#id")
+    //@CachePut(value = "products", key = "#id")
     public Product updateProduct(String id, @Valid UpdateProductDTO updateProductDTO) {
         log.debug("Updating product with ID: {}", id);
         Product existingProduct = productRepository.findById(UUID.fromString(id))
@@ -92,7 +92,7 @@ public class ProductService {
         return updatedProduct;
     }
 
-    @CacheEvict(value = "products", key = "#id")
+    //@CacheEvict(value = "products", key = "#id")
     public void deleteProduct(String id) {
         log.debug("Deleting product with ID: {}", id);
         UUID productId = UUID.fromString(id);
