@@ -4,6 +4,7 @@ import authReducer from './authSlice';
 import activityLogReducer from './activityLogSlice';
 import deviceLogSliceReducer from './deviceLogSlice';
 import userSliceReducer from './userSlice';
+import productSliceReducer from './productSlice';
 import { thunk, ThunkAction } from 'redux-thunk';
 
 const store = configureStore({
@@ -12,6 +13,7 @@ const store = configureStore({
     activityLog: activityLogReducer, 
     deviceLog: deviceLogSliceReducer,
     user: userSliceReducer,
+    product: productSliceReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

@@ -24,7 +24,7 @@ const FilterAndSort = () => {
     <div className="flex w-full relative">
       {/* Sidebar for Desktop */}
       <aside
-        className={`text-black min-h-screen w-1/5 border-r border-zinc-500 shadow-xl transition-transform duration-300 hidden ${
+        className={`text-black min-h-screen w-1/3 border-r border-zinc-500 shadow-xl transition-transform duration-300 hidden ${
           isFilterVisible ? "lg:block" : "hidden"
         }`}
       >
