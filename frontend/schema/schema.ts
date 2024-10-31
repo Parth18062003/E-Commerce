@@ -64,3 +64,54 @@ export const UpdateUserSchema = z.object({
     .regex(/^\d+$/, "Postal code must be numeric")
     .optional(),
 });
+
+
+export const productSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  description: z.string().min(1, "Description is required"),
+  price: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
+    z.number().positive("Price must be a positive number")),
+  discount: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
+    z.number().nonnegative("Discount cannot be negative")),
+  stockQuantity: z.preprocess((val) => (typeof val === "string" ? parseInt(val, 10) : val), 
+    z.number().int("Stock must be an integer")),
+  category: z.string().min(1, "Category is required"),
+  brand: z.string().min(1, "Brand is required"),
+  sku: z.string().min(1, "SKU is required"),
+  tags: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(tag => tag.trim()) : val), 
+    z.array(z.string()).optional()), // Optional if no tags are provided
+  dimensions: z.string().min(1, "Dimensions are required"),
+  weight: z.string().min(1, "Weight is required"),
+  sizes: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(size => size.trim()) : val), 
+    z.array(z.string()).optional()), // Optional if no sizes are provided
+    colorOptions: z.preprocess(
+      (val) => (typeof val === "string" ? val.split(",").map(color => color.trim()) : val),
+      z.array(z.string()).optional()
+    ),// Optional if no color options are provided
+  colorOptionImages: z.record(z.array(z.string())).optional(), // Object with arrays of images for each color
+});
+
+export const updateProductSchema = z.object({
+  name: z.string().min(1, "Product name is required").optional(),
+  description: z.string().min(1, "Description is required").optional(),
+  price: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
+    z.number().positive("Price must be a positive number")).optional(),
+  discount: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
+    z.number().nonnegative("Discount cannot be negative")).optional(),
+  stockQuantity: z.preprocess((val) => (typeof val === "string" ? parseInt(val, 10) : val), 
+    z.number().int("Stock must be an integer")).optional(),
+  category: z.string().min(1, "Category is required").optional(),
+  brand: z.string().min(1, "Brand is required").optional(),
+  sku: z.string().min(1, "SKU is required").optional(),
+  tags: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(tag => tag.trim()) : val), 
+    z.array(z.string()).optional()), // Optional if no tags are provided
+  dimensions: z.string().min(1, "Dimensions are required").optional(),
+  weight: z.string().min(1, "Weight is required").optional(),
+  sizes: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(size => size.trim()) : val), 
+    z.array(z.string()).optional()), // Optional if no sizes are provided
+    colorOptions: z.preprocess(
+      (val) => (typeof val === "string" ? val.split(",").map(color => color.trim()) : val),
+      z.array(z.string()).optional()
+    ),// Optional if no color options are provided
+  colorOptionImages: z.record(z.array(z.string())).optional(), // Object with arrays of images for each color
+});

@@ -6,19 +6,26 @@ import ProductCard from './ui/product-card';
 import { ChevronLeft, ChevronRight, Dot } from 'lucide-react';
 import { fetchProducts } from '@/store/productSlice';
 import { AppDispatch, RootState } from '@/store/store';
+import Loading from '@/app/loading';
 
 const ProductList: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { products, loading, error, totalPages } = useSelector((state: RootState) => state.product);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 40;
-
+  
   useEffect(() => {
-    dispatch(fetchProducts(currentPage - 1));
-  }, [dispatch, currentPage]);
+    // Check if products for the current page are already cached
+    const isProductsCached = products.length > 0 && products.length >= productsPerPage * (currentPage - 1);
+  
+    if (!isProductsCached) {
+      dispatch(fetchProducts(currentPage - 1));
+    }
+  }, [dispatch, currentPage, products, productsPerPage]);  
+  
 
   // Handle loading and error states
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <><Loading /></>;
   if (error) return <div>{error}</div>;
 
   const indexOfLastProduct = currentPage * productsPerPage;

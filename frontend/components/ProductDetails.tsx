@@ -18,6 +18,7 @@ import Link from "next/link";
 import { Lens } from "./ui/lens";
 import ImageModal from "./ImageModal";
 import { fetchProductDetails } from "@/store/productSlice";
+import Loading from "@/app/loading";
 
 const ProductDetails: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,25 +37,39 @@ const ProductDetails: React.FC = () => {
   // Fetch product data when component mounts
   useEffect(() => {
     if (productId) {
-      dispatch(fetchProductDetails(productId));
+      // Check if the product is already in the store
+      const existingProduct = product; // Assuming `product` comes from your Redux state
+  
+      if (!existingProduct || existingProduct.id !== productId) {
+        // Only fetch if not in store or if the ID doesn't match
+        dispatch(fetchProductDetails(productId));
+      } else {
+        // Set the selected color and main images based on the existing product
+        const initialColor = existingProduct.colorOptions[0];
+        setSelectedColor(initialColor);
+        setMainImages(existingProduct.colorOptionImages[initialColor] || []);
+      }
     }
-  }, [dispatch, productId]);
+  }, [dispatch, productId, product]);
+  
 
   // Set initial color and images when product data loads
   useEffect(() => {
-    if (product && product.colorOptions.length > 0) {
+    if (product && product.colorOptions.length > 0 && product.colorOptionImages) {
       const initialColor = product.colorOptions[0];
       setSelectedColor(initialColor);
-      setMainImages(product.colorOptionImages[initialColor]);
+      setMainImages(product.colorOptionImages[initialColor] || []);
+    } else {
+      setMainImages([]); // Reset if product is invalid or has no images
     }
   }, [product]);
-
-  // Update images when color changes
+  
   useEffect(() => {
     if (product && selectedColor) {
-      setMainImages(product.colorOptionImages[selectedColor]);
+      setMainImages(product.colorOptionImages[selectedColor] || []);
     }
   }, [selectedColor, product]);
+  
 
   // Carousel API effect
   useEffect(() => {
@@ -79,7 +94,7 @@ const ProductDetails: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="p-6">Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -135,7 +150,7 @@ const ProductDetails: React.FC = () => {
 
         {/* Desktop Grid */}
         <div className="hidden lg:grid grid-cols-2 gap-4 mt-4">
-          {mainImages.map((image, index) => (
+          {mainImages?.map((image, index) => (
             <div key={index} className="relative overflow-hidden">
               <Lens>
                 <Image
@@ -157,7 +172,7 @@ const ProductDetails: React.FC = () => {
       <div className="w-full lg:w-1/3 lg:pl-8 mt-0 lg:mt-5">
         {/* Color Selection */}
         <div className="lg:hidden grid grid-cols-3 gap-2 mt-2">
-          {product.colorOptions.map((color) => (
+          {product?.colorOptions.map((color) => (
             <div
               key={color}
               className={`flex items-center justify-center cursor-pointer border rounded-lg p-0 ${
