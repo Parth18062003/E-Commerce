@@ -1,6 +1,7 @@
 package com.hypehouse.product_service;
 
 import com.hypehouse.common.rate_limit.RateLimit;
+import com.hypehouse.product_service.exception.ProductAlreadyExistsException;
 import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.UpdateProductDTO;
 import com.hypehouse.product_service.model.Product;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -21,14 +23,16 @@ import java.util.concurrent.ExecutionException;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
     private final Logger log = LoggerFactory.getLogger(ProductController.class);
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
-    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @RateLimit(limitForPeriod = 15, limitRefreshPeriod = 60)
     public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
         log.info("Fetching all products");
         Page<Product> products = productService.getAllProducts(pageable);
@@ -36,7 +40,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    @RateLimit(limitForPeriod = 15, limitRefreshPeriod = 60)
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
         log.info("Fetching product with ID: {}", id);
         return productService.getProductById(id)
@@ -48,6 +52,10 @@ public class ProductController {
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         log.debug("Creating new product: {}", product);
+        Optional<Product> existingProduct = productRepository.findBySku(product.getSku());
+        if (existingProduct.isPresent()) {
+            throw new ProductAlreadyExistsException(product.getSku()); // Create a custom exception
+        }
         Product savedProduct = productService.saveProduct(product);
         log.info("Product created successfully with ID: {}", savedProduct.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);

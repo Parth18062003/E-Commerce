@@ -9,9 +9,6 @@ import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,7 +34,21 @@ public class ProductService {
     }
 
     public void indexProduct(Product product) throws ExecutionException, InterruptedException {
-        productIndex.saveObject(product).waitTask();
+        // Create a partial product object for indexing
+        Product indexableProduct = new Product();
+        indexableProduct.setObjectID(product.getObjectID());
+        indexableProduct.setName(product.getName());
+        indexableProduct.setDescription(product.getDescription());
+        indexableProduct.setPrice(product.getPrice());
+        indexableProduct.setDiscount(product.getDiscount());
+        indexableProduct.setTags(product.getTags());
+        indexableProduct.setCategory(product.getCategory());
+        indexableProduct.setBrand(product.getBrand());
+        indexableProduct.setColorOptions(product.getColorOptions());
+        indexableProduct.setColorOptionImages(product.getColorOptionImages());
+        indexableProduct.setSizes(product.getSizes());
+
+        productIndex.saveObject(indexableProduct).waitTask();
     }
 
     public List<Product> searchProducts(String query) throws ExecutionException, InterruptedException {
@@ -123,7 +134,7 @@ public class ProductService {
         if (updateProductDTO.getBrand() != null) {
             existingProduct.setBrand(updateProductDTO.getBrand());
         }
-        if (updateProductDTO.getStockQuantity() != null) { // Assuming stock cannot be negative
+        if (updateProductDTO.getStockQuantity() != null) {
             existingProduct.setStockQuantity(updateProductDTO.getStockQuantity());
         }
         if (updateProductDTO.getSku() != null) {
@@ -141,15 +152,16 @@ public class ProductService {
         if (updateProductDTO.getWeight() != null) {
             existingProduct.setWeight(updateProductDTO.getWeight());
         }
+        if (updateProductDTO.getSizes() != null) {
+            existingProduct.setSizes(updateProductDTO.getSizes());
+        }
         if (updateProductDTO.isActive() != existingProduct.isActive()) {
             existingProduct.setActive(updateProductDTO.isActive());
         }
         if (updateProductDTO.isFeatured() != existingProduct.isFeatured()) {
             existingProduct.setFeatured(updateProductDTO.isFeatured());
         }
-        if (updateProductDTO.getSizes() != null) {
-            existingProduct.setSizes(updateProductDTO.getSizes());
-        }
+        // Handle optional fields
         if (updateProductDTO.getColorOptions() != null) {
             existingProduct.setColorOptions(updateProductDTO.getColorOptions());
         }
