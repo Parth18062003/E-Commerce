@@ -5,6 +5,8 @@ import activityLogReducer from './activityLogSlice';
 import deviceLogSliceReducer from './deviceLogSlice';
 import userSliceReducer from './userSlice';
 import productSliceReducer from './productSlice';
+import wishListSliceReducer from './wishListSlice';
+import ratingSliceReducer from './ratingSlice';
 import { thunk, ThunkAction } from 'redux-thunk';
 
 const store = configureStore({
@@ -14,6 +16,8 @@ const store = configureStore({
     deviceLog: deviceLogSliceReducer,
     user: userSliceReducer,
     product: productSliceReducer,
+    wishList: wishListSliceReducer,
+    rating: ratingSliceReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

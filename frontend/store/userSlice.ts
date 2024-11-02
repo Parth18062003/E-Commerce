@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-interface User {
+export interface User {
     id: string;
     username: string;
     email: string;
@@ -43,6 +43,15 @@ export const fetchUsers = createAsyncThunk<{
     async (page) => {
         const response = await fetch(`http://localhost:8081/api/v1/users?page=${page}`);
         if (!response.ok) throw new Error('Failed to fetch users');
+        return response.json();
+    }
+);
+
+export const fetchUserById = createAsyncThunk<User, string>(
+    'users/fetchUserById',
+    async (userId) => { 
+        const response = await fetch(`http://localhost:8081/api/v1/users/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch user');
         return response.json();
     }
 );

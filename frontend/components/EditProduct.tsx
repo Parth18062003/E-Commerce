@@ -348,6 +348,7 @@ const EditProduct: React.FC = () => {
                             <DialogHeader>
                               <DialogTitle>Update Image</DialogTitle>
                             </DialogHeader>
+                            <DialogDescription>Upload image to be updated</DialogDescription>
                             <ProductImageUpdate 
                                 defaultImageUrl={selectedImage?.url || ""}
                                 onImageUpdate={(newUrl) => {

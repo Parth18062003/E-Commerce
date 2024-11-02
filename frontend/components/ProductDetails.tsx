@@ -19,14 +19,19 @@ import { Lens } from "./ui/lens";
 import ImageModal from "./ImageModal";
 import { fetchProductDetails } from "@/store/productSlice";
 import Loading from "@/app/loading";
+import WishListButton from "./WishListButton";
+import { StarRating } from "./StarRating";
+import ProductReviewsList from "./ProductReviewsList";
 
 const ProductDetails: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const productId = params.productId as string;
-  
-  const { product, loading, error } = useSelector((state: RootState) => state.product);
-  
+
+  const { product, loading, error } = useSelector(
+    (state: RootState) => state.product
+  );
+
   const [mainImages, setMainImages] = useState<string[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,7 +44,7 @@ const ProductDetails: React.FC = () => {
     if (productId) {
       // Check if the product is already in the store
       const existingProduct = product; // Assuming `product` comes from your Redux state
-  
+
       if (!existingProduct || existingProduct.id !== productId) {
         // Only fetch if not in store or if the ID doesn't match
         dispatch(fetchProductDetails(productId));
@@ -51,11 +56,14 @@ const ProductDetails: React.FC = () => {
       }
     }
   }, [dispatch, productId, product]);
-  
 
   // Set initial color and images when product data loads
   useEffect(() => {
-    if (product && product.colorOptions.length > 0 && product.colorOptionImages) {
+    if (
+      product &&
+      product.colorOptions.length > 0 &&
+      product.colorOptionImages
+    ) {
       const initialColor = product.colorOptions[0];
       setSelectedColor(initialColor);
       setMainImages(product.colorOptionImages[initialColor] || []);
@@ -63,13 +71,12 @@ const ProductDetails: React.FC = () => {
       setMainImages([]); // Reset if product is invalid or has no images
     }
   }, [product]);
-  
+
   useEffect(() => {
     if (product && selectedColor) {
       setMainImages(product.colorOptionImages[selectedColor] || []);
     }
   }, [selectedColor, product]);
-  
 
   // Carousel API effect
   useEffect(() => {
@@ -105,9 +112,11 @@ const ProductDetails: React.FC = () => {
     return <div className="p-6">No product available.</div>;
   }
 
-  const discountedPrice = product.price - (product.price * (product.discount / 100));
+  const discountedPrice =
+    product.price - product.price * (product.discount / 100);
 
   return (
+    <>
     <div className="p-6 lg:p-10 flex flex-col lg:flex-row">
       {/* Left Half: Image Carousel */}
       <div className="w-full lg:w-2/3">
@@ -122,7 +131,9 @@ const ProductDetails: React.FC = () => {
                       <CardContent className="flex aspect-square items-center justify-center p-0">
                         <Image
                           src={image}
-                          alt={`${product.name} - ${selectedColor} view ${index + 1}`}
+                          alt={`${product.name} - ${selectedColor} view ${
+                            index + 1
+                          }`}
                           className="object-cover h-96 rounded-lg"
                           width={512}
                           height={512}
@@ -172,11 +183,11 @@ const ProductDetails: React.FC = () => {
       <div className="w-full lg:w-1/3 lg:pl-8 mt-0 lg:mt-5">
         {/* Color Selection */}
         <div className="lg:hidden grid grid-cols-3 gap-2 mt-2">
-          {product?.colorOptions.map((color) => (
+          {product?.colorOptions.map((color, index) => (
             <div
-              key={color}
+              key={index}
               className={`flex items-center justify-center cursor-pointer border rounded-lg p-0 ${
-                selectedColor === color ? 'border-black' : ''
+                selectedColor === color ? "border-black" : ""
               }`}
               onClick={() => handleColorChange(color)}
             >
@@ -191,11 +202,14 @@ const ProductDetails: React.FC = () => {
           ))}
         </div>
 
-        <h1 className="text-2xl font-bold mb-2 text-black">{product.name}</h1>
-        <p className="text-lg text-gray-600 mb-4">
-          Brand: <span className="font-semibold text-black">{product.brand}</span>
-        </p>
+        <div className="flex justify-between">
+          <h1 className="text-2xl font-bold mb-2 text-black">{product.name}</h1>
 
+          <WishListButton productId={product.id} />
+        </div>
+        <p className="text-lg text-gray-600 mb-4">
+          <span className="font-thin text-zinc-500">{product.brand}</span>
+        </p>
         <div className="flex items-center mb-4">
           <Star className="w-5 h-5 fill-yellow-400 stroke-yellow-400" />
           <span className="ml-1 text-black">{product.rating}</span>
@@ -206,13 +220,13 @@ const ProductDetails: React.FC = () => {
         <div className="mb-4">
           {product.discount > 0 ? (
             <div className="flex items-center">
-              <p className="text-xl font-bold text-red-600">
+              <p className="text-xl font-bold text-indigo-600">
                 ${discountedPrice.toFixed(2)}
               </p>
               <p className="ml-2 text-lg text-gray-500 line-through">
                 ${product.price.toFixed(2)}
               </p>
-              <span className="ml-2 bg-red-100 text-red-600 px-2 py-1 rounded">
+              <span className="ml-2 bg-indigo-100 text-indigo-600 px-2 py-1 rounded">
                 {product.discount}% OFF
               </span>
             </div>
@@ -229,7 +243,7 @@ const ProductDetails: React.FC = () => {
             <div
               key={color}
               className={`flex items-center justify-center cursor-pointer border rounded-lg p-0 ${
-                selectedColor === color ? 'border-black' : ''
+                selectedColor === color ? "border-black" : ""
               }`}
               onClick={() => handleColorChange(color)}
             >
@@ -280,7 +294,10 @@ const ProductDetails: React.FC = () => {
           <p className="text-sm text-gray-600">SKU: {product.sku}</p>
           <p className="text-sm text-gray-600">Category: {product.category}</p>
           <p className="text-sm text-gray-600">Weight: {product.weight}</p>
-          <p className="text-sm text-gray-600">Dimensions: {product.dimensions}</p>
+          <p className="text-sm text-gray-600">
+            Dimensions: {product.dimensions}
+          </p>
+          <StarRating productId={productId} />
         </div>
       </div>
 
@@ -291,6 +308,8 @@ const ProductDetails: React.FC = () => {
         initialIndex={selectedImageIndex}
       />
     </div>
+    <ProductReviewsList productId={productId} />
+    </>
   );
 };
 
