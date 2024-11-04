@@ -98,6 +98,7 @@ export const createProduct = createAsyncThunk<Product, Partial<Product>>(
     'product/createProduct',
     async (newProductData) => {
         const response = await axios.post('http://localhost:8082/api/v1/products/create-product', newProductData);
+        console.log(response.data);
         return response.data; // Assuming your API returns the created product
     }
 );

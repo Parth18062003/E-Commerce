@@ -17,6 +17,7 @@ import { ThemeToggle } from "./ui/theme-toggle";
 import { DropdownLinks } from "./ui/dropdown/dropdown-links";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { SearchBox } from "react-instantsearch";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,8 @@ const Navbar = () => {
             href="/"
             className="text-2xl font-bold hover:text-indigo-400 transition"
           >
-            <Logo /><span className="sr-only">Logo Hype House</span>
+            <Logo />
+            <span className="sr-only">Logo Hype House</span>
           </TransitionLink>
         </div>
 
@@ -53,7 +55,8 @@ const Navbar = () => {
             onClick={toggleMenu}
             className="text-2xl ml-3 text-zinc-800 dark:text-zinc-400 focus:outline-none"
           >
-            {isOpen ? <X /> : <Menu />}<span className="sr-only">Menu</span>
+            {isOpen ? <X /> : <Menu />}
+            <span className="sr-only">Menu</span>
           </button>
         </div>
 
@@ -66,18 +69,26 @@ const Navbar = () => {
         {/* Search Input and Icons on the right */}
         <div className="items-center hidden lg:flex space-x-4 px-4">
           <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400"
-            />
-            <div className="absolute inset-y-0 left-3 flex items-center text-zinc-400">
-              <Search />
-              <span className="sr-only">Search</span>
-            </div>
-            <div className="absolute inset-y-0 right-3 flex items-center text-zinc-600 dark:text-zinc-400 cursor-pointer">
-              <Mic />
-              <span className="sr-only">Voice input</span>
+            <div className="flex-grow max-w-xl">
+              <SearchBox
+                placeholder="Search products..."
+                classNames={{
+                  root: "w-full",
+                  form: "w-full",
+                  input:
+                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                  submit: "hidden",
+                  reset: "hidden",
+                }}
+              />
+              <div className="absolute inset-y-0 left-3 flex items-center text-zinc-400">
+                <Search />
+                <span className="sr-only">Search</span>
+              </div>
+              <div className="absolute inset-y-0 right-3 flex items-center text-zinc-600 dark:text-zinc-400 cursor-pointer">
+                <Mic />
+                <span className="sr-only">Voice input</span>
+              </div>
             </div>
           </div>
           <ThemeToggle />
@@ -125,7 +136,8 @@ const Navbar = () => {
             onClick={toggleMenu}
             className="text-zinc-400 text-2xl self-end mb-4 z-10"
           >
-            <X /><span className="sr-only">Close Menu</span>
+            <X />
+            <span className="sr-only">Close Menu</span>
           </button>
           <div className="flex flex-col space-y-4 text-white z-10">
             <TransitionLink href="/authentication/sign-up" onClick={toggleMenu}>

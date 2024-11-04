@@ -79,6 +79,7 @@ const CreateProduct: React.FC = () => {
       colorOptionImages: colorImages, // Color-specific images for each color option
     };
 
+    console.log("Processed data:", processedData);
     try {
       await dispatch(createProduct(processedData)).unwrap();
       reset();

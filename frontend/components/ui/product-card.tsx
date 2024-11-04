@@ -101,22 +101,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {!isHovered && (
             <>
               <p className="text-gray-700">
-                {product.discount && (
-                  <span>
-                    $
-                    {(
-                      product.price -
-                      product.price * (product.discount / 100)
-                    ).toFixed(2)}
-                  </span>
+                {product.discount  && product.discount > 0 ? (
+                  <>
+                    <span>
+                      $
+                      {(
+                        product.price -
+                        product.price * (product.discount / 100)
+                      ).toFixed(2)}
+                    </span>
+                    <span className="mx-2 text-red-500 line-through">
+                      ${product.price.toFixed(2)}
+                    </span>
+                  </>
+                ) : (
+                  <span>${product.price.toFixed(2)}</span>
                 )}
-
-                <span className="mx-2 text-red-500 line-through">
-                  ${product.price.toFixed(2)}
-                </span>
               </p>
               <p className="text-gray-700">
-                Rating: {product.rating} ({product.reviewCount} reviews)
+                {product.colorOptions && product.colorOptions.length > 0 && (
+                  <span>{product.colorOptions.join(", ")}</span>
+                )}
               </p>
             </>
           )}

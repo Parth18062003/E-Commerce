@@ -22,6 +22,7 @@ import Loading from "@/app/loading";
 import WishListButton from "./WishListButton";
 import { StarRating } from "./StarRating";
 import ProductReviewsList from "./ProductReviewsList";
+import GetProductRating from "./GetProductRating";
 
 const ProductDetails: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -210,12 +211,8 @@ const ProductDetails: React.FC = () => {
         <p className="text-lg text-gray-600 mb-4">
           <span className="font-thin text-zinc-500">{product.brand}</span>
         </p>
-        <div className="flex items-center mb-4">
-          <Star className="w-5 h-5 fill-yellow-400 stroke-yellow-400" />
-          <span className="ml-1 text-black">{product.rating}</span>
-          <span className="mx-1 text-gray-400">|</span>
-          <span className="text-gray-600">{product.reviewCount} reviews</span>
-        </div>
+          <GetProductRating productId={productId} />
+
 
         <div className="mb-4">
           {product.discount > 0 ? (

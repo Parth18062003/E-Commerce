@@ -52,7 +52,6 @@ const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId }) => {
                         ? "text-yellow-500"
                         : "text-gray-400"
                     }`}
-                    fill={review ? "#fde047" : "none"}
                   />
                 ))}
               </div>

@@ -16,6 +16,8 @@ export interface Rating {
 interface RatingState {
     ratings: Rating[];
     rating: Rating | null;
+    averageRating?: number;
+    totalReviews?: number;
     loading: { fetch: boolean; add: boolean; update: boolean; remove: boolean };
     error: string | null;
     cache: { [key: string]: Rating[] };
@@ -24,6 +26,8 @@ interface RatingState {
 const initialState: RatingState = {
     ratings: [],
     rating: null,
+    averageRating: 0,
+    totalReviews: 0,
     loading: { fetch: false, add: false, update: false, remove: false },
     error: null,
     cache: {},
@@ -110,6 +114,15 @@ export const fetchUserRating = createAsyncThunk<
     }
 );
 
+
+export const fetchAverageRating = createAsyncThunk<{ averageRating: number; totalReviews: number }, string>(
+    'rating/fetchAverageRating',
+    async (productId) => {
+        const response = await axios.get(`http://localhost:8082/api/v1/ratings/products/${productId}/average`);
+        return response.data; // Assuming this returns { averageRating, totalReviews }
+    }
+);
+
 export const removeRating = createAsyncThunk<void, string>(
     'rating/removeRating',
     async (ratingId) => {
@@ -152,7 +165,20 @@ const ratingSlice = createSlice({
             .addCase(fetchRatingsByUser.rejected, (state, action) => {
                 state.loading.fetch = false;
                 state.error = action.error.message || 'Failed to load user ratings';
-            })            
+            })       
+            .addCase(fetchAverageRating.pending, (state) => {
+                state.loading.fetch = true;
+                state.error = null;
+            })
+            .addCase(fetchAverageRating.fulfilled, (state, action) => {
+                state.averageRating = action.payload.averageRating; // Update averageRating
+                state.totalReviews = action.payload.totalReviews;   // Update totalReviews
+                state.loading.fetch = false;
+            })
+            .addCase(fetchAverageRating.rejected, (state, action) => {
+                state.loading.fetch = false;
+                state.error = action.error.message || 'Failed to load average rating';
+            })   
             .addCase(addRating.pending, (state) => {
                 state.loading.add = true;
                 state.error = null;

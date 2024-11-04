@@ -5,15 +5,15 @@ import { DropdownSort } from "./DropdownSort";
 import { FilterOptions, FilterProducts } from "./Filter";
 import ProductList from "./ProductList";
 import { X } from "lucide-react";
+import ProductSearch from "./ProductSearch";
 
 const FilterAndSort = () => {
-  const [isFilterVisible, setIsFilterVisible] = useState(false); // State to manage filter visibility
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const toggleFilterSidebar = () => {
-    setIsFilterVisible((prev) => !prev); // Toggle visibility
+    setIsFilterVisible((prev) => !prev);
   };
 
-  // Close the sidebar when clicking outside on desktop
   const handleOverlayClick = () => {
     if (isFilterVisible) {
       setIsFilterVisible(false);
@@ -38,7 +38,7 @@ const FilterAndSort = () => {
       {isFilterVisible && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-10 lg:hidden"
-          onClick={handleOverlayClick} // Close sidebar when clicking outside
+          onClick={handleOverlayClick}
         />
       )}
 
@@ -50,11 +50,8 @@ const FilterAndSort = () => {
       >
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="font-bold">Filters</h2>
-          <button
-            className="text-black font-bold"
-            onClick={toggleFilterSidebar}
-          >
-            <X aria-label="Close Filters"/>
+          <button className="text-black" onClick={toggleFilterSidebar}>
+            <X aria-label="Close Filters" />
           </button>
         </div>
         <div className="p-4">
@@ -64,11 +61,10 @@ const FilterAndSort = () => {
 
       {/* Main Content Area */}
       <div className="flex-grow flex flex-col">
-        {/* Top Bar for DropdownSort and FilterProducts */}
-        <div className="flex justify-end text-black mx-6 gap-12 mt-5">
-          <DropdownSort />
-          <div className="flex items-center">
+        <div className="flex justify-end items-center text-black mx-6 gap-4 mt-5">
+          <div className="flex items-center gap-4">
             <FilterProducts toggleFilterSidebar={toggleFilterSidebar} />
+            <DropdownSort />
           </div>
         </div>
 

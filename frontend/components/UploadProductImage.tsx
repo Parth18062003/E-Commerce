@@ -14,17 +14,24 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import axios from "axios";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { DndContext } from "@dnd-kit/core";
 
 interface UploadProductImageProps {
   color: string;
   onImagesUpload: (color: string, urls: string[]) => void;
-  initialImages?: string[]; // Add this to handle existing images
+  initialImages?: string[];
 }
 
-const UploadProductImage: React.FC<UploadProductImageProps> = ({ 
-  color, 
+const UploadProductImage: React.FC<UploadProductImageProps> = ({
+  color,
   onImagesUpload,
-  initialImages = []
+  initialImages = [],
 }) => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>(initialImages);
@@ -37,7 +44,6 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   useEffect(() => {
-    // Update uploaded images when initialImages changes
     setUploadedImages(initialImages);
   }, [initialImages]);
 
@@ -98,10 +104,51 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
     setNewImageFiles([]);
   };
 
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = previewUrls.findIndex((url) => url === active.id);
+      const newIndex = previewUrls.findIndex((url) => url === over.id);
+
+      const newPreviewUrls = Array.from(previewUrls);
+      const newNewImageFiles = Array.from(newImageFiles);
+
+      // Reorder previewUrls
+      [newPreviewUrls[oldIndex], newPreviewUrls[newIndex]] = [newPreviewUrls[newIndex], newPreviewUrls[oldIndex]];
+      // Reorder newImageFiles
+      [newNewImageFiles[oldIndex], newNewImageFiles[newIndex]] = [newNewImageFiles[newIndex], newNewImageFiles[oldIndex]];
+
+      setPreviewUrls(newPreviewUrls);
+      setNewImageFiles(newNewImageFiles);
+    }
+  };
+
+  const SortableItem = ({ url }: { url: string }) => {
+    const { setNodeRef, attributes, listeners, isDragging } = useSortable({ id: url });
+
+    return (
+      <div
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+        className="rounded-lg border border-gray-300 dark:border-gray-600"
+      >
+        <CldImage
+          src={url}
+          alt={`New Product Image`}
+          width={150}
+          height={150}
+          className="rounded-lg"
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="relative mb-4">
-        {/* Display uploaded images */}
         {uploadedImages.length > 0 ? (
           <div className="grid grid-cols-3 gap-2 mb-4">
             {uploadedImages.map((url, index) => (
@@ -153,18 +200,15 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
               {uploadedImages.length > 0 && " This will replace the existing images."}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-3 gap-2 my-4">
-            {previewUrls.map((url, index) => (
-              <CldImage
-                key={`preview-${index}`}
-                src={url}
-                alt={`New Product Image ${index + 1}`}
-                width={150}
-                height={150}
-                className="rounded-lg border border-gray-300 dark:border-gray-600"
-              />
-            ))}
-          </div>
+          <DndContext onDragEnd={handleDragEnd}>
+            <SortableContext items={previewUrls} strategy={verticalListSortingStrategy}>
+              <div className="grid grid-cols-3 gap-2 my-4">
+                {previewUrls.map((url) => (
+                  <SortableItem key={url} url={url} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
           <DialogFooter>
             <Button variant="outline" onClick={handleCancel} className="w-1/2">
               Cancel

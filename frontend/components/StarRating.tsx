@@ -139,7 +139,6 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
                     key={starValue}
                     size={24}
                     className={`cursor-default ${ratingValue !== null && starValue <= ratingValue ? "text-yellow-500" : "text-gray-400"}`}
-                    fill={ratingValue && starValue <= ratingValue ? "#fde047" : "none"}
                   />
                 );
               })}
@@ -162,7 +161,6 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
                       <Star
                         size={24}
                         className={`cursor-pointer transition-colors duration-200 } ${ratingValue && starValue <= ratingValue ? "text-yellow-500" : "text-gray-400"}`}
-                        fill={ratingValue && starValue <= ratingValue ? "#fde047" : "none"}
                       />
                     </button>
                   );
