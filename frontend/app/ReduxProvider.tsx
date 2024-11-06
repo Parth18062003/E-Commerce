@@ -3,18 +3,23 @@
 
 import { Provider } from "react-redux";
 import store from "../store/store";
-import { liteClient as algoliasearch } from 'algoliasearch/lite';
-import { InstantSearch } from 'react-instantsearch';
+import { liteClient as algoliasearch } from "algoliasearch/lite";
+import { InstantSearch } from "react-instantsearch";
+import ProductSearch from "@/components/ProductSearch";
 
 const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
-  const searchClient = algoliasearch('G66MRCQA66', 'cc985da48044a74a507f8d64c7a32265');
+  const searchClient = algoliasearch(
+    "G66MRCQA66",
+    "cc985da48044a74a507f8d64c7a32265"
+  );
 
   return (
     <>
-    <InstantSearch searchClient={searchClient} indexName="products">
-      <Provider store={store}>
-        {children}
-      </Provider>
+      <InstantSearch searchClient={searchClient} indexName="products">
+        <Provider store={store}>
+          <ProductSearch />
+          {children}
+        </Provider>
       </InstantSearch>
     </>
   );

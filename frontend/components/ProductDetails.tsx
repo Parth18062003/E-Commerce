@@ -279,8 +279,8 @@ const ProductDetails: React.FC = () => {
 
         <div className="flex flex-col space-y-4 mb-4">
           <Button className="w-full">Add to Cart</Button>
-          <Button variant="outline" className="w-full">
-            <Heart className="w-4 h-4 mr-1" /> Favorite
+          <Button variant="outline" className="w-full text-black gap-x-2">
+            <WishListButton productId={product.id} /> Add to Wishlist
           </Button>
         </div>
 
