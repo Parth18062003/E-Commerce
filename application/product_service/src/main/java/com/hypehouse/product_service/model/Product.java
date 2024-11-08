@@ -22,15 +22,12 @@ public class Product implements Serializable {
     @Field(name = "id")
     private String id;
 
-    @JsonProperty("objectID")
-    private String ObjectID;
-
     @NotBlank(message = "Product name is mandatory")
     @Length(max = 100, message = "Product name must not exceed 100 characters")
     private String name;
 
     @NotBlank(message = "Description is mandatory")
-    @Length(max = 500, message = "Description must not exceed 500 characters")
+    @Length(max = 1000, message = "Description must not exceed 500 characters")
     private String description;
 
     @NotNull(message = "Price is mandatory")
@@ -89,7 +86,6 @@ public class Product implements Serializable {
 
     public Product() {
         this.id = UUID.randomUUID().toString();; // Automatically generate a new UUID
-        this.ObjectID = this.id; // Set ObjectId to the same value as ID
         this.createdAt = LocalDateTime.now(); // Set created timestamp
         this.updatedAt = LocalDateTime.now(); // Set updated timestamp
     }
@@ -102,14 +98,6 @@ public class Product implements Serializable {
 
     public void setId(UUID id) {
         this.id = id.toString();
-    }
-
-    public String getObjectID() {
-        return ObjectID;
-    }
-
-    public void setObjectID(String ObjectID) {
-        this.ObjectID = ObjectID;
     }
 
     public String getName() {

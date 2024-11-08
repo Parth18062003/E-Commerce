@@ -2,7 +2,9 @@ package com.hypehouse.product_service;
 
 import com.hypehouse.product_service.model.WishList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,13 @@ public class WishListService {
     private WishListRepository wishListRepository;
 
     // Create or update a wishlist for a user
+    // Update to ensure productIds is never null
+    @CacheEvict(value = "wishLists", allEntries = true)
     public WishList saveOrUpdateWishList(String userId, List<String> productIds) {
         WishList wishList = wishListRepository.findByUserId(userId)
                 .orElse(new WishList(userId, new ArrayList<>()));
-        wishList.setProductIds(productIds);
+        // If productIds is null, we use an empty list instead
+        wishList.setProductIds(productIds != null ? productIds : new ArrayList<>());
         return wishListRepository.save(wishList);
     }
 
@@ -25,7 +30,6 @@ public class WishListService {
     public WishList toggleProductInWishList(String userId, String productId) {
         WishList wishList = wishListRepository.findByUserId(userId)
                 .orElse(new WishList(userId, new ArrayList<>()));
-
 
         // Clean the product ID to ensure no unwanted characters
         productId = productId.replace("=", "");
@@ -57,6 +61,7 @@ public class WishListService {
     }
 
     // Get all wishlists (if needed)
+    @Cacheable(value = "wishLists", key = "'all'")
     public List<WishList> getAllWishLists() {
         return wishListRepository.findAll();
     }

@@ -4,87 +4,94 @@ import com.algolia.search.SearchClient;
 import com.algolia.search.SearchIndex;
 import com.algolia.search.models.indexing.Query;
 import com.algolia.search.models.indexing.SearchResult;
+import com.hypehouse.product_service.model.IndexableProduct;
 import com.hypehouse.product_service.model.UpdateProductDTO;
 import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
-    private final SearchIndex<Product> productIndex;
+    private final SearchIndex<IndexableProduct> productIndex;
 
     public ProductService(ProductRepository productRepository, SearchClient searchClient) {
         this.productRepository = productRepository;
-        this.productIndex = searchClient.initIndex("products", Product.class);
+        this.productIndex = searchClient.initIndex("products", IndexableProduct.class);
     }
 
-    public void indexProduct(Product product) throws ExecutionException, InterruptedException {
-        // Create a partial product object for indexing
-        Product indexableProduct = new Product();
-        indexableProduct.setObjectID(product.getObjectID());
-        indexableProduct.setName(product.getName());
-        indexableProduct.setDescription(product.getDescription());
-        indexableProduct.setPrice(product.getPrice());
-        indexableProduct.setDiscount(product.getDiscount());
-        indexableProduct.setTags(product.getTags());
-        indexableProduct.setCategory(product.getCategory());
-        indexableProduct.setBrand(product.getBrand());
-        indexableProduct.setColorOptions(product.getColorOptions());
-        indexableProduct.setColorOptionImages(product.getColorOptionImages());
-        indexableProduct.setSizes(product.getSizes());
-
-        productIndex.saveObject(indexableProduct).waitTask();
+    // Async method for Algolia indexing to prevent blocking
+    @Async
+    public void indexProductAsync(Product product) {
+        IndexableProduct indexableProduct = convertToIndexableProduct(product);
+        try {
+            productIndex.saveObject(indexableProduct).waitTask();
+        } catch (Exception e) {
+            log.error("Failed to index product in Algolia: {}", e.getMessage());
+        }
     }
 
-    public List<Product> searchProducts(String query) throws ExecutionException, InterruptedException {
-        SearchResult<Product> results = productIndex.search(new Query(query));
+    // Optimizing product search with caching
+    @Cacheable(value = "productSearchCache", key = "#query + #pageable.pageNumber")
+    public List<IndexableProduct> searchProducts(String query, Pageable pageable) throws InterruptedException {
+        // Map the Pageable to Algolia's RequestOptions (or a similar object if you're using a different search engine)
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
+        // Prepare the Algolia search query
+        Query algoliaQuery = new Query(query)
+                .setPage(page) // Page number
+                .setHitsPerPage(size); // Number of results per page
+
+        // Perform the search
+        SearchResult<IndexableProduct> results = productIndex.search(algoliaQuery);
+
+        // Return the hits (list of results)
         return results.getHits();
     }
 
-    public void deleteProductFromAlgolia(String objectId) throws ExecutionException, InterruptedException {
-        productIndex.deleteObject(objectId).waitTask();
-    }
 
-    //@Cacheable(value = "products", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+
+    // Optimized method for fetching all products with pagination
     public Page<Product> getAllProducts(Pageable pageable) {
         log.debug("Fetching all products with pagination: {}", pageable);
         return productRepository.findAll(pageable);
     }
 
-    //@Cacheable(value = "products", key = "#id")
+    // Fetch product by ID
     public Optional<Product> getProductById(String id) {
         log.debug("Fetching product with ID: {}", id);
         return productRepository.findById(UUID.fromString(id));
     }
 
-    //@CachePut(value = "products", key = "#product.id")
+    // Improved save method with async indexing
     public Product saveProduct(@Valid Product product) {
         log.debug("Inserting product with details: {}", product);
         Product savedProduct = productRepository.save(product);
-        try {
-            indexProduct(savedProduct);
-        } catch (ExecutionException | InterruptedException e) {
-            log.error("Failed to index product in Algolia: {}", e.getMessage());
-        }
+        indexProductAsync(savedProduct); // Async indexing
         return savedProduct;
     }
 
-    //@CachePut(value = "products", key = "#id")
+    // Optimized update with less code repetition
     public Product updateProduct(String id, @Valid UpdateProductDTO updateProductDTO) {
         log.debug("Updating product with ID: {}", id);
         Product existingProduct = productRepository.findById(UUID.fromString(id))
@@ -94,16 +101,12 @@ public class ProductService {
         existingProduct.setUpdatedAt(LocalDateTime.now());
         Product updatedProduct = productRepository.save(existingProduct);
 
-        try {
-            indexProduct(updatedProduct);
-        } catch (ExecutionException | InterruptedException e) {
-            log.error("Failed to index updated product in Algolia: {}", e.getMessage());
-        }
-
+        indexProductAsync(updatedProduct); // Async indexing
         return updatedProduct;
     }
 
-    //@CacheEvict(value = "products", key = "#id")
+    // Delete product with improved error handling and async delete from Algolia
+    @Transactional
     public void deleteProduct(String id) {
         log.debug("Deleting product with ID: {}", id);
         UUID productId = UUID.fromString(id);
@@ -111,62 +114,52 @@ public class ProductService {
             throw new ProductNotFoundException(id);
         }
         productRepository.deleteById(productId);
+        CompletableFuture.runAsync(() -> deleteProductFromAlgolia(id));
+    }
+
+
+    // Method to delete product from Algolia
+    public void deleteProductFromAlgolia(String productId) {
         try {
-            deleteProductFromAlgolia(productId.toString());
-        } catch (ExecutionException | InterruptedException e) {
-            log.error("Failed to delete product from Algolia: {}", e.getMessage());
+            productIndex.deleteObject(productId).waitTask(); // Blocking delete
+            log.info("Successfully deleted product {} from Algolia", productId);
+        } catch (Exception e) {
+            log.error("Failed to delete product {} from Algolia: {}", productId, e.getMessage());
         }
     }
 
     private void updateFields(Product existingProduct, UpdateProductDTO updateProductDTO) {
-        if (updateProductDTO.getName() != null) {
-            existingProduct.setName(updateProductDTO.getName());
-        }
-        if (updateProductDTO.getDescription() != null) {
-            existingProduct.setDescription(updateProductDTO.getDescription());
-        }
-        if (updateProductDTO.getPrice() != null) {
-            existingProduct.setPrice(updateProductDTO.getPrice());
-        }
-        if (updateProductDTO.getCategory() != null) {
-            existingProduct.setCategory(updateProductDTO.getCategory());
-        }
-        if (updateProductDTO.getBrand() != null) {
-            existingProduct.setBrand(updateProductDTO.getBrand());
-        }
-        if (updateProductDTO.getStockQuantity() != null) {
-            existingProduct.setStockQuantity(updateProductDTO.getStockQuantity());
-        }
-        if (updateProductDTO.getSku() != null) {
-            existingProduct.setSku(updateProductDTO.getSku());
-        }
-        if (updateProductDTO.getTags() != null) {
-            existingProduct.setTags(updateProductDTO.getTags());
-        }
-        if (updateProductDTO.getDiscount() != null) {
-            existingProduct.setDiscount(updateProductDTO.getDiscount());
-        }
-        if (updateProductDTO.getDimensions() != null) {
-            existingProduct.setDimensions(updateProductDTO.getDimensions());
-        }
-        if (updateProductDTO.getWeight() != null) {
-            existingProduct.setWeight(updateProductDTO.getWeight());
-        }
-        if (updateProductDTO.getSizes() != null) {
-            existingProduct.setSizes(updateProductDTO.getSizes());
-        }
-        if (updateProductDTO.isActive() != existingProduct.isActive()) {
-            existingProduct.setActive(updateProductDTO.isActive());
-        }
-        if (updateProductDTO.isFeatured() != existingProduct.isFeatured()) {
-            existingProduct.setFeatured(updateProductDTO.isFeatured());
-        }
-        // Handle optional fields
-        if (updateProductDTO.getColorOptions() != null) {
-            existingProduct.setColorOptions(updateProductDTO.getColorOptions());
-        }
-        if (updateProductDTO.getColorOptionImages() != null) {
-            existingProduct.setColorOptionImages(updateProductDTO.getColorOptionImages());
-        }
+        Arrays.stream(UpdateProductDTO.class.getDeclaredFields())
+                .filter(field -> !field.isSynthetic())
+                .forEach(field -> {
+                    try {
+                        field.setAccessible(true);
+                        Object value = field.get(updateProductDTO);
+                        if (value != null) {
+                            Field productField = Product.class.getDeclaredField(field.getName());
+                            productField.setAccessible(true);
+                            productField.set(existingProduct, value);
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        log.warn("Error updating field: {}", field.getName(), e);
+                    }
+                });
+    }
+
+    private IndexableProduct convertToIndexableProduct(Product product) {
+        IndexableProduct indexableProduct = new IndexableProduct();
+        indexableProduct.setObjectID(product.getId());
+        indexableProduct.setName(product.getName());
+        indexableProduct.setDescription(product.getDescription());
+        indexableProduct.setPrice(product.getPrice());
+        indexableProduct.setSku(product.getSku());
+        indexableProduct.setDiscount(product.getDiscount());
+        indexableProduct.setTags(product.getTags());
+        indexableProduct.setCategory(product.getCategory());
+        indexableProduct.setBrand(product.getBrand());
+        indexableProduct.setColorOptions(product.getColorOptions());
+        indexableProduct.setColorOptionImages(product.getColorOptionImages());
+        indexableProduct.setSizes(product.getSizes());
+        return indexableProduct;
     }
 }

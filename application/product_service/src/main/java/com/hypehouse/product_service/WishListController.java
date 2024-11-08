@@ -36,7 +36,7 @@ public class WishListController {
         }
     }
 
-    // Endpoint to remove a product from the wishlist (optional, now redundant)
+    // Endpoint to remove a product from the wishlist
     @DeleteMapping("/{userId}/remove/{productId}")
     @RateLimit(limitForPeriod = 25, limitRefreshPeriod = 60)
     public ResponseEntity<WishList> removeProductFromWishList(@PathVariable String userId, @PathVariable String productId) {

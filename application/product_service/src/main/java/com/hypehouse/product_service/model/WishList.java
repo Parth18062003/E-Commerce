@@ -1,5 +1,6 @@
 package com.hypehouse.product_service.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -7,13 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "wishlist")
-public class WishList {
+public class WishList implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(WishList.class); // Logger instance
 
     @Id
@@ -25,7 +27,10 @@ public class WishList {
     @NotEmpty(message = "Product list cannot be empty")
     private List<String> productIds = new ArrayList<>(); // Store only product IDs
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
     // Default constructor

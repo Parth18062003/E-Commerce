@@ -1,5 +1,6 @@
 package com.hypehouse.product_service.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
@@ -42,11 +43,14 @@ public class Rating implements Serializable {
     private List<String> imageUrls; // List of image URLs
 
     @NotNull(message = "Created timestamp is mandatory")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt; // Timestamp when the rating was created
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt; // Timestamp when the rating was last updated
 
-    public Rating(String userId,String userName ,String productId, double rating, String comment, List<String> imageUrls) {
+    // Constructor to initialize all required fields
+    public Rating(String userId, String userName, String productId, double rating, String comment, List<String> imageUrls) {
         this.id = UUID.randomUUID().toString();
         this.userId = userId;
         this.userName = userName;
@@ -57,6 +61,7 @@ public class Rating implements Serializable {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
     // Getters and Setters
 
     public String getId() {

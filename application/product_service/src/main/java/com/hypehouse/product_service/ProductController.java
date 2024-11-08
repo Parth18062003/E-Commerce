@@ -3,6 +3,7 @@ package com.hypehouse.product_service;
 import com.hypehouse.common.rate_limit.RateLimit;
 import com.hypehouse.product_service.exception.ProductAlreadyExistsException;
 import com.hypehouse.product_service.exception.ProductNotFoundException;
+import com.hypehouse.product_service.model.IndexableProduct;
 import com.hypehouse.product_service.model.UpdateProductDTO;
 import com.hypehouse.product_service.model.Product;
 import jakarta.validation.Valid;
@@ -15,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -31,6 +30,7 @@ public class ProductController {
         this.productRepository = productRepository;
     }
 
+    // Get all products with pagination
     @GetMapping
     @RateLimit(limitForPeriod = 15, limitRefreshPeriod = 60)
     public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
@@ -39,6 +39,7 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    // Get a single product by ID
     @GetMapping("/{id}")
     @RateLimit(limitForPeriod = 15, limitRefreshPeriod = 60)
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
@@ -48,19 +49,22 @@ public class ProductController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    // Create a new product
     @PostMapping("/create-product")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         log.debug("Creating new product: {}", product);
-        Optional<Product> existingProduct = productRepository.findBySku(product.getSku());
-        if (existingProduct.isPresent()) {
-            throw new ProductAlreadyExistsException(product.getSku()); // Create a custom exception
-        }
-        Product savedProduct = productService.saveProduct(product);
+        // Check if the product already exists based on SKU
+        productRepository.findBySku(product.getSku()).ifPresent(existingProduct -> {
+            throw new ProductAlreadyExistsException(product.getSku());
+        });
+
+        Product savedProduct = productService.saveProduct(product);  // Async indexing happens in the service layer
         log.info("Product created successfully with ID: {}", savedProduct.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
+    // Update an existing product
     @PutMapping("/update-product/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Product> updateProduct(
@@ -68,7 +72,7 @@ public class ProductController {
             @Valid @RequestBody UpdateProductDTO updateProductDTO) {
         log.debug("Updating product with ID: {}", id);
         try {
-            Product updatedProduct = productService.updateProduct(id, updateProductDTO);
+            Product updatedProduct = productService.updateProduct(id, updateProductDTO);  // Async indexing happens in the service layer
             log.info("Product with ID: {} updated successfully", id);
             return ResponseEntity.ok(updatedProduct);
         } catch (ProductNotFoundException e) {
@@ -77,12 +81,13 @@ public class ProductController {
         }
     }
 
+    // Delete a product by ID
     @DeleteMapping("/delete-product/{id}")
     @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.debug("Deleting product with ID: {}", id);
         try {
-            productService.deleteProduct(id);
+            productService.deleteProduct(id);  // Async delete from Algolia happens in the service layer
             log.info("Product with ID: {} deleted successfully", id);
             return ResponseEntity.noContent().build();
         } catch (ProductNotFoundException e) {
@@ -91,25 +96,28 @@ public class ProductController {
         }
     }
 
+    // Search products by query (Algolia search)
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> search(@RequestParam String query) {
+    public ResponseEntity<List<IndexableProduct>> search(
+            @RequestParam String query,
+            Pageable pageable) { // Add Pageable as a method argument
         log.debug("Search request received for query: {}", query);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("Empty search query received");
-            return ResponseEntity.badRequest().body(List.of()); // Return empty list for bad requests
+            return ResponseEntity.badRequest().body(List.of());  // Return empty list for bad requests
         }
 
         try {
-            List<Product> products = productService.searchProducts(query);
+            // Pass both query and pageable to searchProducts
+            List<IndexableProduct> products = productService.searchProducts(query, pageable);
             if (products.isEmpty()) {
                 log.info("No products found for query: {}", query);
             }
             return ResponseEntity.ok(products);
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
             log.error("Error searching for products with query: {}", query, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }
