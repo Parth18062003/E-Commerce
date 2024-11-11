@@ -28,7 +28,7 @@ export default function TestGeolocation() {
   };
 
   const fetchLocationDetails = async (latitude: number, longitude: number, newLocation: { latitude: number; longitude: number }) => {
-    const apiKey = process.env.OPENCAGE_API_KEY; // Accessing the API key from the .env file
+    const apiKey = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY; // Accessing the API key from the .env file
     const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude},${longitude}&key=${apiKey}`);
     const data = await response.json();
 

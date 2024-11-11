@@ -1,186 +1,235 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { RootState } from './store';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { RootState } from "./store";
 
 // Product interface definition
 export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    brand: string;
-    stockQuantity: number;
-    sku: string;
-    tags: string[];
-    rating: number;
-    reviewCount: number;
-    createdAt: number[]; // Keeping it as an array for your specific format
-    updatedAt: number[]; // Keeping it as an array for your specific format
-    discount: number;
-    dimensions: string;
-    weight: string;
-    colorOptions: string[];
-    colorOptionImages: Record<string, string[]>; // Object with color names as keys and image arrays as values
-    sizes: string[];
-    active: boolean;
-    objectID: string;
-    featured: boolean;
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  brand: string;
+  stockQuantity: number;
+  sku: string;
+  tags: string[];
+  rating: number;
+  reviewCount: number;
+  createdAt: number[];
+  updatedAt: number[];
+  discount: number;
+  dimensions: string;
+  weight: string;
+  colorOptions: string[];
+  colorOptionImages: Record<string, string[]>;
+  sizes: string[];
+  active: boolean;
+  objectID: string;
+  featured: boolean;
+}
+
+// Define a more generic cache structure for product data
+interface EntityCache<T> {
+  [key: string]: T | null;
 }
 
 interface ProductState {
-    products: Product[];
-    product: Product | null; // For a single product
-    loading: boolean;
-    error: string | null;
-    totalPages: number;
-    currentPage: number;
-    cache: { [key: string]: Product | null; }; // Cache for product details
-    productsCache: { [key: number]: Product[]; }; // Cache for products by page
+  products: Product[];
+  product: Product | null;
+  loading: { [key in AsyncActionTypes]: boolean };
+  error: { [key in AsyncActionTypes]: string | null };
+  totalPages: number;
+  currentPage: number;
+  cache: EntityCache<Product>;
+  productsCache: { [key: number]: Product[] };
 }
+
+// Action Types for Async Thunks
+type AsyncActionTypes =
+  | "fetchProducts"
+  | "fetchProductDetails"
+  | "createProduct"
+  | "updateProduct"
+  | "deleteProduct";
 
 // Initial state
 const initialState: ProductState = {
-    products: [],
-    product: null,
-    loading: false,
-    error: null,
-    totalPages: 0,
-    currentPage: 0,
-    cache: {}, // Initialize cache for product details
-    productsCache: {}, // Initialize cache for products
+  products: [],
+  product: null,
+  loading: {
+    fetchProducts: false,
+    fetchProductDetails: false,
+    createProduct: false,
+    updateProduct: false,
+    deleteProduct: false,
+  },
+  error: {
+    fetchProducts: null,
+    fetchProductDetails: null,
+    createProduct: null,
+    updateProduct: null,
+    deleteProduct: null,
+  },
+  totalPages: 0,
+  currentPage: 0,
+  cache: {},
+  productsCache: {},
 };
 
-
-// Async thunk for fetching product details
+// Async Thunks
 export const fetchProductDetails = createAsyncThunk<Product, string>(
-    'product/fetchProductDetails',
-    async (productId, { getState }) => {
-        const state = getState() as RootState;
-        
-        // Check if the product is already cached
-        if (state.product.cache[productId]) {
-            return state.product.cache[productId]; // Return cached product
-        }
+  "product/fetchProductDetails",
+  async (productId, { getState }) => {
+    const state = getState() as RootState;
 
-        const response = await axios.get(`http://localhost:8082/api/v1/products/${productId}`);
-        return response.data; // Fetch from API if not cached
+    if (state.product.cache[productId]) {
+      return state.product.cache[productId]!; // Return from cache if available
     }
+
+    const response = await axios.get(
+      `http://localhost:8082/api/v1/products/${productId}`
+    );
+    return response.data;
+  }
 );
 
-
-// Async thunk for fetching all products
 export const fetchProducts = createAsyncThunk<{
-    content: Product[];
-    totalPages: number;
-    number: number;
+  content: Product[];
+  totalPages: number;
+  number: number;
 }, number>(
-    'products/fetchProducts',
-    async (page, { getState }) => {
-        const state = getState() as RootState;
+  "products/fetchProducts",
+  async (page, { getState }) => {
+    const state = getState() as RootState;
 
-        // Check if the products for this page are already cached
-        if (state.product.productsCache[page]) {
-            return {
-                content: state.product.productsCache[page],
-                totalPages: state.product.totalPages,
-                number: page,
-            }; // Return cached products
-        }
-
-        const response = await axios.get(`http://localhost:8082/api/v1/products?page=${page}`);
-        return response.data; // Fetch from API if not cached
+    // Return products from cache if available for the requested page
+    if (state.product.productsCache[page]) {
+      return {
+        content: state.product.productsCache[page],
+        totalPages: state.product.totalPages,
+        number: page,
+      };
     }
+
+    // If not in cache, fetch from the server
+    const response = await axios.get(
+      `http://localhost:8082/api/v1/products?page=${page}`
+    );
+    return response.data;
+  }
 );
 
-// Async thunk for creating a product
 export const createProduct = createAsyncThunk<Product, Partial<Product>>(
-    'product/createProduct',
-    async (newProductData) => {
-        const response = await axios.post('http://localhost:8082/api/v1/products/create-product', newProductData);
-        console.log(response.data);
-        return response.data; // Assuming your API returns the created product
-    }
+  "product/createProduct",
+  async (newProductData) => {
+    const response = await axios.post(
+      "http://localhost:8082/api/v1/products/create-product",
+      newProductData
+    );
+    return response.data;
+  }
 );
 
-// Async thunk for updating a product
 export const updateProduct = createAsyncThunk<Product, Partial<Product>>(
-    'product/updateProduct',
-    async (productData) => {
-        const response = await axios.put(`http://localhost:8082/api/v1/products/update-product/${productData.id}`, productData);
-        return response.data; // Return the updated product
-    }
+  "product/updateProduct",
+  async (productData) => {
+    const response = await axios.put(
+      `http://localhost:8082/api/v1/products/update-product/${productData.id}`,
+      productData
+    );
+    return response.data;
+  }
 );
 
 export const deleteProduct = createAsyncThunk<string, string>(
-    'product/deleteProduct',
-    async (productId) => {
-        await axios.delete(`http://localhost:8082/api/v1/products/delete-product/${productId}`);
-        return productId; // Return the ID for further processing
-    }
+  "product/deleteProduct",
+  async (productId, { dispatch }) => {
+    await axios.delete(
+      `http://localhost:8082/api/v1/products/delete-product/${productId}`
+    );
+    dispatch(clearProductCache(productId)); // Clear the product from the cache after deletion
+    return productId;
+  }
 );
-// Create the product slice
+
+// Slice Reducers
 const productSlice = createSlice({
-    name: 'product',
-    initialState,
-    reducers: {
-        setProducts: (state, action) => {
-            state.products = action.payload; // Set products directly from cache
-        },
+  name: "product",
+  initialState,
+  reducers: {
+    clearProductCache: (state, action) => {
+      delete state.cache[action.payload]; // Clear the cache for the deleted product
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchProductDetails.pending, (state) => {
-                state.loading = true;
-                state.error = null; // Reset error state
-            })
-            .addCase(fetchProductDetails.fulfilled, (state, action) => {
-                state.product = action.payload; // Set the single product
-                state.loading = false; // Stop loading
-                state.cache[action.payload.id] = action.payload; // Cache the product
-            })
-            .addCase(fetchProductDetails.rejected, (state, action) => {
-                state.loading = false; // Stop loading on error
-                state.error = action.error.message || 'Failed to load product details'; // Set error message
-            })
-            .addCase(fetchProducts.pending, (state) => {
-                state.loading = true;
-                state.error = null; // Reset error state
-            })
-            .addCase(fetchProducts.fulfilled, (state, action) => {
-                state.products = action.payload.content; // Set products from API response
-                state.totalPages = action.payload.totalPages; // Set total pages
-                state.currentPage = action.payload.number; // Set current page
-                state.loading = false; // Stop loading
-                state.productsCache[action.payload.number] = action.payload.content; // Cache the products for the page
-            })
-            .addCase(fetchProducts.rejected, (state, action) => {
-                state.loading = false; // Stop loading on error
-                state.error = action.error.message || 'Failed to load products'; // Set error message
-            })
-            .addCase(createProduct.fulfilled, (state, action) => {
-                state.products.push(action.payload); // Add the new product to the products array
-            })
-            .addCase(createProduct.pending, (state) => {
-                state.loading = true; // Set loading to true while creating
-                state.error = null; // Reset error state
-            })
-            .addCase(createProduct.rejected, (state, action) => {
-                state.loading = false; // Stop loading on error
-                state.error = action.error.message || 'Failed to create product'; // Set error message
-            })
-            .addCase(updateProduct.fulfilled, (state, action) => {
-                const index = state.products.findIndex(product => product.id === action.payload.id);
-                if (index !== -1) {
-                    state.products[index] = action.payload; // Update the product in the array
-                }
-            })
-            .addCase(deleteProduct.fulfilled, (state, action) => {
-                state.products = state.products.filter(product => product.id !== action.payload);
-            });
+    setProducts: (state, action) => {
+      state.products = action.payload; // Set all products in the state
     },
+    setProductsCache: (state, action) => {
+      state.productsCache[action.payload.page] = action.payload.products; // Cache the products for pagination
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProductDetails.pending, (state) => {
+        state.loading.fetchProductDetails = true;
+        state.error.fetchProductDetails = null;
+      })
+      .addCase(fetchProductDetails.fulfilled, (state, action) => {
+        state.product = action.payload;
+        state.cache[action.payload.id] = action.payload;
+        state.loading.fetchProductDetails = false;
+      })
+      .addCase(fetchProductDetails.rejected, (state, action) => {
+        state.loading.fetchProductDetails = false;
+        state.error.fetchProductDetails =
+          action.error.message || "Failed to load product details";
+      })
+
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading.fetchProducts = true;
+        state.error.fetchProducts = null;
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.products = action.payload.content;
+        state.totalPages = action.payload.totalPages;
+        state.currentPage = action.payload.number;
+        state.loading.fetchProducts = false;
+        state.productsCache[action.payload.number] = action.payload.content; // Cache the fetched products
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading.fetchProducts = false;
+        state.error.fetchProducts =
+          action.error.message || "Failed to load products";
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.products.push(action.payload); // Add new product to the list
+      })
+      .addCase(createProduct.pending, (state) => {
+        state.loading.createProduct = true;
+        state.error.createProduct = null;
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.loading.createProduct = false;
+        state.error.createProduct =
+          action.error.message || "Failed to create product";
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        const index = state.products.findIndex(
+          (product) => product.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.products[index] = action.payload; // Update product in the list
+        }
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.products = state.products.filter(
+          (product) => product.id !== action.payload
+        );
+        state.cache[action.payload] = null; // Clear deleted product from cache
+      });
+  },
 });
 
-// Exporting actions and reducer
-export const { setProducts } = productSlice.actions;
+// Export actions to be dispatched
+export const { setProducts, clearProductCache, setProductsCache } = productSlice.actions;
+
 export default productSlice.reducer;

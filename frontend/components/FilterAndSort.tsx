@@ -1,14 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { DropdownSort } from "./DropdownSort";
 import { FilterOptions, FilterProducts } from "./Filter";
-import ProductList from "./ProductList";
 import { X } from "lucide-react";
-import ProductSearch from "./ProductSearch";
+import AlgoliaProductList from "./AlgoliaProductList";
+import CustomSortBy from "./CustomSortBy";
+import CustomPagination from "./CustomPagination";
+import CustomHitsPerPage from "./CustomHitsPerPage";
+import CustomCurrentRefinements from "./Algolia/CustomCurrentRefinements";
 
 const FilterAndSort = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+
+  const sortOptions = [
+    { label: "Featured", value: "products" },
+    { label: "Price [Low - High]", value: "instant_search_price_asc" },
+    { label: "Price [High - Low]", value: "instant_search_price_desc" },
+  ];
 
   const toggleFilterSidebar = () => {
     setIsFilterVisible((prev) => !prev);
@@ -63,15 +71,24 @@ const FilterAndSort = () => {
       <div className="flex-grow flex flex-col">
         <div className="flex justify-end items-center text-black mx-6 gap-4 mt-5">
           <div className="flex items-center gap-4">
+            <CustomCurrentRefinements />
             <FilterProducts toggleFilterSidebar={toggleFilterSidebar} />
-            <DropdownSort />
+            <CustomSortBy items={sortOptions} />
+            <CustomHitsPerPage
+              items={[
+                { label: "8 products per page", value: 8, default: true },
+                { label: "16 products per page", value: 16 },
+              ]}
+            />
           </div>
         </div>
 
         {/* Product List */}
         <div className="w-full mt-5">
-          <ProductList />
+          <AlgoliaProductList />
+          {/* <ProductList /> */}
         </div>
+        <CustomPagination />
       </div>
     </div>
   );

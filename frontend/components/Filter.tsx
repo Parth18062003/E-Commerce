@@ -9,6 +9,9 @@ import {
 import { Checkbox } from "./ui/checkbox";
 import { Slider } from "./ui/slider";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import CustomRangeInput from "./Algolia/PriceFilter";
+import { ClearRefinements } from "react-instantsearch";
+import CustomRefinementList from "./CustomRefinementList";
 
 interface FilterProductsProps {
   toggleFilterSidebar: () => void; // Prop type for the toggle function
@@ -118,38 +121,15 @@ export const FilterOptions: React.FC = () => {
     <div className="p-4">
       <Accordion type="single" collapsible>
         {/* All Products */}
-        <AccordionItem value="all">
-          <AccordionTrigger>All Products</AccordionTrigger>
-          <AccordionContent>
-            <div className="flex flex-col items-start gap-y-2">
-              <div className="flex items-center">
-                <Checkbox id="all-products" />
-                <label htmlFor="all-products" className="ml-2">
-                  All Products
-                </label>
-              </div>
-              <div className="flex items-center">
-                <Checkbox id="new-arrivals" />
-                <label htmlFor="new-arrivals" className="ml-2">
-                  New Arrivals
-                </label>
-              </div>
-              <div className="flex items-center">
-                <Checkbox id="sale" />
-                <label htmlFor="sale" className="ml-2">
-                  Sale
-                </label>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+        <CustomRefinementList attribute="category" label="Category" />
 
         {/* Price Filter */}
         <AccordionItem value="price">
           <AccordionTrigger>Price Range</AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col">
-              <Slider
+              <CustomRangeInput attribute="price" />
+              {/*               <Slider
                 value={priceRange}
                 onValueChange={setPriceRange}
                 min={0}
@@ -160,7 +140,7 @@ export const FilterOptions: React.FC = () => {
               <div className="flex justify-between">
                 <span>${priceRange[0]}</span>
                 <span>${priceRange[1]}</span>
-              </div>
+              </div> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -195,7 +175,8 @@ export const FilterOptions: React.FC = () => {
         </AccordionItem>
 
         {/* Brand Filter */}
-        <AccordionItem value="brand">
+        <CustomRefinementList attribute="brand" label="Brand" />
+        {/*  <AccordionItem value="brand">
           <AccordionTrigger>Brand</AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col gap-y-2">
@@ -217,11 +198,10 @@ export const FilterOptions: React.FC = () => {
                   Puma
                 </label>
               </div>
-              {/* Add more brands as needed */}
             </div>
           </AccordionContent>
         </AccordionItem>
-
+ */}
         {/* Color Filter */}
         <AccordionItem value="color">
           <AccordionTrigger>Color</AccordionTrigger>
@@ -260,7 +240,7 @@ export const FilterOptions: React.FC = () => {
                   }`}
                   onClick={() => setSizeSystem("UK")}
                 >
-                  UK 
+                  UK
                 </button>
                 <button
                   className={`py-1 px-2 rounded ${
@@ -270,7 +250,7 @@ export const FilterOptions: React.FC = () => {
                   }`}
                   onClick={() => setSizeSystem("US")}
                 >
-                  US 
+                  US
                 </button>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-2">
@@ -294,6 +274,12 @@ export const FilterOptions: React.FC = () => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      <ClearRefinements
+        className="my-4"
+        translations={{
+          resetButtonText: "Clear all",
+        }}
+      />
     </div>
   );
 };

@@ -15,7 +15,13 @@ const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <InstantSearch searchClient={searchClient} indexName="products">
+      <InstantSearch
+        searchClient={searchClient}
+        indexName="products"
+        future={{
+          preserveSharedStateOnUnmount: true,
+        }}
+      >
         <Provider store={store}>
           <ProductSearch />
           {children}

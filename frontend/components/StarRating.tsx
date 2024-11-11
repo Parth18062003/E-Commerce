@@ -4,18 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addRating, fetchUserRating, Rating } from "@/store/ratingSlice";
+import { addRating, Rating } from "@/store/ratingSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import LoginDialog from "./LoginDialog";
 import RatingImageUpload from "./RatingImageUpload";
 
-const totalStars = 5;
-
 interface StarRatingProps {
   productId: string;
+  ratings: Rating[];  // Accept ratings as a prop
 }
 
-export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
+export const StarRating: React.FC<StarRatingProps> = ({ productId, ratings }) => {
   const textRef = useRef<HTMLTextAreaElement>(null);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
   const [comment, setComment] = useState<string>("");
@@ -32,46 +31,29 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
   const userId = user?.id;
   const userName = user?.firstName + " " + user?.lastName;
 
+  // Set initial values if the user already has a rating
   useEffect(() => {
     if (isLoggedIn && userId) {
-      dispatch(fetchUserRating({ userId, productId }))
-        .unwrap()
-        .then((existingRating) => {
-          if (existingRating) {
-            setRatingValue(existingRating.rating);
-            setComment(existingRating.comment || "");
-            if (textRef.current) {
-              textRef.current.value = existingRating.comment || "";
-            }
-            setSubmissionState(true);
-            setUploadedImageUrls(existingRating.imageUrls || []);
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to fetch user rating:", error);
-          setError("Failed to fetch existing rating");
-        });
+      const existingRating = ratings.find((r) => r.userId === userId);
+      if (existingRating) {
+        setRatingValue(existingRating.rating);
+        setComment(existingRating.comment || "");
+        if (textRef.current) {
+          textRef.current.value = existingRating.comment || "";
+        }
+        setSubmissionState(true);
+        setUploadedImageUrls(existingRating.imageUrls || []);
+      }
     }
-  }, [isLoggedIn, userId, productId, dispatch]);
+  }, [isLoggedIn, userId, ratings]);
 
   const handleRating = (value: number) => {
-    setRatingValue((prev) => (value === prev ? null : value));
+    setRatingValue((prev) => (value === prev ? null : value)); // Toggle rating
     setError(null); // Clear any previous errors
   };
 
   const handleSubmit = async () => {
-    // Reset error state
     setError(null);
-
-    // Debug logging
-    console.log("Submit clicked with state:", {
-      isLoggedIn,
-      userId,
-      userName,
-      ratingValue,
-      comment: textRef.current?.value,
-      imageUrls: uploadedImageUrls
-    });
 
     if (!isLoggedIn) {
       setShowLoginDialog(true);
@@ -98,22 +80,17 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
         userName
       };
 
-      console.log("Submitting rating with data:", ratingData);
-
       const result = await dispatch(addRating(ratingData)).unwrap();
-      console.log("Rating submission result:", result);
-
       setSubmissionState(true);
       setComment(textRef.current?.value || "");
     } catch (error) {
-      console.error("Failed to submit rating:", error);
       setError("Failed to submit rating. Please try again.");
     }
   };
 
   const handleImageUploadComplete = (imageUrls: string[]) => {
     setUploadedImageUrls(imageUrls);
-    setError(null); // Clear any previous errors
+    setError(null);
   };
 
   const handleCloseDialog = () => {
@@ -132,7 +109,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
           <div className="flex items-center justify-center gap-3 pl-4 pr-2">
             <div className="text-sm text-black dark:text-neutral-400">Your Rating:</div>
             <div className="flex items-center">
-              {[...Array(totalStars)].map((_, index) => {
+              {[...Array(5)].map((_, index) => {
                 const starValue = index + 1;
                 return (
                   <Star
@@ -150,7 +127,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId }) => {
             <div className="flex items-center justify-center gap-3 pl-4 pr-2">
               <div className="text-sm text-black dark:text-neutral-400">Do you like the product?</div>
               <div className="flex items-center">
-                {[...Array(totalStars)].map((_, index) => {
+                {[...Array(5)].map((_, index) => {
                   const starValue = index + 1;
                   return (
                     <button

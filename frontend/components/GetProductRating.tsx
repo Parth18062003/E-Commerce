@@ -6,19 +6,24 @@ import { Star } from "lucide-react";
 
 const GetProductRating = ({ productId }: { productId: string }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { averageRating, totalReviews, loading, error } = useSelector(
+  const { averageRating, totalReviews, loading, error, cache } = useSelector(
     (state: RootState) => state.rating
   );
 
+  // Effect to fetch the average rating if it's not cached
   useEffect(() => {
-    // Dispatch the fetchAverageRating action when the component mounts
-    dispatch(fetchAverageRating(productId));
-  }, [dispatch, productId]);
+    // Check if the average rating for this product is not in cache
+    if (!cache[productId]) {
+      dispatch(fetchAverageRating(productId));
+    }
+  }, [dispatch, productId, cache]);
 
+  // Handle loading state
   if (loading.fetch) {
     return <div>Loading...</div>;
   }
 
+  // Handle error state
   if (error) {
     return <div>Error: {error}</div>;
   }

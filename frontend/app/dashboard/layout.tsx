@@ -1,11 +1,23 @@
-import { RetractingSidebar } from "@/components/RetractingSidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import React from "react";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <RetractingSidebar />
-      <div className="lg:translate-x-40 max-w-7xl">{children}</div>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <SidebarTrigger
+            className="text-black m-2"
+          />
+          <div className="relative">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
     </>
   );
 };

@@ -2,8 +2,15 @@
 
 import React, { useState } from "react";
 import {
+  ClearRefinements,
+  Configure,
+  DynamicWidgets,
   Hits,
+  HitsPerPage,
+  Pagination,
+  RefinementList,
   SearchBox,
+  SortBy,
   useInstantSearch,
   useSearchBox,
 } from "react-instantsearch";
@@ -18,12 +25,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Hit from "./Hits";
+import CustomPagination from "./CustomPagination";
+import CustomSortBy from "./CustomSortBy";
+import CustomRefinementList from "./CustomRefinementList";
 
 const ProductSearch = () => {
   const { results } = useInstantSearch(); // Adding isSearching from Algolia
   const { query } = useSearchBox();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const sortItems = [
+    { label: "Featured", value: "products" },
+    { label: "Price (asc)", value: "instant_search_price_asc" },
+    { label: "Price (desc)", value: "instant_search_price_desc" },
+  ];
   // Open dialog when query is entered and not empty
   const handleDialogOpen = () => {
     if (query?.length > 0) {
@@ -55,7 +70,8 @@ const ProductSearch = () => {
           <DialogHeader>
             <DialogTitle className="text-black">Search Results</DialogTitle>
             <DialogDescription>
-              Here are the results for <span className="font-semibold text-zinc-600 ">{query}</span>
+              Here are the results for{" "}
+              <span className="font-semibold text-zinc-600 ">{query}</span>
             </DialogDescription>
             {/* Search Box inside Dialog */}
             <SearchBox
@@ -79,6 +95,7 @@ const ProductSearch = () => {
                 <div className="text-sm text-gray-600 mb-2">
                   {results.hits.length} Results found
                 </div>
+                <Configure hitsPerPage={5} />
                 <Hits
                   hitComponent={Hit}
                   classNames={{
@@ -86,6 +103,7 @@ const ProductSearch = () => {
                     item: "p-0",
                   }}
                 />
+                <CustomPagination />
               </div>
             ) : query && query.length > 0 ? (
               <div className="text-sm text-gray-600">

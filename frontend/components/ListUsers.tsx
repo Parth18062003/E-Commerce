@@ -19,6 +19,7 @@ import {
 import { Button } from "./ui/button";
 import { Trash } from "lucide-react";
 import DeleteConfirmDialog from "./ui/deleteDialog";
+import Image from "next/image";
 
 interface User {
   id: string;
@@ -27,6 +28,7 @@ interface User {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  profileImageurl: string;
   address: string;
   city: string;
   state: string;
@@ -121,13 +123,14 @@ const ListUsers: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-zinc-900 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4">User List</h2>
+    <div className="p-6 dark:bg-zinc-900 rounded-lg shadow-lg">
+      <h2 className="text-2xl text-black font-semibold mb-4">User List</h2>
       {error && <Alert>{error}</Alert>}
       {users.length > 0 ? (
-        <Table className="min-w-full divide-y divide-zinc-700">
+        <Table className="min-w-full divide-y divide-zinc-700 text-black">
           <TableHeader>
             <TableRow>
+              <TableHead>Sr. No.</TableHead>
               <TableHead>User ID</TableHead>
               <TableHead>Username</TableHead>
               <TableHead>Email</TableHead>
@@ -138,8 +141,9 @@ const ListUsers: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user: User) => (
+            {users.map((user: User, index) => (
               <TableRow key={user.id}>
+                <TableCell>{index+1}</TableCell>
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>

@@ -1,46 +1,47 @@
+"use client";
+
 import React, { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "./card";
+import { Hit as AlgoliaHit } from "instantsearch.js/es/types";
+import { Highlight } from "react-instantsearch";
 import Image from "next/image";
 import Link from "next/link";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  brand: string;
-  stockQuantity: number;
-  sku: string;
-  tags?: string[];
-  rating: number;
-  reviewCount: number;
-  colorOptions: string[]; // Array of color names
-  colorOptionImages: {
-    [key: string]: string[]; // Mapping of color names to an array of image URLs
-  };
-  discount?: number;
-  dimensions?: string;
-  weight?: string;
-}
+export type ProductCardProps = {
+  hit: AlgoliaHit<{
+    name: string;
+    description: string;
+    price: number;
+    discount: number;
+    brand: string;
+    category: string;
+    colorOptions: string[];
+    colorOptionImages: { [key: string]: string[] };
+    tags: string[]; // Added tags field
+    sizes: string[]; // Added sizes field
+    sku: string; // Added sku field
+    objectID: string; // Ensure objectID is included
+  }>;
+};
 
-interface ProductCardProps {
-  product: Product;
-}
-
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
   // Get the initial color and the corresponding initial image URL
-  const initialColor =
-    product.colorOptions.length > 0 ? product.colorOptions[0] : null;
+  const initialColor = hit.colorOptions.length > 0 ? hit.colorOptions[0] : null;
   const initialImage =
-    initialColor && initialColor in product.colorOptionImages
-      ? product.colorOptionImages[initialColor][0] || ""
+    initialColor && initialColor in hit.colorOptionImages
+      ? hit.colorOptionImages[initialColor][0] || ""
       : "";
 
   const [mainImage, setMainImage] = useState(initialImage);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Final price after discount if any
+  const finalPrice = hit.discount
+    ? (hit.price - hit.price * (hit.discount / 100)).toFixed(2)
+    : hit.price.toFixed(2);
+
   return (
-    <Link href={`/products/${product.name}/${product.id}`}>
+    <Link href={`/products/${hit.name}/${hit.objectID}`}>
       <Card
         className="max-w-3xl shadow-lg"
         onMouseEnter={() => setIsHovered(true)}
@@ -51,7 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <Image
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 rounded-t-xl"
               src={mainImage || "/placeholder-image-url.jpg"} // Placeholder image if mainImage is empty
-              alt={product.name}
+              alt={hit.name}
               height={512}
               width={512}
               priority
@@ -59,14 +60,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         </CardHeader>
         <CardContent className="h-32">
-          {isHovered && product.colorOptions.length > 0 && (
+          {isHovered && hit.colorOptions.length > 0 && (
             <div className="my-2 flex space-x-2 overflow-hidden">
-              {product.colorOptions.map((color) => (
+              {hit.colorOptions.map((color) => (
                 <div
                   key={color} // Use color name as key
                   className="relative w-12 h-12 rounded-full cursor-pointer overflow-hidden border-2 border-gray-300"
                   onMouseEnter={() => {
-                    const images = product.colorOptionImages[color];
+                    const images = hit.colorOptionImages[color];
                     if (images && images.length > 0) {
                       setMainImage(images[0]); // Set the first image of the selected color
                     }
@@ -77,9 +78,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 >
                   <Image
                     src={
-                      product.colorOptionImages[color]?.[0] ||
+                      hit.colorOptionImages[color]?.[0] ||
                       "/placeholder-image-url.jpg"
-                    } // Use placeholder if not available
+                    }
                     alt={color}
                     className="object-cover"
                     width={256}
@@ -91,45 +92,39 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
           <h2
             className={`font-bold text-lg mb-2 ${
-              product.colorOptions.length ? "mt-1" : ""
+              hit.colorOptions.length ? "mt-1" : ""
             }`}
           >
-            {product.name}
+            <Highlight hit={hit} attribute="name" />
           </h2>
-          <p className="text-gray-700">{product.brand}</p>
-          <p className="line-clamp-1 text-gray-700">{product.description}</p>
+          <p className="text-gray-700">{hit.brand}</p>
+          <p className="line-clamp-1 text-gray-700">{hit.description}</p>
           {!isHovered && (
             <>
               <p className="text-gray-700">
-                {product.discount  && product.discount > 0 ? (
+                {hit.discount && hit.discount > 0 ? (
                   <>
-                    <span>
-                      $
-                      {(
-                        product.price -
-                        product.price * (product.discount / 100)
-                      ).toFixed(2)}
-                    </span>
+                    <span>${finalPrice}</span>
                     <span className="mx-2 text-red-500 line-through">
-                      ${product.price.toFixed(2)}
+                      ${hit.price.toFixed(2)}
                     </span>
                   </>
                 ) : (
-                  <span>${product.price.toFixed(2)}</span>
+                  <span>${finalPrice}</span>
                 )}
               </p>
               <p className="text-gray-700">
-                {product.colorOptions && product.colorOptions.length > 0 && (
-                  <span>{product.colorOptions.join(", ")}</span>
+                {hit.colorOptions && hit.colorOptions.length > 0 && (
+                  <span>{hit.colorOptions.join(", ")}</span>
                 )}
               </p>
             </>
           )}
         </CardContent>
-        <CardFooter>{/* Additional footer content can go here */}</CardFooter>
+        <CardFooter>{/* Optional footer content can go here */}</CardFooter>
       </Card>
     </Link>
   );
 };
 
-export default ProductCard;
+export default AlgoliaProductCard;

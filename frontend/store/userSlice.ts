@@ -7,6 +7,7 @@ export interface User {
     firstName: string;
     lastName: string;
     phoneNumber: string;
+    profileImageurl: string;
     address: string;
     city: string;
     state: string;
