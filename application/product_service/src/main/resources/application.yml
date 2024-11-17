@@ -5,7 +5,7 @@ spring:
     port: 8082
   data:
     mongodb:
-      uri: mongodb+srv://.oc0ol.mongodb.net/product_service
+      uri:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
