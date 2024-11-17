@@ -18,11 +18,12 @@ import { DropdownLinks } from "./ui/dropdown/dropdown-links";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { SearchBox } from "react-instantsearch";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
-  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;
+  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;  
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };

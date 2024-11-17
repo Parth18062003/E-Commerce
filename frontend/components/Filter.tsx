@@ -6,12 +6,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { Checkbox } from "./ui/checkbox";
-import { Slider } from "./ui/slider";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import CustomRangeInput from "./Algolia/PriceFilter";
 import { ClearRefinements } from "react-instantsearch";
 import CustomRefinementList from "./CustomRefinementList";
+import CustomSizeFilter from "@/components/CustomSizeFilter";
+import { CustomRatingMenu } from "@/components/Algolia/CustomRatingMenu";
+import CustomColorFilter from "@/components/Algolia/CustomColorFilter";
 
 interface FilterProductsProps {
   toggleFilterSidebar: () => void; // Prop type for the toggle function
@@ -30,52 +30,6 @@ const colors = [
   { name: "Black", hex: "#000000" },
 ];
 
-const shoeSizesUK = [
-  "1",
-  "1.5",
-  "2",
-  "2.5",
-  "3",
-  "3.5",
-  "4",
-  "4.5",
-  "5",
-  "5.5",
-  "6",
-  "6.5",
-  "7",
-  "7.5",
-  "8",
-  "8.5",
-  "9",
-  "9.5",
-  "10",
-  "10.5",
-  "11",
-  "11.5",
-  "12",
-];
-
-const shoeSizesUS = [
-  "2",
-  "2.5",
-  "3",
-  "4",
-  "5",
-  "5.5",
-  "6",
-  "6.5",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12",
-  "13",
-];
-
-const apparelSizes = ["XS", "S", "M", "L", "XL", "XXL"];
-
 export const FilterProducts: React.FC<FilterProductsProps> = ({
   toggleFilterSidebar,
 }) => {
@@ -90,32 +44,6 @@ export const FilterProducts: React.FC<FilterProductsProps> = ({
 };
 
 export const FilterOptions: React.FC = () => {
-  const [priceRange, setPriceRange] = useState<number[]>([50, 1000]);
-  const [selectedShoeSizes, setSelectedShoeSizes] = useState<string[]>([]);
-  const [selectedApparelSizes, setSelectedApparelSizes] = useState<string[]>(
-    []
-  );
-  const [sizeSystem, setSizeSystem] = useState<"UK" | "US">("UK");
-
-  const toggleShoeSize = (size: string) => {
-    setSelectedShoeSizes((prev) => {
-      if (prev.includes(size)) {
-        return prev.filter((s) => s !== size);
-      } else {
-        return [...prev, size];
-      }
-    });
-  };
-
-  const toggleApparelSize = (size: string) => {
-    setSelectedApparelSizes((prev) => {
-      if (prev.includes(size)) {
-        return prev.filter((s) => s !== size);
-      } else {
-        return [...prev, size];
-      }
-    });
-  };
 
   return (
     <div className="p-4">
@@ -123,6 +51,7 @@ export const FilterOptions: React.FC = () => {
         {/* All Products */}
         <CustomRefinementList attribute="category" label="Category" />
 
+        <CustomRefinementList attribute="type" label="Product Type" />
         {/* Price Filter */}
         <AccordionItem value="price">
           <AccordionTrigger>Price Range</AccordionTrigger>
@@ -146,7 +75,8 @@ export const FilterOptions: React.FC = () => {
         </AccordionItem>
 
         {/* Gender Filter */}
-        <AccordionItem value="gender">
+        <CustomRefinementList attribute="gender" label="Gender" />
+       {/* <AccordionItem value="gender">
           <AccordionTrigger>Gender</AccordionTrigger>
           <AccordionContent>
             <RadioGroup>
@@ -172,7 +102,7 @@ export const FilterOptions: React.FC = () => {
               </div>
             </RadioGroup>
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem>*/}
 
         {/* Brand Filter */}
         <CustomRefinementList attribute="brand" label="Brand" />
@@ -203,7 +133,8 @@ export const FilterOptions: React.FC = () => {
         </AccordionItem>
  */}
         {/* Color Filter */}
-        <AccordionItem value="color">
+        <CustomColorFilter attribute="variants.color" label="Color" />
+        {/*<AccordionItem value="color">
           <AccordionTrigger>Color</AccordionTrigger>
           <AccordionContent>
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-2">
@@ -223,10 +154,10 @@ export const FilterOptions: React.FC = () => {
               ))}
             </div>
           </AccordionContent>
-        </AccordionItem>
-
+        </AccordionItem>*/}
         {/* Size Filter */}
-        <AccordionItem value="size">
+        <CustomSizeFilter label="Sizes" attribute="variants.sizes.size" />
+        {/*<AccordionItem value="size">
           <AccordionTrigger>Size</AccordionTrigger>
           <AccordionContent>
             <div>
@@ -272,7 +203,9 @@ export const FilterOptions: React.FC = () => {
               </div>
             </div>
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem>*/}
+
+        <CustomRatingMenu attribute="rating" label="Rating" />
       </Accordion>
       <ClearRefinements
         className="my-4"

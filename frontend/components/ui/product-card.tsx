@@ -110,7 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         product.price * (product.discount / 100)
                       ).toFixed(2)}
                     </span>
-                    <span className="mx-2 text-red-500 line-through">
+                    <span className="mx-2 text-indigo-500 line-through">
                       ${product.price.toFixed(2)}
                     </span>
                   </>

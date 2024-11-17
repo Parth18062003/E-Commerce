@@ -8,12 +8,14 @@ import CustomSortBy from "./CustomSortBy";
 import CustomPagination from "./CustomPagination";
 import CustomHitsPerPage from "./CustomHitsPerPage";
 import CustomCurrentRefinements from "./Algolia/CustomCurrentRefinements";
+import { SearchBox } from "react-instantsearch";
 
 const FilterAndSort = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const sortOptions = [
     { label: "Featured", value: "products" },
+    {label: "Newest", value: "instant_search_newest" },
     { label: "Price [Low - High]", value: "instant_search_price_asc" },
     { label: "Price [High - Low]", value: "instant_search_price_desc" },
   ];
@@ -76,8 +78,8 @@ const FilterAndSort = () => {
             <CustomSortBy items={sortOptions} />
             <CustomHitsPerPage
               items={[
-                { label: "8 products per page", value: 8, default: true },
-                { label: "16 products per page", value: 16 },
+                { label: "9 products per page", value: 9, default: true },
+                { label: "18 products per page", value: 18 },
               ]}
             />
           </div>

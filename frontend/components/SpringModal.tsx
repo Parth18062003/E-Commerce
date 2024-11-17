@@ -1,14 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
+import {AlertCircle, Heart, ShoppingCart} from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
+import {Product} from "@/store/productSlice";
 
-interface Product {
-  imageUrl: string;
-  brand: string;
-  name: string;
-  price: string;
-}
 
 export const SpringModal = ({
   isOpen,
@@ -19,6 +14,17 @@ export const SpringModal = ({
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   product: Product | null;
 }) => {
+
+  const getProductImages = (product: Product): { mainImage: string } => {
+    const firstVariant = product.variants[0];
+    const images = firstVariant.colorOptionImages || [];
+    return {
+      mainImage: images[0] || '',
+    };
+  };
+
+  const { mainImage } = product ? getProductImages(product) : { mainImage: '' };
+
   return (
     <AnimatePresence>
       {isOpen && product && (
@@ -39,7 +45,7 @@ export const SpringModal = ({
             <AlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
             <div className="relative z-10 flex-shrink-0 mb-4 md:mb-0 md:mr-4">
               <Image
-                src={product.imageUrl}
+                src={mainImage}
                 alt={product.name}
                 className="w-60 h-60 md:w-72 md:h-72 object-cover rounded-lg"
                 height={256}
@@ -49,7 +55,7 @@ export const SpringModal = ({
             <div className="relative z-10 text-center md:text-left flex-1">
               <h3 className="text-2xl font-bold mb-2">{product.name}</h3>
               <p className="text-lg text-zinc-200 mb-1">{product.brand}</p>
-              <p className="text-xl font-semibold mb-4">{product.price}</p>
+              <p className="text-xl font-semibold mb-4">${product.price}</p>
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => {
@@ -58,16 +64,16 @@ export const SpringModal = ({
                   }}
                   className="bg-white hover:opacity-90 transition-opacity text-indigo-600 font-semibold w-full py-2 rounded"
                 >
-                  Add to Cart
+                  <span className="flex justify-center items-center gap-2">Add to Cart <ShoppingCart /></span>
                 </button>
                 <button
                   onClick={() => {
                     // Handle like action
                     setIsOpen(false);
                   }}
-                  className="bg-transparent hover:bg-white/10 transition-colors text-white font-semibold w-full py-2 rounded"
+                  className="bg-white/30 hover:bg-white/10 transition-colors text-white font-semibold w-full py-2 rounded"
                 >
-                  Like
+                  <span className="flex justify-center items-center gap-2">Like <Heart /></span>
                 </button>
               </div>
               <button
