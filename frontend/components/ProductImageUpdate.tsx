@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import sha1 from "sha1";
-import { set } from "zod";
 
 interface ImageUploadProps {
-  defaultImageUrl: string;
-  onImageUpdate: (newUrl: string) => void;
-  onCancel: () => void;
+  currentImages: string[]; // Array of images for the selected variant
+  onImageUpdate: (newUrl: string) => void; // Callback to update image in parent
+  onCancel: () => void; // Callback to cancel the image update
 }
 
 const ProductImageUpdate: React.FC<ImageUploadProps> = ({
-  defaultImageUrl,
+  currentImages,
   onImageUpdate,
   onCancel,
 }) => {
-  const [originalImageUrl, setOriginalImageUrl] = useState<string>(defaultImageUrl);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>(currentImages[0] || ''); // First image of the current variant
   const [newImageUrl, setNewImageUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +23,11 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const cloudname = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  // Store original image URL on mount
+
+  // Reset the image whenever currentImages change
   useEffect(() => {
-    setOriginalImageUrl(defaultImageUrl);
-  }, [defaultImageUrl]);
+    setOriginalImageUrl(currentImages[0] || '');
+  }, [currentImages]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -47,7 +47,10 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
     formData.append("upload_preset", "HypeHouse_Products");
 
     try {
-      const response = await axios.post(`https://api.cloudinary.com/v1_1/${cloudname}/image/upload`, formData);
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudname}/image/upload`,
+        formData
+      );
       setUploaded(true);
       return response.data.secure_url;
     } catch (error) {
@@ -56,12 +59,15 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
     }
   };
 
-  const handleDeleteImage = async (publicId: string) => {
-    const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+  const handleDeleteImage = async (imageUrl: string) => {
+    const publicId = getPublicIdFromUrl(imageUrl);
+    if (!publicId) return;
+
+    const timestamp = Math.floor(Date.now() / 1000);
     const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
     const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET;
-
     const signature = sha1(`public_id=${publicId}&timestamp=${timestamp}${apiSecret}`);
+
     const url = `https://api.cloudinary.com/v1_1/${cloudname}/image/destroy`;
 
     try {
@@ -77,10 +83,10 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
     }
   };
 
-  const getPublicIdFromUrl = (url: string) => {
+  const getPublicIdFromUrl = (url: string): string | null => {
     const regex = /\/upload\/v\d+\/(.*)\.\w{3,4}$/;
     const match = url.match(regex);
-    return match ? match[1] : null; // Returns the public ID or null if not found
+    return match ? match[1] : null;
   };
 
   const handleImageUpdate = async () => {
@@ -90,7 +96,9 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
     setError(null);
 
     try {
-      const fileInput = document.getElementById("imageUploadInput") as HTMLInputElement | null;
+      const fileInput = document.getElementById(
+        "imageUploadInput"
+      ) as HTMLInputElement | null;
       if (!fileInput || !fileInput.files) return;
 
       const file = fileInput.files[0];
@@ -98,17 +106,18 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
 
       // Upload the new image
       const uploadedImageUrl = await uploadImageToCloudinary(file);
-      const publicId = getPublicIdFromUrl(originalImageUrl); // Extract the public ID for deletion
 
-      if (publicId) {
-        // Delete the old image from Cloudinary
-        await handleDeleteImage(publicId);
+      // Delete the previous image (if exists)
+      if (originalImageUrl) {
+        await handleDeleteImage(originalImageUrl); // Deletes the old image from Cloudinary
       }
 
       // Update the parent component with the new image URL
       onImageUpdate(uploadedImageUrl);
+
+      // Set the preview URL to the newly uploaded image
       setPreviewUrl(uploadedImageUrl);
-      
+
     } catch (error) {
       console.error("Failed to update profile image on the server:", error);
       setError("Failed to update profile image. Please try again.");
@@ -127,7 +136,7 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
         )}
       </div>
       <Input
-        id="imageUploadInput" // Ensure the ID is set
+        id="imageUploadInput"
         type="file"
         accept="image/*"
         onChange={handleFileChange}
@@ -135,10 +144,23 @@ const ProductImageUpdate: React.FC<ImageUploadProps> = ({
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex justify-end space-x-3">
         <Button onClick={onCancel}>Cancel</Button>
-        <Button onClick={handleImageUpdate}  disabled={isLoading || uploaded}>
-          {isLoading && !uploaded? "Uploading..." : "Upload"}
+        <Button onClick={handleImageUpdate} disabled={isLoading || uploaded}>
+          {isLoading && !uploaded ? "Uploading..." : "Upload"}
         </Button>
       </div>
+
+      {/* If there's an existing image, allow deleting it */}
+      {originalImageUrl && !newImageUrl && (
+        <div className="mt-4 text-center">
+          <Button
+            variant="outline"
+            color="danger"
+            onClick={() => handleDeleteImage(originalImageUrl)}
+          >
+            Delete Current Image
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

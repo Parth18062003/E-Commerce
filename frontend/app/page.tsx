@@ -13,6 +13,10 @@ const categories = [
   { title: "Men", imageUrl: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_714,c_limit/b7f9649b-81bf-4a98-a1b9-89850cfe4407/nike-just-do-it.png" },
   { title: "Kids", imageUrl: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_714,c_limit/43950456-d2ec-4ae1-84bb-fa46ec470728/image.png" },
 ];
+
+const currentDate = new Date();
+const customDateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+
 export default function Home() {
   return (
     <>
@@ -28,11 +32,11 @@ export default function Home() {
           <CategoryCards categories={categories}/>
           <div className="">
             <h2 className="text-2xl font-bold text-black">New Arrivals</h2>
-            <ProductCarousel />
+            {/*<ProductCarousel  />*/}
           </div>
           <div className="">
             <h2 className="text-2xl font-bold text-black">Trending</h2>
-            <ProductCarousel />
+            {/*<ProductCarousel  />*/}
           </div>
           <CategoryCards categories={categories}/>
         </main>

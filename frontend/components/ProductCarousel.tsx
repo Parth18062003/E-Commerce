@@ -35,7 +35,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
   useEffect(() => {
     if (products.length === 0) {
-      dispatch(fetchProducts(initialPage));
+      dispatch(fetchProducts({page: initialPage, size: 15}));
     }
   }, [dispatch, initialPage]);
 

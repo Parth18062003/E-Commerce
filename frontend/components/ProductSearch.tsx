@@ -27,11 +27,6 @@ const ProductSearch = () => {
   const { query } = useSearchBox();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const pathname = usePathname(); // Use usePathname from next/navigation
-  const sortItems = [
-    { label: "Featured", value: "products" },
-    { label: "Price (asc)", value: "instant_search_price_asc" },
-    { label: "Price (desc)", value: "instant_search_price_desc" },
-  ];
 
   // Open dialog when query is entered and not empty
   const handleDialogOpen = () => {
@@ -58,7 +53,7 @@ const ProductSearch = () => {
       {pathname === "/products" ? (
         // Show only the search box when the URL is "/product"
         <div className="searchbox-container">
-          
+
         </div>
       ) : (
         // Show the dialog when the URL is not "/product"
@@ -108,7 +103,7 @@ const ProductSearch = () => {
                 </div>
               ) : query && query.length > 0 ? (
                 <div className="text-sm text-gray-600">
-                  No results found for "{query}"
+                  No results found for {query}
                 </div>
               ) : (
                 <div className="text-sm text-gray-600">

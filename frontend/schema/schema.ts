@@ -65,53 +65,74 @@ export const UpdateUserSchema = z.object({
     .optional(),
 });
 
-
-export const productSchema = z.object({
-  name: z.string().min(1, "Product name is required"),
-  description: z.string().min(1, "Description is required"),
-  price: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
-    z.number().positive("Price must be a positive number")),
-  discount: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
-    z.number().nonnegative("Discount cannot be negative")),
-  stockQuantity: z.preprocess((val) => (typeof val === "string" ? parseInt(val, 10) : val), 
-    z.number().int("Stock must be an integer")),
-  category: z.string().min(1, "Category is required"),
-  brand: z.string().min(1, "Brand is required"),
-  sku: z.string().min(1, "SKU is required"),
-  tags: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(tag => tag.trim()) : val), 
-    z.array(z.string()).optional()), // Optional if no tags are provided
-  dimensions: z.string().min(1, "Dimensions are required"),
-  weight: z.string().min(1, "Weight is required"),
-  sizes: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(size => size.trim()) : val), 
-    z.array(z.string()).optional()), // Optional if no sizes are provided
-    colorOptions: z.preprocess(
-      (val) => (typeof val === "string" ? val.split(",").map(color => color.trim()) : val),
-      z.array(z.string()).optional()
-    ),// Optional if no color options are provided
-  colorOptionImages: z.record(z.array(z.string())).optional(), // Object with arrays of images for each color
+const SizeStockSchema = z.object({
+  size: z.string(),  // Size of the variant (e.g., '6', '7', '9', etc.)
+  stockQuantity: z.number().int().min(0),  // Quantity in stock for the specific size
 });
 
-export const updateProductSchema = z.object({
-  name: z.string().min(1, "Product name is required").optional(),
-  description: z.string().min(1, "Description is required").optional(),
-  price: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
-    z.number().positive("Price must be a positive number")).optional(),
-  discount: z.preprocess((val) => (typeof val === "string" ? parseFloat(val) : val), 
-    z.number().nonnegative("Discount cannot be negative")).optional(),
-  stockQuantity: z.preprocess((val) => (typeof val === "string" ? parseInt(val, 10) : val), 
-    z.number().int("Stock must be an integer")).optional(),
-  category: z.string().min(1, "Category is required").optional(),
-  brand: z.string().min(1, "Brand is required").optional(),
-  sku: z.string().min(1, "SKU is required").optional(),
-  tags: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(tag => tag.trim()) : val), 
-    z.array(z.string()).optional()), // Optional if no tags are provided
-  dimensions: z.string().min(1, "Dimensions are required").optional(),
-  weight: z.string().min(1, "Weight is required").optional(),
-  sizes: z.preprocess((val) => (typeof val === "string" ? val.split(",").map(size => size.trim()) : val), 
-    z.array(z.string()).optional()), // Optional if no sizes are provided
-    colorOptions: z.preprocess(
-      (val) => (typeof val === "string" ? val.split(",").map(color => color.trim()) : val),
-      z.array(z.string()).optional()
-    ),// Optional if no color options are provided
-  colorOptionImages: z.record(z.array(z.string())).optional(), // Object with arrays of images for each color
+// Define the schema for product images by color
+const ColorOptionImagesSchema = z.array(z.string().url());  // Array of image URLs for a specific color
+
+// Define the schema for a product variant
+const ProductVariantSchema = z.object({
+  color: z.string().min(1),  // Color of the variant (e.g., 'White', etc.)
+  price: z.number().positive(),  // Price of the variant
+  discount: z.number().min(0).max(100),  // Discount in percentage
+  stockQuantity: z.number().int().min(0),  // Total stock quantity of the variant
+  sizes: z.array(SizeStockSchema),  // Array of sizes and their stock quantities
+  colorOptionImages: ColorOptionImagesSchema,  // Array of image URLs for the color
+  sku: z.string().min(1),  // SKU for the variant (optional)
+});
+
+export const productSchema = z.object({
+  id: z.string().uuid(),  // Product ID (UUID format)
+  name: z.string().min(1, "Name is required"),  // Name of the product
+  description: z.string().min(1, "Description is required"),  // Product description
+  price: z.number().positive(),  // Base price of the product (not variant-specific)
+  discount: z.number().min(0).max(100),  // Base discount percentage
+  sku: z.string().min(1),  // Product SKU (global identifier)
+  tags: z.array(z.string()),  // Optional array of tags (e.g., ['basketball', 'sports'])
+  category: z.string().min(1),  // Product category (e.g., 'Shoes')
+  rating: z.number().min(0).max(5).optional(),  // Product rating (optional)
+  releaseDate: z.string().optional(),  // Optional release date (could be a string like '2024-11-01')
+  active: z.boolean().optional(),  // Whether the product is active (optional)
+  weight: z.string().optional(),  // Weight of the product (optional)
+  dimensions: z.string().optional(),  // Dimensions of the product (optional)
+  createdAt: z.string().optional(),  // Date when the product was created
+  updatedAt: z.string().optional(),  // Last updated date of the product
+  productURL: z.string().url().optional(),  // Product URL (optional)
+  material: z.string().min(1).optional(),  // Material of the product (required)
+  gender: z.enum(["mens", "womens", "unisex"]),  // Gender for which the product is designed (optional)
+  type: z.string().optional(),  // Type of product (e.g., 'Basketball Shoes', optional)
+  brand: z.string(),  // Product brand (optional)
+  manufacturer: z.string().nullable().optional(),  // Manufacturer details (optional)
+  featured: z.boolean().optional(),  // Whether the product is featured (optional)
+  variants: z.array(ProductVariantSchema).min(1, "Atleast One Variant is required"),  // Array of variants (colors, sizes, etc.)
+});
+
+
+export const UpdateProductSchema = z.object({
+  id: z.string().uuid(),  // Product ID (UUID format)
+  name: z.string().min(1).optional(),  // Name of the product
+  description: z.string().min(1).optional(),  // Product description
+  price: z.number().positive().optional(),  // Base price of the product (not variant-specific)
+  discount: z.number().min(0).max(100).optional(),  // Base discount percentage
+  sku: z.string().min(1).optional(),  // Product SKU (global identifier)
+  tags: z.array(z.string()).optional(),  // Optional array of tags (e.g., ['basketball', 'sports'])
+  category: z.string().min(1).optional(),  // Product category (e.g., 'Shoes')
+  rating: z.number().min(0).max(5).optional(),  // Product rating (optional)
+  releaseDate: z.string().optional(),  // Optional release date (could be a string like '2024-11-01')
+  active: z.boolean().optional(),  // Whether the product is active (optional)
+  weight: z.string().optional(),  // Weight of the product (optional)
+  dimensions: z.string().optional(),  // Dimensions of the product (optional)
+  createdAt: z.string().optional(),  // Date when the product was created
+  updatedAt: z.string().optional(),  // Last updated date of the product
+  productURL: z.string().url().optional(),  // Product URL (optional)
+  material: z.string().min(1).optional(),  // Material of the product (required)
+  gender: z.enum(["mens", "womens", "unisex"]).optional(),  // Gender for which the product is designed (optional)
+  type: z.string().optional(),  // Type of product (e.g., 'Basketball Shoes', optional)
+  brand: z.string().optional(),  // Product brand (optional)
+  manufacturer: z.string().optional(),  // Manufacturer details (optional)
+  featured: z.boolean().optional(),  // Whether the product is featured (optional)
+  variants: z.array(ProductVariantSchema).optional(),  // Array of variants (colors, sizes, etc.)
 });
