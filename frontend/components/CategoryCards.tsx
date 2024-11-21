@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 
 interface Category {
   title: string;
+  filter: string;
   imageUrl: string;
 }
 
@@ -15,7 +16,7 @@ interface CategoryCardsProps {
 }
 
 const CategoryCard: React.FC<{ category: Category; isHovered: boolean; isCurrent: boolean; onHover: () => void; onLeave: () => void; }> = ({ category, isHovered, isCurrent, onHover, onLeave }) => {
-  const link = `/products?category=${category.title.toLowerCase()}`;
+  const link = `/products/filter/${category.filter}?${category.filter}=${category.title.toLowerCase()}`;
 
   return (
     <div

@@ -1,7 +1,6 @@
 import React from "react";
 import { useRefinementList, UseRefinementListProps } from "react-instantsearch";
-import { Accordion, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { AccordionContent } from "@radix-ui/react-accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 const CustomRefinementList = ({
   attribute,

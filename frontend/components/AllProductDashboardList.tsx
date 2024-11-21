@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { ChevronLeft, ChevronRight, PencilOff, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import Notification from "./ui/notification";
 import Image from "next/image";
 import Loading from "@/app/loading";
@@ -211,7 +211,7 @@ const AllProducts: React.FC = () => {
                     onClick={() => handleEdit(product.id)}
                     className="bg-zinc-500 text-white px-2 py-1 rounded mr-2 hover:bg-zinc-600 transition"
                   >
-                    <PencilOff />
+                    <Pencil />
                   </button>
                   <button
                     onClick={() => handleDelete(product)}

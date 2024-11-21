@@ -132,20 +132,22 @@ export default AlgoliaProductCard;
 */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Hit as AlgoliaHit } from "instantsearch.js/es/types";
-import { Highlight } from "react-instantsearch";
+import { Configure, Highlight } from "react-instantsearch";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { createSlug } from "@/lib/utils";
 
+// ProductCardProps updated to accept only searchFilter as a prop
 export type ProductCardProps = {
   hit: AlgoliaHit<{
     name: string;
     description: string;
     price: number | null;
     discount: number | null;
-    sku: string | null;
+    sku: string;
     tags: string[];
     category: string;
     brand: string;
@@ -168,9 +170,25 @@ export type ProductCardProps = {
     rating: number;
     objectID: string;
   }>;
+  searchFilter?: string; // Accept a search filter as a prop
 };
 
-const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
+const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit, searchFilter }) => {
+  // Early return if searchFilter doesn't match any part of the product
+  if (searchFilter) {
+    const lowercasedFilter = searchFilter.toLowerCase();
+    const matchSearch = 
+      hit.gender.toLowerCase().includes(lowercasedFilter) ||
+      hit.type.toLowerCase().includes(lowercasedFilter) ||
+      hit.category.toLowerCase().includes(lowercasedFilter) ||
+      hit.tags.some(tag => tag.toLowerCase().includes(lowercasedFilter)) ||
+      hit.brand.toLowerCase().includes(lowercasedFilter);
+
+    if (!matchSearch) {
+      return null; // Return nothing if no match
+    }
+  }
+
   // Safe check for variants to prevent undefined errors
   const variants = Array.isArray(hit.variants) ? hit.variants : [];
 
@@ -194,7 +212,7 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
   const finalPrice = selectedVariant?.price
     ? selectedVariant.discount
       ? (
-          selectedVariant.price -
+          selectedVariant.price - 
           selectedVariant.price * (selectedVariant.discount / 100)
         ).toFixed(2)
       : selectedVariant.price.toFixed(2)
@@ -202,7 +220,7 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
 
   return (
     <>
-      <Link href={`/products/${hit.name}/${hit.objectID}/${hit.sku}`}>
+      <Link href={`/products/${createSlug(hit.name)}/${hit.objectID}/${createSlug(hit.sku)}`}>
         <Card
           className="max-w-3xl shadow-lg"
           onMouseEnter={() => setIsHovered(true)}
@@ -212,10 +230,7 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
             <div className="relative w-full h-96">
               <Image
                 className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 rounded-t-xl"
-                src={
-                  mainImage ||
-                  "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/7d12fa05-39c6-4d40-8c81-f5ccb5694fae/U+NIKE+ESC+CMPTNL+TRCK+JKT.png"
-                } // Placeholder image if mainImage is empty
+                src={mainImage || "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/7d12fa05-39c6-4d40-8c81-f5ccb5694fae/U+NIKE+ESC+CMPTNL+TRCK+JKT.png"}
                 alt={hit.name}
                 height={512}
                 width={512}
@@ -228,10 +243,9 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
               <div className="my-2 flex space-x-2 overflow-hidden">
                 {variants.map((variant, index) => (
                   <div
-                    key={index} // Use color name as key
+                    key={index}
                     className="relative w-12 h-12 rounded-full cursor-pointer overflow-hidden border-2 border-gray-300"
                     onMouseEnter={() => {
-                      // Ensure colorOptionImages is not empty and then set the first image URL
                       if (
                         variant.colorOptionImages &&
                         variant.colorOptionImages.length > 0
@@ -240,14 +254,11 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
                       }
                     }}
                     onMouseLeave={() => {
-                      // Reset to the initial image on mouse leave
-                      setMainImage(
-                        initialImage || "/placeholder-image-url.jpg"
-                      );
+                      setMainImage(initialImage || "/placeholder-image-url.jpg");
                     }}
                   >
                     <Image
-                      src={variant.colorOptionImages[0] || mainImage} // Fallback to placeholder image if no image
+                      src={variant.colorOptionImages[0] || mainImage}
                       alt={variant.color}
                       className="object-cover"
                       width={256}
@@ -257,7 +268,7 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
                 ))}
               </div>
             )}
-            <h2 className={`font-bold text-lg mb-2 mt-1`}>
+            <h2 className="font-bold text-lg mb-2 mt-1">
               <Highlight hit={hit} attribute="name" />
             </h2>
             <p className="text-gray-700">{hit.brand}</p>
@@ -267,8 +278,7 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
                 <p className="text-gray-700">
                   {selectedVariant?.price ? (
                     <>
-                      {selectedVariant.discount &&
-                      selectedVariant.discount > 0 ? (
+                      {selectedVariant.discount > 0 ? (
                         <>
                           <span className="text-indigo-500 text-lg font-semibold">
                             ${finalPrice}
@@ -280,11 +290,11 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit }) => {
                       ) : (
                         <span className="text-indigo-500 text-lg font-semibold">
                           ${finalPrice}
-                        </span> // No discount, just show the final price
+                        </span>
                       )}
                     </>
                   ) : (
-                    <span>${finalPrice}</span> // If no selected variant or price, show 0.00
+                    <span>${finalPrice}</span>
                   )}
                 </p>
                 <p className="text-zinc-700">

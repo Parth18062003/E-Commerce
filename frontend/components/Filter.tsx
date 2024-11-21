@@ -8,8 +8,8 @@ import {
 } from "./ui/accordion";
 import CustomRangeInput from "./Algolia/PriceFilter";
 import { ClearRefinements } from "react-instantsearch";
-import CustomRefinementList from "./CustomRefinementList";
-import CustomSizeFilter from "@/components/CustomSizeFilter";
+import CustomRefinementList from "./Algolia/CustomRefinementList";
+import CustomSizeFilter from "./Algolia/CustomSizeFilter";
 import { CustomRatingMenu } from "@/components/Algolia/CustomRatingMenu";
 import CustomColorFilter from "@/components/Algolia/CustomColorFilter";
 

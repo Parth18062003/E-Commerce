@@ -3,12 +3,13 @@
 import { Provider } from "react-redux";
 import store from "../store/store";
 import { liteClient as algoliasearch } from "algoliasearch/lite";
-import { InstantSearch } from "react-instantsearch";
+import { Configure, InstantSearch } from "react-instantsearch";
 import ProductSearch from "@/components/ProductSearch";
 import {
     InstantSearchSSRProvider,
     InstantSearchServerState,
 } from "react-instantsearch"; // Import SSR-related components
+import { CustomConfigure } from "@/components/Algolia/CustomConfigure";
 
 // Assuming `serverState` is passed from the server-side (getServerSideProps or similar)
 type ReduxProviderProps = {
@@ -25,6 +26,7 @@ const ReduxProvider = ({ children, serverState }: ReduxProviderProps) => {
     return (
         <InstantSearchSSRProvider {...serverState}> {/* Wrap with SSR provider */}
             <InstantSearch searchClient={searchClient} indexName="products">
+                <CustomConfigure hitsPerPage={9}/>
                 <Provider store={store}>
                     <ProductSearch />
                     {children}

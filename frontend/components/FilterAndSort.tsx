@@ -3,19 +3,20 @@
 import React, { useState } from "react";
 import { FilterOptions, FilterProducts } from "./Filter";
 import { X } from "lucide-react";
-import AlgoliaProductList from "./AlgoliaProductList";
-import CustomSortBy from "./CustomSortBy";
-import CustomPagination from "./CustomPagination";
-import CustomHitsPerPage from "./CustomHitsPerPage";
+import AlgoliaProductList from "./Algolia/AlgoliaProductList";
+import CustomSortBy from "./Algolia/CustomSortBy";
+import CustomPagination from "./Algolia/CustomPagination";
+import CustomHitsPerPage from "./Algolia/CustomHitsPerPage";
 import CustomCurrentRefinements from "./Algolia/CustomCurrentRefinements";
-import { SearchBox } from "react-instantsearch";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 const FilterAndSort = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-
+  const params = useParams();
+  const searchParams = useSearchParams();
   const sortOptions = [
     { label: "Featured", value: "products" },
-    {label: "Newest", value: "instant_search_newest" },
+    { label: "Newest", value: "instant_search_newest" },
     { label: "Price [Low - High]", value: "instant_search_price_asc" },
     { label: "Price [High - Low]", value: "instant_search_price_desc" },
   ];
@@ -29,6 +30,20 @@ const FilterAndSort = () => {
       setIsFilterVisible(false);
     }
   };
+
+  // Extract filter type (e.g., "brand", "gender") from the URL path
+  const filterType = params.filter as string;
+  // Extract the value of the filter (e.g., "Nike", "mens") from the query string
+  const filterValue = searchParams.get(filterType);
+
+  // Ensure filterValue is a string (handle if it's an array)
+  const filterValueString = Array.isArray(filterValue)
+    ? filterValue[0]
+    : filterValue;
+
+  // Combine filter type and value for the searchFilter prop
+  const searchFilter =
+    filterType && filterValueString ? `${filterType}:${filterValueString}` : "";
 
   return (
     <div className="flex w-full relative">
@@ -87,7 +102,7 @@ const FilterAndSort = () => {
 
         {/* Product List */}
         <div className="w-full mt-5">
-          <AlgoliaProductList />
+          <AlgoliaProductList searchFilter={searchFilter} />
           {/* <ProductList /> */}
         </div>
         <CustomPagination />

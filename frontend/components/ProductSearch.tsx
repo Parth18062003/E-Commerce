@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Hit from "./Hits";
-import CustomPagination from "./CustomPagination";
+import CustomPagination from "./Algolia/CustomPagination";
 import { usePathname } from "next/navigation";
 
 const ProductSearch = () => {
