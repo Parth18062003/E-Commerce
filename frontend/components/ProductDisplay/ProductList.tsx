@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ProductCard from "./ui/product-card";
 import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
 import { fetchProducts } from "@/store/productSlice";
 import { AppDispatch, RootState } from "@/store/store";
@@ -22,9 +21,7 @@ const ProductList: React.FC = () => {
     const isProductsCached =
       products.length > 0 && products.length >= productsPerPage * (page - 1);
 
-    if (!isProductsCached) {
-      dispatch(fetchProducts(page - 1)); // Fetch products for the page if not cached
-    }
+
   }, [dispatch, page, products]); 
 
   // Handle loading and error states
@@ -143,9 +140,7 @@ const ProductList: React.FC = () => {
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {currentProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+
       </div>   
       <div className="flex justify-center mt-4 h-8">{paginationItems()}</div>
     </div>

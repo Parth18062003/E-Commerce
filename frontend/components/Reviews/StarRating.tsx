@@ -6,8 +6,8 @@ import { Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addRating, Rating } from "@/store/ratingSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import LoginDialog from "./LoginDialog";
 import RatingImageUpload from "./RatingImageUpload";
+import LoginDialog from "../LoginDialog";
 
 interface StarRatingProps {
   productId: string;
@@ -137,6 +137,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId, ratings }) =>
                     >
                       <Star
                         size={24}
+                        aria-label={`Rate ${starValue}`}
                         className={`cursor-pointer transition-colors duration-200 } ${ratingValue && starValue <= ratingValue ? "text-yellow-500" : "text-gray-400"}`}
                       />
                     </button>

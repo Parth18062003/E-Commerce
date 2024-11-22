@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProductToWishList, removeProductFromWishList, fetchWishList } from '@/store/wishListSlice';
 import { AppDispatch } from '@/store/store';
-import LoginDialog from './LoginDialog';
+import LoginDialog from '../LoginDialog';
 
 interface WishListButtonProps {
     productId: string; // Accepts only the product ID

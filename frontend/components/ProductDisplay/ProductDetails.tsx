@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Ruler } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,26 +15,26 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Link from "next/link";
-import { Lens } from "./ui/lens";
-import ImageModal from "./ImageModal";
+import { Lens } from "../ui/lens";
+import ImageModal from "../ImageModal";
 import { fetchProductDetails, Variant } from "@/store/productSlice";
-import WishListButton from "./WishListButton";
-import { StarRating } from "./StarRating";
-import ProductReviewsList from "./ProductReviewsList";
+import ProductReviewsList from "../Reviews/ProductReviewsList";
 import { fetchRatingsByProduct } from "@/store/ratingSlice";
-import GetProductRating from "./GetProductRating";
+import GetProductRating from "../Reviews/GetProductRating";
 import Loading from "@/app/loading";
 import { createSlug } from "@/lib/utils";
+import WishListButton from "../WishList/WishListButton";
+import { StarRating } from "../Reviews/StarRating";
 
 const ProductDetails: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const params = useParams();
   const productId = params.productId as string;
-  
+
   const { product, loading, error } = useSelector((state: RootState) => state.product);
   const { ratings, cache } = useSelector((state: RootState) => state.rating);
-  
+
   const [mainImages, setMainImages] = useState<string[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
@@ -44,11 +44,11 @@ const ProductDetails: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState<number>(0);
   const [sizes, setSizes] = useState<{ size: string; stockQuantity: number }[]>([]);
-  
+
   // Track both product ID and initialization status
   const initialSetupRef = useRef<{ productId: string | null; completed: boolean }>({
     productId: null,
-    completed: false
+    completed: false,
   });
 
   // Fetch product and ratings only when the productId changes
@@ -65,17 +65,17 @@ const ProductDetails: React.FC = () => {
   // Initial setup effect - runs only once per unique product
   useEffect(() => {
     if (
-      product && 
+      product &&
       (!initialSetupRef.current.completed || initialSetupRef.current.productId !== product.id)
     ) {
       // Check URL for variant SKU
-      const skuFromUrl = window.location.pathname.split('/').pop();
+      const skuFromUrl = window.location.pathname.split("/").pop();
       let initialVariant = product.variants[0];
-      
+
       // If URL contains SKU, find matching variant
       if (skuFromUrl) {
         const variantFromUrl = product.variants.find(
-          v => createSlug(v.sku) === skuFromUrl
+          (v) => createSlug(v.sku) === skuFromUrl
         );
         if (variantFromUrl) {
           initialVariant = variantFromUrl;
@@ -87,11 +87,11 @@ const ProductDetails: React.FC = () => {
         initializeVariant(initialVariant);
         initialSetupRef.current = {
           productId: product.id,
-          completed: true
+          completed: true,
         };
       }
     }
-  }, [productId]); // Only depend on productId, not product
+  }, [product, productId]); // Ensure to watch for product and productId changes
 
   // Function to initialize a selected variant
   const initializeVariant = (variant: Variant) => {
@@ -115,7 +115,7 @@ const ProductDetails: React.FC = () => {
       console.error(`No variant found for color: ${color}`);
       return;
     }
-    
+
     console.log("Changing color to:", color);
     initializeVariant(newVariant);
 

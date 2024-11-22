@@ -5,16 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts, deleteProduct, Product } from "@/store/productSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+
 import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react";
-import Notification from "./ui/notification";
 import Image from "next/image";
 import Loading from "@/app/loading";
 import {
@@ -24,7 +16,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "../ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import Notification from "../ui/notification";
 
 type NotificationType = {
   id: number;
@@ -246,7 +247,8 @@ const AllProducts: React.FC = () => {
                 width={512}
                 className="w-32 h-32 object-cover rounded mr-4"
               />
-              <DialogDescription className="flex flex-col">
+              <DialogDescription>Product Details</DialogDescription>
+              <div className="flex flex-col">
                 <span>
                   <strong>ID:</strong> {selectedProduct.id}
                 </span>
@@ -309,7 +311,7 @@ const AllProducts: React.FC = () => {
                     {selectedProduct.productURL}
                   </a>
                 </span>
-              </DialogDescription>
+              </div>
             </div>
             <DialogFooter>
               <button
@@ -374,7 +376,9 @@ const AllProducts: React.FC = () => {
           className="flex items-center justify-center text-zinc-700 p-1 rounded-full hover:bg-zinc-400 disabled:bg-zinc-300 transition-colors"
           aria-label="Previous page"
         >
-          <span className="font-semibold text-lg"><ChevronLeft /></span>
+          <span className="font-semibold text-lg">
+            <ChevronLeft />
+          </span>
         </button>
 
         {/* Page Numbers */}
@@ -438,7 +442,9 @@ const AllProducts: React.FC = () => {
           className="flex items-center justify-center text-zinc-700 p-1 hover:bg-zinc-400 rounded-full disabled:bg-zinc-300 transition-colors"
           aria-label="Next page"
         >
-          <span className="font-semibold text-lg"><ChevronRight /></span>
+          <span className="font-semibold text-lg">
+            <ChevronRight />
+          </span>
         </button>
       </div>
     </div>

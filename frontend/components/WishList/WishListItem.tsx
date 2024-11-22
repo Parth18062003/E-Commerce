@@ -20,8 +20,8 @@ const WishListItem: React.FC<WishListItemProps> = ({ productId, onRemove }) => {
     const productCache = useSelector((state: RootState) => state.product.cache);
 
     const product = productCache[productId.trim()];
-    const loading = useSelector((state: RootState) => state.product.loading);
-    const error = useSelector((state: RootState) => state.product.error);
+    const loading = useSelector((state: RootState) => state.product.loading.fetchProductDetails);
+    const error = useSelector((state: RootState) => state.product.error.fetchProductDetails);
     
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [mainImages, setMainImages] = useState<string[]>([]);
@@ -30,9 +30,18 @@ const WishListItem: React.FC<WishListItemProps> = ({ productId, onRemove }) => {
         if (productId && !product) {
             dispatch(fetchProductDetails(productId.trim()));
         } else if (product) {
-            const initialColor = product.colorOptions[0];
+            const initialColor = product.colorOptions[0]; // Set the initial color option
             setSelectedColor(initialColor);
-            setMainImages(product.colorOptionImages[initialColor] || []);
+
+            // Loop through variants to find the correct images for the selected color
+            if (product.variants) {
+                const variantForColor = product.variants.find(variant =>
+                    variant.color === initialColor
+                );
+                if (variantForColor && variantForColor.colorOptionImages) {
+                    setMainImages(variantForColor.colorOptionImages || []);
+                }
+            }
         }
     }, [dispatch, productId, product]);
 

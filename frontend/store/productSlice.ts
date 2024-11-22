@@ -84,7 +84,8 @@ type AsyncActionTypes =
     | "fetchFeaturedProducts"
     | "createProduct"
     | "updateProduct"
-    | "deleteProduct";
+    | "deleteProduct"
+    | "fetchProductsByIds";
 
 // API configuration
 const API_BASE_URL = "http://localhost:8082/api/v1/products";
@@ -102,6 +103,13 @@ const productAPI = {
     createProduct: (data: Partial<Product>) => axios.post<Product>(`${API_BASE_URL}/create-product`, data),
     updateProduct: (id: string, data: Partial<Product>) => axios.put<Product>(`${API_BASE_URL}/update-product/${id}`, data),
     deleteProduct: (id: string) => axios.delete(`${API_BASE_URL}/delete-product/${id}`),
+    fetchProductsByIds: (ids: string[]) => {
+        return axios.get<Product[]>(`${API_BASE_URL}/ids`, {
+          params: {
+            ids: ids.join(',')  // Join the array of ids into a single comma-separated string
+          }
+        });
+      }    
 };
 
 // Thunk creators with improved error handling and typing
@@ -303,6 +311,21 @@ export const fetchFeaturedProducts = createAsyncThunk<
     }
 );
 
+// Fetch products by IDs
+export const fetchProductsByIds = createAsyncThunk<Product[], string[], { state: RootState }>(
+    "products/fetchProductsByIds",
+    async (ids, { getState }) => {
+        const state = getState();
+        const cachedProducts = ids.map((id) => state.product.cache[id]).filter((product) => !!product);
+        if (cachedProducts.length === ids.length) {
+            return cachedProducts as Product[];
+        }
+
+        const { data } = await productAPI.fetchProductsByIds(ids);
+        return data;
+    }
+);
+
 // Create a new product
 export const createProduct = createAsyncThunk<Product, Partial<Product>>(
     "product/createProduct",
@@ -349,7 +372,8 @@ const initialState: ProductState = {
         fetchFeaturedProducts: false,
         createProduct: false,
         updateProduct: false,
-        deleteProduct: false
+        deleteProduct: false,
+        fetchProductsByIds: false
     },
     error: {
         fetchProducts: null,
@@ -362,7 +386,8 @@ const initialState: ProductState = {
         fetchFeaturedProducts: null,
         createProduct: null,
         updateProduct: null,
-        deleteProduct: null
+        deleteProduct: null,
+        fetchProductsByIds: null
     },
     totalPages: 0,
     currentPage: 0,
@@ -614,6 +639,19 @@ const productSlice = createSlice({
                 state.error.fetchProductsByCategory = action.error.message ?? "Failed to load products by category";
             })
 
+            // FetchProductsByIds
+            .addCase(fetchProductsByIds.pending, (state) => {
+                state.loading.fetchProductsByIds = true;
+                state.error.fetchProductsByIds = null;
+            })
+            .addCase(fetchProductsByIds.fulfilled, (state, action) => {
+                state.loading.fetchProductsByIds = false;
+                state.products = action.payload;
+            })
+            .addCase(fetchProductsByIds.rejected, (state, action) => {
+                state.loading.fetchProductsByIds = false;
+                state.error.fetchProductsByIds = action.error.message ?? "Failed to load products by IDs";
+            })
             // CreateProduct
             .addCase(createProduct.pending, (state) => {
                 state.loading.createProduct = true;

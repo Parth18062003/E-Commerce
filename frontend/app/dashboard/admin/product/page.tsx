@@ -1,4 +1,5 @@
-import AllProducts from '@/components/AllProductDashboardList'
+
+import AllProducts from '@/components/ManageProduct/AllProductDashboardList'
 import React from 'react'
 
 const ProductsPage = () => {

@@ -2,11 +2,11 @@
 
 import { fetchWishList, removeProductFromWishList } from '@/store/wishListSlice';
 import React, { useEffect } from 'react';
-import WishListItem from './WishListItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
+import WishListItem from './WishListItem';
 
 const WishList: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -37,7 +37,7 @@ const WishList: React.FC<{ userId: string }> = ({ userId }) => {
             {productsInWishList.length > 0 ? (
                 <ul className="space-y-4">
                     {productsInWishList.map((productId) => (
-                        <WishListItem 
+                        <WishListItem
                             key={productId} 
                             productId={productId} 
                             onRemove={() => handleRemoveProduct(productId)} 

@@ -18,9 +18,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import Hit from "./Hits";
-import CustomPagination from "./Algolia/CustomPagination";
 import { usePathname } from "next/navigation";
+import Hit from "../Hits";
+import CustomPagination from "./CustomPagination";
 
 const ProductSearch = () => {
   const { results } = useInstantSearch(); // Adding isSearching from Algolia
