@@ -57,7 +57,6 @@ const AllProducts: React.FC = () => {
   useEffect(() => {
     // Check if the products for the current page are already in the cache
     const isProductsCached = cachedProducts && cachedProducts.length > 0;
-
     // If products for the current page are not cached, fetch them
     if (!isProductsCached) {
       dispatch(fetchProducts({ page: currentPage - 1, size: productsPerPage }));
@@ -111,8 +110,12 @@ const AllProducts: React.FC = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const formatPrice = (priceInCents: number) => {
-    return `$${(priceInCents / 100).toFixed(2)}`;
+  const formatPrice = (price: number) => {
+    
+    // Format the number with commas as thousands separators
+    const formattedPrice = price.toLocaleString('en-IN'); // 'en-IN' for Indian numbering system (1,24,532)
+  
+    return `$${formattedPrice}`;
   };
 
   if (loading)
@@ -128,25 +131,17 @@ const AllProducts: React.FC = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="border border-zinc-300 p-4">Sr.No.</TableHead>
-            <TableHead className="border border-zinc-300 p-4">ID</TableHead>
-            <TableHead className="border border-zinc-300 p-4">Name</TableHead>
-            <TableHead className="border border-zinc-300 p-4">SKU</TableHead>
-            <TableHead className="border border-zinc-300 p-4">Price</TableHead>
-            <TableHead className="border border-zinc-300 p-4">Stock</TableHead>
-            <TableHead className="border border-zinc-300 p-4">
-              Discount
-            </TableHead>
-            <TableHead className="border border-zinc-300 p-4">
-              Dimensions
-            </TableHead>
-            <TableHead className="border border-zinc-300 p-4">Weight</TableHead>
-            <TableHead className="border border-zinc-300 p-4">
-              Main Image
-            </TableHead>
-            <TableHead className="border border-zinc-300 p-4">
-              Actions
-            </TableHead>
+            <TableHead>Sr.No.</TableHead>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>SKU</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Discount</TableHead>
+            <TableHead>Dimensions</TableHead>
+            <TableHead>Weight</TableHead>
+            <TableHead>Main Image</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -162,11 +157,9 @@ const AllProducts: React.FC = () => {
 
             return (
               <TableRow key={product.id} className="hover:bg-zinc-50">
-                <TableCell className="border border-zinc-300 p-4">
-                  {index + 1}
-                </TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell
-                  className="border border-zinc-300 p-4 cursor-pointer"
+                  className=" cursor-pointer"
                   onClick={() => setSelectedProduct(product)}
                 >
                   {product.id.length > 10
@@ -174,31 +167,19 @@ const AllProducts: React.FC = () => {
                     : product.id}
                 </TableCell>
                 <TableCell
-                  className="border border-zinc-300 p-4 cursor-pointer"
+                  className=" cursor-pointer"
                   onClick={() => setSelectedProduct(product)}
                 >
                   <div className="font-semibold">{product.name}</div>
                   <div className="text-sm text-zinc-600">{product.brand}</div>
                 </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {product.sku}
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {formattedPrice}
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {totalStock}
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {product.discount}%
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {product.dimensions}
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
-                  {product.weight}
-                </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
+                <TableCell>{product.sku}</TableCell>
+                <TableCell>{formattedPrice}</TableCell>
+                <TableCell>{totalStock}</TableCell>
+                <TableCell>{product.discount}%</TableCell>
+                <TableCell>{product.dimensions}</TableCell>
+                <TableCell>{product.weight}</TableCell>
+                <TableCell>
                   <Image
                     src={imageSrc}
                     alt={product.name}
@@ -207,7 +188,7 @@ const AllProducts: React.FC = () => {
                     className="w-20 h-20 object-cover rounded"
                   />
                 </TableCell>
-                <TableCell className="border border-zinc-300 p-4">
+                <TableCell>
                   <button
                     onClick={() => handleEdit(product.id)}
                     className="bg-zinc-500 text-white px-2 py-1 rounded mr-2 hover:bg-zinc-600 transition"
@@ -232,11 +213,12 @@ const AllProducts: React.FC = () => {
           open={!!selectedProduct}
           onOpenChange={() => setSelectedProduct(null)}
         >
-          <DialogContent className="mt-6 p-4 border border-zinc-300 rounded bg-white shadow">
-            <DialogTitle className="text-xl font-bold mb-2 text-black">
+          <DialogContent className="mt-6 p-4 border border-zinc-300 rounded bg-white shadow text-black">
+            <DialogTitle className="flex flex-col text-xl font-bold mb-2">
               Product Details
             </DialogTitle>
-            <div className="flex items-start">
+            <DialogDescription className="w-full">
+              {" "}
               <Image
                 src={
                   selectedProduct.variants[0]?.colorOptionImages[0] ||
@@ -247,7 +229,8 @@ const AllProducts: React.FC = () => {
                 width={512}
                 className="w-32 h-32 object-cover rounded mr-4"
               />
-              <DialogDescription>Product Details</DialogDescription>
+            </DialogDescription>
+            <div className="flex items-start">
               <div className="flex flex-col">
                 <span>
                   <strong>ID:</strong> {selectedProduct.id}
@@ -262,7 +245,7 @@ const AllProducts: React.FC = () => {
                   <strong>Description:</strong> {selectedProduct.description}
                 </span>
                 <span>
-                  <strong>Price:</strong> {formatPrice(selectedProduct.price)}
+                  <strong>Price:</strong> {(selectedProduct.price)}
                 </span>
                 <span>
                   <strong>SKU:</strong> {selectedProduct.sku}

@@ -10,6 +10,7 @@ import { HorizontalScrollCarousel } from "@/components/ScrollCarousel";
 import HeroBackground from "@/components/ui/custom-grid";
 import HeroText from "@/components/ui/hero-text";
 import { useProduct } from "@/hooks/useProduct";
+import { CTASection } from "./cta-section";
 
 const categories = [
   {
@@ -60,6 +61,7 @@ const { products } = useProduct(0, 16);
           </div>
         </main>
       </div>
+      <CTASection />
       <Footer />
     </>
   );

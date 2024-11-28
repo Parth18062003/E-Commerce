@@ -1,4 +1,4 @@
-"use client";
+/* "use client";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -32,5 +32,35 @@ export const useProduct = (page: number, size: number) => {
     error,
     totalPages,
     currentPage
+  };
+};
+ */
+// hooks/useProduct.tsx
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { AppDispatch, RootState } from '@/store/store';
+import { fetchProducts } from '@/store/productSlice';
+
+export const useProduct = (page: number, size: number) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { products, loading, error, productsCache, totalPages, currentPage } = useSelector(
+    (state: RootState) => state.product
+  );
+
+  const cacheKey = `products_page_${page}`;
+
+  useEffect(() => {
+    // Only fetch client-side
+    if (typeof window !== 'undefined' && !productsCache[cacheKey]) {
+      dispatch(fetchProducts({ page, size }));
+    }
+  }, [dispatch, page, size, productsCache, cacheKey]);
+
+  return {
+    products: productsCache[cacheKey] || [],
+    loading,
+    error,
+    totalPages,
+    currentPage,
   };
 };

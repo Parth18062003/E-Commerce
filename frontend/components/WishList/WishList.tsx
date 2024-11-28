@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { fetchWishList, removeProductFromWishList } from '@/store/wishListSlice';
 import React, { useEffect } from 'react';
@@ -26,7 +26,7 @@ const WishList: React.FC<{ userId: string }> = ({ userId }) => {
     if (loading.fetch) return <p>Loading...</p>;
 
     const productsInWishList = wishlist?.productIds || [];
-
+    
     const handleGoBack = () => {
         router.back();
     };
@@ -42,7 +42,7 @@ const WishList: React.FC<{ userId: string }> = ({ userId }) => {
                             productId={productId} 
                             onRemove={() => handleRemoveProduct(productId)} 
                         />
-                    ))}
+                    ))} 
                 </ul>
             ) : (
                 !loading.fetch && (

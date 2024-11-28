@@ -1,3 +1,26 @@
+/* import React from "react";
+import { Star } from "lucide-react";
+
+const GetProductRating = ({ averageRatingData }: { averageRatingData : { averageRating:number, totalReviews: number  } }) => {
+  const { averageRating, totalReviews } = averageRatingData;
+  return (
+    <div>
+      {averageRating !== undefined ? (
+        <div className="flex items-center mb-4">
+          <Star className="w-5 h-5 fill-yellow-400 stroke-yellow-400" />
+          <span className="ml-1 text-black">{averageRating}</span>
+          <span className="mx-1 text-gray-400">|</span>
+          <span className="text-gray-400">{totalReviews} reviews</span>
+        </div>
+      ) : (
+        <div>No ratings available.</div>
+      )}
+    </div>
+  );
+};
+
+export default GetProductRating;
+ */
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAverageRating } from "@/store/ratingSlice"; // Adjust the import based on your store structure

@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"; 
@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { fetchProductDetails } from '@/store/productSlice';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { createSlug } from '@/lib/utils';
 
 interface WishListItemProps {
     productId: string; 
@@ -52,7 +53,7 @@ const WishListItem: React.FC<WishListItemProps> = ({ productId, onRemove }) => {
     const discountedPrice = product.price - (product.price * (product.discount / 100));
 
     const handleCardClick = () => {
-        router.push(`/products/${product.name}/${product.id}`);
+        router.push(`/products/${createSlug(product.name)}/${product.id}/${createSlug(product.sku)}`);
     };
 
     return (

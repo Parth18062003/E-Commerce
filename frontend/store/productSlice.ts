@@ -2,13 +2,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "./store";
 
-// SizeVariant type for sizes within a color option
 export interface SizeVariant {
     size: string;
     stockQuantity: number;
 }
 
-// Variant type for product variants (e.g., different colors, prices, sizes)
 export interface Variant {
     color: string;
     price: number;
@@ -16,10 +14,9 @@ export interface Variant {
     sku: string;
     stockQuantity: number;
     sizes: SizeVariant[];
-    colorOptionImages: string[]; // Images for the color option
+    colorOptionImages: string[]; 
 }
 
-// Main Product model type
 export interface Product {
     id: string;
     name: string;
@@ -31,23 +28,22 @@ export interface Product {
     tags: string[];
     rating: number;
     reviewCount: number;
-    createdAt: string | string[];
-    updatedAt: string | string[];
+    createdAt?: string | string[];
+    updatedAt?: string | string[];
     discount: number;
     dimensions: string;
     weight: string;
-    colorOptions: string[]; // Array of color options available
-    isActive: boolean;
-    isFeatured: boolean;
+    colorOptions: string[]; 
+    isActive?: boolean;
+    featured?: boolean;
     productURL: string;
     material: string;
     releaseDate: string;
     gender: string;
     type: string;
-    variants: Variant[]; // List of variants (different colors, sizes, prices)
+    variants: Variant[]; 
 }
 
-// API response types
 interface ProductsResponse {
     content: Product[];
     totalPages: number;
@@ -55,12 +51,10 @@ interface ProductsResponse {
     size: number;
 }
 
-// Cache type for storing products in cache
 interface EntityCache<T> {
     [key: string]: T | null;
 }
 
-// Product state interface
 interface ProductState {
     products: Product[];
     product: Product | null;
@@ -72,7 +66,6 @@ interface ProductState {
     productsCache: Record<string, Product[]>;
 }
 
-// Async action types
 type AsyncActionTypes =
     | "fetchProducts"
     | "fetchProductDetails"
@@ -87,10 +80,7 @@ type AsyncActionTypes =
     | "deleteProduct"
     | "fetchProductsByIds";
 
-// API configuration
 const API_BASE_URL = "http://localhost:8082/api/v1/products";
-
-// API service functions
 const productAPI = {
     fetchProduct: (id: string) => axios.get<Product>(`${API_BASE_URL}/${id}`),
     fetchProducts: (page: number, size: number) => axios.get<ProductsResponse>(`${API_BASE_URL}?page=${page}&size=${size}`),
@@ -106,15 +96,12 @@ const productAPI = {
     fetchProductsByIds: (ids: string[]) => {
         return axios.get<Product[]>(`${API_BASE_URL}/ids`, {
           params: {
-            ids: ids.join(',')  // Join the array of ids into a single comma-separated string
+            ids: ids.join(',')  
           }
         });
       }    
 };
 
-// Thunk creators with improved error handling and typing
-
-// Fetch product details with caching
 export const fetchProductDetails = createAsyncThunk<Product, string, { state: RootState }>(
     "product/fetchProductDetails",
     async (productId, { getState }) => {
@@ -128,26 +115,22 @@ export const fetchProductDetails = createAsyncThunk<Product, string, { state: Ro
     }
 );
 
-// Fetch products with pagination and caching
 export const fetchProducts = createAsyncThunk<ProductsResponse, { page: number; size: number }, { state: RootState }>(
     'products/fetchProducts',
     async ({ page, size }, { getState }) => {
       const state = getState();
       const cacheKey = `products_page_${page}`;
   
-      // Check if the products for the requested page are already cached
       const cachedProducts = state.product.productsCache[cacheKey];
       if (cachedProducts) {
         return { content: cachedProducts, totalPages: state.product.totalPages, number: page, size };
       }
   
-      // Fetch the products from the API if not cached
       const { data } = await productAPI.fetchProducts(page, size);
       return data;
     }
   );
   
-// Fetch products by category
 export const fetchProductsByCategory = createAsyncThunk<
     ProductsResponse,
     { category: string, page: number, size: number },
@@ -168,12 +151,10 @@ export const fetchProductsByCategory = createAsyncThunk<
         }
 
         const { data } = await productAPI.fetchProductsByCategory(category, page, size);
-
         return data;
     }
 )
 
-// Fetch products by release date (latest before the given date)
 export const fetchProductsByReleaseDate = createAsyncThunk<
     ProductsResponse,
     { releaseDate: string, page: number, size: number },
@@ -192,15 +173,11 @@ export const fetchProductsByReleaseDate = createAsyncThunk<
                 size: size
             }
         }
-        // Make API call if not cached
         const { data } = await productAPI.fetchProductsByReleaseDate(releaseDate, page, size);
-
-        // Store the fetched data in cache
         return data;
     }
 );
 
-// Fetch products by tag
 export const fetchProductsByTag = createAsyncThunk<
     ProductsResponse,
     { tag: string, page: number, size: number },
@@ -220,15 +197,11 @@ export const fetchProductsByTag = createAsyncThunk<
             }
         }
 
-        // Make API call if not cached
         const { data } = await productAPI.fetchProductsByTag(tag, page, size);
-
-        // Store the fetched data in cache
         return data;
     }
 );
 
-// Fetch products by gender
 export const fetchProductsByGender = createAsyncThunk<
     ProductsResponse,
     { gender: string, page: number, size: number },
@@ -248,15 +221,11 @@ export const fetchProductsByGender = createAsyncThunk<
             }
         }
 
-        // Make API call if not cached
         const { data } = await productAPI.fetchProductsByGender(gender, page, size);
-
-        // Store the fetched data in cache
         return data;
     }
 );
 
-// Fetch products by brand
 export const fetchProductsByBrand = createAsyncThunk<
     ProductsResponse,
     { brand: string, page: number, size: number },
@@ -275,15 +244,11 @@ export const fetchProductsByBrand = createAsyncThunk<
                 size: size
             }
         }
-        // Make API call if not cached
         const { data } = await productAPI.fetchProductsByBrand(brand, page, size);
-
-        // Store the fetched data in cache
         return data;
     }
 );
 
-// Fetch featured products
 export const fetchFeaturedProducts = createAsyncThunk<
     ProductsResponse,
     { page: number, size: number },
@@ -302,16 +267,11 @@ export const fetchFeaturedProducts = createAsyncThunk<
                 size: size
             }
         }
-
-        // Make API call if not cached
         const { data } = await productAPI.fetchFeaturedProducts(page, size);
-
-        // Store the fetched data in cache
         return data;
     }
 );
 
-// Fetch products by IDs
 export const fetchProductsByIds = createAsyncThunk<Product[], string[], { state: RootState }>(
     "products/fetchProductsByIds",
     async (ids, { getState }) => {
@@ -326,7 +286,6 @@ export const fetchProductsByIds = createAsyncThunk<Product[], string[], { state:
     }
 );
 
-// Create a new product
 export const createProduct = createAsyncThunk<Product, Partial<Product>>(
     "product/createProduct",
     async (newProductData) => {
@@ -335,7 +294,6 @@ export const createProduct = createAsyncThunk<Product, Partial<Product>>(
     }
 );
 
-// Update an existing product
 export const updateProduct = createAsyncThunk<Product, Partial<Product>>(
     "product/updateProduct",
     async (productData) => {
@@ -347,7 +305,6 @@ export const updateProduct = createAsyncThunk<Product, Partial<Product>>(
     }
 );
 
-// Delete a product
 export const deleteProduct = createAsyncThunk<string, string>(
     "product/deleteProduct",
     async (productId, { dispatch }) => {
@@ -357,7 +314,6 @@ export const deleteProduct = createAsyncThunk<string, string>(
     }
 );
 
-// Initial state for product slice]
 const initialState: ProductState = {
     products: [],
     product: null,
@@ -395,40 +351,24 @@ const initialState: ProductState = {
     productsCache: {}
 };
 
-// Product slice with reducers and extra reducers for async actions
 const productSlice = createSlice({
     name: "product",
     initialState,
     reducers: {
         clearProductCache: (state, action: PayloadAction<string>) => {
-            // Create a new cache object to ensure immutability
-            const newCache = { ...state.cache };
-            delete newCache[action.payload];
-            state.cache = newCache;
-
-            // Filter out the product from the products array
-            state.products = state.products.filter((product) => product.id !== action.payload);
-
-            // Clean the products cache per page, ensuring we don't directly mutate arrays
-            const newProductsCache = { ...state.productsCache };
-            Object.keys(newProductsCache).forEach((page) => {
-                newProductsCache[page] = newProductsCache[page].filter((product) => product.id !== action.payload);
+            delete state.cache[action.payload];
+            Object.keys(state.productsCache).forEach((page) => {
+              state.productsCache[page] = state.productsCache[page].filter((product) => product.id !== action.payload);
             });
-            state.productsCache = newProductsCache;
-        },
+            state.products = state.products.filter((product) => product.id !== action.payload);
+          },
         setProducts: (state, action: PayloadAction<Product[]>) => {
             state.products = action.payload;
         },
         setProductsCache: (state, action: PayloadAction<{ cacheKey: string; products: Product[] }>) => {
             const { cacheKey, products } = action.payload;
-      
-            // Merge existing products in cache with new ones to avoid overwriting
-            const existingProducts = state.productsCache[cacheKey] || [];
-            state.productsCache = {
-              ...state.productsCache,
-              [cacheKey]: [...existingProducts, ...products],
-            };
-        },       
+            state.productsCache[cacheKey] = products;
+          },      
         clearAllCache: (state) => {
             state.cache = {};
             state.productsCache = {};
@@ -436,8 +376,6 @@ const productSlice = createSlice({
         createProduct: (state, action) => {
             state.products.push(action.payload);
             state.cache[action.payload.id] = action.payload;
-
-            // Optionally update productsCache (if needed for pagination)
             Object.keys(state.productsCache).forEach((page) => {
                 state.productsCache[page].push(action.payload);
             });
@@ -445,16 +383,11 @@ const productSlice = createSlice({
         },
         updateProduct: (state, action) => {
             const updatedProduct = action.payload;
-            // Update the product in the products array
             const productIndex = state.products.findIndex((product) => product.id === updatedProduct.id);
             if (productIndex !== -1) {
                 state.products[productIndex] = updatedProduct;
             }
-
-            // Update the product in the cache
             state.cache[updatedProduct.id] = updatedProduct;
-
-            // Update the product in the productsCache (page-level)
             Object.keys(state.productsCache).forEach((page) => {
                 const productIndexInPage = state.productsCache[page].findIndex((product) => product.id === updatedProduct.id);
                 if (productIndexInPage !== -1) {
@@ -686,11 +619,9 @@ const productSlice = createSlice({
                     }
                 });
                 const updatedVariants = action.payload.variants.map((variant) => ({
-                    ...variant, // Ensure a shallow copy of the variant object
-                    // Further modify the variant here if you want to update certain properties
+                    ...variant, 
                 }));
             
-                // Replace the variants with the updated variants array in the product
                 state.products[index].variants = updatedVariants;
                 state.loading.updateProduct = false;
             })
@@ -719,8 +650,5 @@ const productSlice = createSlice({
     },
 });
 
-// Export the actions
 export const { setProducts, clearProductCache, setProductsCache, clearAllCache } = productSlice.actions;
-
-// Default export of the reducer
 export default productSlice.reducer;

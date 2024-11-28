@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
 import { fetchProducts } from "@/store/productSlice";

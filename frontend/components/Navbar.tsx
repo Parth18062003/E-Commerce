@@ -160,6 +160,17 @@ const Navbar = () => {
               Cart
             </TransitionLink>
             {/* Add more links as needed */}
+            <SearchBox
+                placeholder="Search products..."
+                classNames={{
+                  root: "w-full",
+                  form: "w-full",
+                  input:
+                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                  submit: "hidden",
+                  reset: "hidden",
+                }}
+              />
           </div>
         </div>
       )}

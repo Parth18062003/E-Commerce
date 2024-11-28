@@ -2,6 +2,7 @@ import React from "react";
 import { CldImage } from "next-cloudinary";
 import { Star } from "lucide-react";
 import { Rating } from "@/store/ratingSlice";
+import { ReviewsList } from "./reviews-list";
 
 interface ReviewsListProps {
   productId: string;
@@ -14,15 +15,21 @@ const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId, ratings }) 
     return <div className="flex justify-start items-center text-black px-4">No reviews yet.</div>;
   }
 
+  const handleReportReview = (id: string, reason: string) => {
+    console.log(`Review ${id} reported for reason: ${reason}`);
+  };
+
   return (
-    <div className="reviews-list mt-2 px-8 max-w-3xl">
-      <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
-      {ratings.map((review: Rating) => (
+    <div className="max-w-4xl mx-16 py-12 px-4">
+      <h2 className="text-3xl font-bold mb-8 text-black">Customer Reviews</h2>
+      
+      <ReviewsList onReportReview={handleReportReview} reviews={ratings} />
+{/*       {ratings.map((review: Rating) => (
         <div
           key={review.id}
-          className="review mb-6 p-4 border border-gray-300 rounded-lg shadow-sm"
+          className=""
         >
-          <div className="flex items-center justify-between">
+           <div className="flex items-center justify-between">
             <div className="text-lg font-semibold text-black">{review?.userName}</div>
             <div className="flex items-center">
               {[...Array(5)].map((_, index) => (
@@ -49,9 +56,9 @@ const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId, ratings }) 
                 />
               ))}
             </div>
-          )}
+          )} 
         </div>
-      ))}
+      ))} */}
     </div>
   );
 };
