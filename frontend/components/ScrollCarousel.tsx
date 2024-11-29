@@ -63,12 +63,12 @@ const Card = ({ product }: { product: ProductType }) => {
   );
 };
  */
+ "use client";
 
-"use client";
-import { motion, useTransform, useScroll } from "framer-motion";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Product } from "@/store/productSlice";
+import { motion, useScroll, useTransform } from "motion/react";
 
 // Type definition for the props
 type HorizontalScrollCarouselProps = {
@@ -78,14 +78,16 @@ type HorizontalScrollCarouselProps = {
 export const HorizontalScrollCarousel = ({ products }: HorizontalScrollCarouselProps) => {
   // Scroll reference
   const targetRef = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: targetRef });
-
+  const { scrollYProgress } = useScroll({ target: targetRef, layoutEffect: false });
+  // Check if products is an array    
   if (!Array.isArray(products)) {
     return <div>No products available.</div>;
   }
+
   // Filter featured products
   const featuredProducts = products.filter((product) => product.featured === false).slice(0, 7);
   const x = useTransform(scrollYProgress, [0, 1], ["1%", "-95%"]);
+
   if (featuredProducts.length === 0) {
     return <div>No products available.</div>;
   }
@@ -95,37 +97,28 @@ export const HorizontalScrollCarousel = ({ products }: HorizontalScrollCarouselP
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         <motion.div style={{ x }} className="flex gap-4">
           {featuredProducts.map((product) => (
-            <Card product={product} key={product.id} />
+            <div key={product.id} className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl flex-shrink-0">
+              {/* Images for the selected color variant */}
+              <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110">
+                <Image
+                  src={product.variants[0].colorOptionImages[0]} // Display the first image for the selected variant
+                  alt={product.name}
+                  width={512}
+                  height={512}
+                  loading="lazy"
+                  className="rounded-2xl object-cover"
+                />
+              </div>
+              {/* Product info */}
+              <div className="relative inset-0 translate-y-10 z-10 grid place-content-center">
+                <p className="p-8 text-2xl font-black uppercase text-zinc-700 text-center italic">
+                  {product.name}
+                </p>
+              </div>
+            </div>
           ))}
         </motion.div>
       </div>
     </section>
-  );
-};
-
-// Card component for displaying individual product details
-const Card = ({ product }: { product: Product }) => {
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
-
-  return (
-    <div className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl">
-      {/* Images for the selected color variant */}
-      <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110">
-        <Image
-          src={selectedVariant.colorOptionImages[0]} // Display the first image for the selected variant
-          alt={product.name}
-          width={512}
-          height={512}
-          loading="lazy"
-          className="rounded-2xl object-cover"
-        />
-      </div>
-      {/* Product info */}
-      <div className="relative inset-0 translate-y-10 z-10 grid place-content-center">
-        <p className="p-8 text-2xl font-black uppercase text-zinc-700 text-center italic">
-          {product.name}
-        </p>
-      </div>
-    </div>
   );
 };

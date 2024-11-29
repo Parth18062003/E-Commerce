@@ -1,10 +1,10 @@
-import HomePage from "@/components/HomePageComponents";
+import { HomePageComponents } from "@/components/HomePageComponents";
 
 export default function Home() {
   
   return (
     <>
-    <HomePage />
+    <HomePageComponents />
     </>
   );
 }

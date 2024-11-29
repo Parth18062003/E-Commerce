@@ -353,24 +353,30 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
 export default ProductCarousel;
  */
-
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 import { SpringModal } from "../SpringModal";
 import { createSlug } from "@/lib/utils";
 import { Product } from "@/store/productSlice";
+import { motion, useScroll, useSpring } from "motion/react";
 
 // Type definition for the props
 interface ProductCarouselProps {
   products: Product[];
   initialPage?: number;
   filter?: keyof Product; // Optional filter key (e.g., "gender", "category")
-  filterValue?: string;    // The value to filter by (e.g., "Men", "Women", etc.)
+  filterValue?: string; // The value to filter by (e.g., "Men", "Women", etc.)
 }
 
 const ProductCarousel: React.FC<ProductCarouselProps> = ({
@@ -382,20 +388,62 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+  const carouselRef = useRef<HTMLDivElement>(null);
+  /*const { scrollXProgress } = useScroll({ container: carouselRef });
+
+  // Use `useSpring` to make the scale animation smoother
+  const scaleX = useSpring(scrollXProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  }); */
+
+  const handleWheel = (event: WheelEvent) => {
+    if (!carouselRef.current) return;
+
+    // Prevent vertical scroll, only handle horizontal scroll
+    event.preventDefault();
+    const scrollAmount = event.deltaY > 0 ? 1 : -1; // Scroll direction
+    const scrollDistance = 200; // Adjust the amount of scroll on each wheel scroll
+
+    carouselRef.current.scrollBy({
+      left: scrollAmount * scrollDistance,
+      behavior: "smooth",
+    });
+  };
+
+  // Add the wheel event listener when the component is mounted
+  useEffect(() => {
+    const currentCarousel = carouselRef.current;
+    if (currentCarousel) {
+      currentCarousel.addEventListener("wheel", handleWheel, { passive: false });
+    }
+
+    return () => {
+      if (currentCarousel) {
+        currentCarousel.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, []);
+
+
   if (!Array.isArray(products)) {
     return <div>No products available.</div>;
   }
   // Filter products based on the provided filter and filterValue
-  const filteredProducts = filter && filterValue
-    ? products.filter((product) => product[filter] === filterValue)
-    : products;
+  const filteredProducts =
+    filter && filterValue
+      ? products.filter((product) => product[filter] === filterValue)
+      : products;
 
   // Get the first image and hover image for a product's color variant
-  const getProductImages = (product: Product): { mainImage: string; hoverImage: string | undefined } => {
+  const getProductImages = (
+    product: Product
+  ): { mainImage: string; hoverImage: string | undefined } => {
     const firstVariant = product.variants[0];
     const images = firstVariant.colorOptionImages || [];
     return {
-      mainImage: images[0] || '/fallback-image.jpg', // Use a fallback image if none exists
+      mainImage: images[0] || "/fallback-image.jpg", // Use a fallback image if none exists
       hoverImage: images[1], // Only use the second image if available
     };
   };
@@ -411,12 +459,20 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
       const discountedPrice = price - (price * discount) / 100;
       return (
         <div className="flex flex-col">
-          <span className="text-lg font-bold text-indigo-600">${discountedPrice.toFixed(2)}</span>
-          <span className="text-sm text-zinc-500 line-through">${price.toFixed(2)}</span>
+          <span className="text-lg font-bold text-indigo-600">
+            ${discountedPrice.toFixed(2)}
+          </span>
+          <span className="text-sm text-zinc-500 line-through">
+            ${price.toFixed(2)}
+          </span>
         </div>
       );
     }
-    return <span className="text-lg font-bold text-zinc-950">${price.toFixed(2)}</span>;
+    return (
+      <span className="text-lg font-bold text-zinc-950">
+        ${price.toFixed(2)}
+      </span>
+    );
   };
 
   const renderProductCard = (product: Product) => {
@@ -428,7 +484,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         <div className="relative cursor-pointer rounded-xl">
           <Card className="p-0 shadow-md hover:shadow-lg transition-shadow duration-300">
             <Link
-              href={`/products/${createSlug(product.name)}/${product.id}/${createSlug(product.sku)}`}
+              href={`/products/${createSlug(product.name)}/${
+                product.id
+              }/${createSlug(product.sku)}`}
               passHref
             >
               <CardContent className="flex flex-col p-0">
@@ -457,7 +515,8 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                 <div className="flex justify-between items-center mt-2 px-3">
                   <span className="text-sm text-zinc-500">{product.brand}</span>
                   <span className="text-xs text-zinc-400">
-                    {product.colorOptions.length} {product.colorOptions.length > 1 ? "colors" : "color"}
+                    {product.colorOptions.length}{" "}
+                    {product.colorOptions.length > 1 ? "colors" : "color"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-1 px-3 gap-8 min-h-12">
@@ -486,11 +545,23 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
   return (
     <div>
-      <Carousel className="w-full mx-auto" opts={{ loop: true, align: "start" }}>
+      <Carousel
+        ref={carouselRef}
+        className="w-full  py-6"
+        opts={{ loop: true, align: "start" }}
+      >
         <CarouselContent>
+          {/*         <motion.div
+        ref={carouselRef}
+        whileTap={{ cursor: "grabbing" }}
+        className="flex gap-3 overflow-x-scroll scrollbar-hide py-4"
+      > */}
           {filteredProducts.map(renderProductCard)}
+          {/* </motion.div> */}
         </CarouselContent>
-        <div className="block md:hidden text-zinc-500 text-sm text-end">swipe</div>
+        <div className="block md:hidden text-zinc-500 text-sm text-end">
+          swipe
+        </div>
         <div className="hidden md:block">
           <CarouselPrevious
             className="text-zinc-600 hover:text-zinc-800 transition-all duration-200 ease-in-out"
@@ -502,7 +573,15 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
           />
         </div>
       </Carousel>
-      <SpringModal isOpen={isOpen} setIsOpen={setIsOpen} product={selectedProduct} />
+      {/*       <motion.div
+        className="h-3 bg-zinc-500 origin-left"
+        style={{ scaleX }}
+      ></motion.div> */}
+      <SpringModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        product={selectedProduct}
+      />
     </div>
   );
 };

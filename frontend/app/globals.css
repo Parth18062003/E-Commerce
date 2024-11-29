@@ -129,3 +129,13 @@ body {
 ::-webkit-scrollbar-track {
   background: #27272a; /* background of the scrollbar track */
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

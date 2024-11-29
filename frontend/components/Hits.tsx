@@ -5,6 +5,7 @@ import { Hit as AlgoliaHit } from "instantsearch.js/es/types";
 import { Highlight } from "react-instantsearch";
 import Image from "next/image";
 import Link from "next/link";
+import { createSlug } from "@/lib/utils";
 
 type HitProps = {
   hit: AlgoliaHit<{
@@ -58,7 +59,7 @@ const Hit = ({ hit }: HitProps) => {
 
   return (
       <article className="bg-white relative border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group z-50 my-2">
-        <Link href={`/products/${hit.name}/${hit.objectID}/${hit.sku}`}>
+        <Link href={`/products/${createSlug(hit.name)}/${hit.objectID}/${createSlug(hit.sku)}`}>
           <div className="flex gap-4 p-4">
             <div className="flex-shrink-0 w-32 h-32 relative overflow-hidden rounded-md transition-transform transform group-hover:scale-105">
               <Image
@@ -71,7 +72,8 @@ const Hit = ({ hit }: HitProps) => {
             </div>
             <div className="flex-grow">
               <h2 className="text-xl font-bold text-gray-900 mb-2">
-                <Highlight hit={hit} attribute="name" />
+              {/* <Highlight hit={hit} attribute="name" /> */} 
+              {hit.name}
               </h2>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">

@@ -23,7 +23,8 @@ const nextConfig = {
                 protocol: "https"
             }
         ]
-    }
+    },
+    transpilePackages: ['lucide-react']
 };
 
 export default nextConfig;

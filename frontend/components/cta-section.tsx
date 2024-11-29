@@ -1,9 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react"
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Youtube, ArrowRight } from "lucide-react";
+import { ArrowRight, Facebook, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 
 const links = {
   company: [
@@ -67,10 +68,10 @@ export function CTASection() {
                 <Facebook className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
-                <Twitter className="h-5 w-5" />
+                <TwitterLogoIcon className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
-                <Instagram className="h-5 w-5" />
+                <InstagramLogoIcon className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
                 <Youtube className="h-5 w-5" />
