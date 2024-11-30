@@ -24,17 +24,10 @@ import {
 import { AppDispatch, RootState } from "@/store/store";
 import { UpdateProductSchema } from "@/schema/schema";
 import ProductImageUpdate from "./ProductImageUpdate";
-import Notification from "./ui/notification";
 import { z } from "zod";
 import Image from "next/image";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import Notification from "../ui/notification";
 
 // Types for notifications
 export type NotificationType = {
@@ -431,10 +424,10 @@ const EditProduct: React.FC = () => {
                 <Label htmlFor="isFeatured">Is Featured</Label>
                 <select
                   id="isFeatured"
-                  value={editedProduct.isFeatured ? "true" : "false"} // Convert boolean to string
+                  value={editedProduct.featured ? "true" : "false"} // Convert boolean to string
                   onChange={
                     (e) =>
-                      handleFieldChange("isFeatured", e.target.value === "true") // Convert string back to boolean
+                      handleFieldChange("featured", e.target.value === "true") // Convert string back to boolean
                   }
                   className="block w-full mt-2 p-2 border"
                 >

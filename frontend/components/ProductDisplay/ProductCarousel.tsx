@@ -398,35 +398,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
     restDelta: 0.001,
   }); */
 
-  const handleWheel = (event: WheelEvent) => {
-    if (!carouselRef.current) return;
-
-    // Prevent vertical scroll, only handle horizontal scroll
-    event.preventDefault();
-    const scrollAmount = event.deltaY > 0 ? 1 : -1; // Scroll direction
-    const scrollDistance = 200; // Adjust the amount of scroll on each wheel scroll
-
-    carouselRef.current.scrollBy({
-      left: scrollAmount * scrollDistance,
-      behavior: "smooth",
-    });
-  };
-
-  // Add the wheel event listener when the component is mounted
-  useEffect(() => {
-    const currentCarousel = carouselRef.current;
-    if (currentCarousel) {
-      currentCarousel.addEventListener("wheel", handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (currentCarousel) {
-        currentCarousel.removeEventListener("wheel", handleWheel);
-      }
-    };
-  }, []);
-
-
   if (!Array.isArray(products)) {
     return <div>No products available.</div>;
   }

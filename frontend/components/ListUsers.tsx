@@ -1,5 +1,3 @@
-// components/ListUsers.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -19,7 +17,6 @@ import {
 import { Button } from "./ui/button";
 import { Trash } from "lucide-react";
 import DeleteConfirmDialog from "./ui/deleteDialog";
-import Image from "next/image";
 
 interface User {
   id: string;
@@ -50,60 +47,34 @@ const ListUsers: React.FC = () => {
   useEffect(() => {
     const fetchUsersData = async (page: number) => {
       try {
-        const resultAction = await dispatch(fetchUsers(page));
-        if (fetchUsers.fulfilled.match(resultAction)) {
-          const cachedData = JSON.parse(localStorage.getItem("users") || "{}");
-          cachedData[page] = resultAction.payload.content;
-          localStorage.setItem("users", JSON.stringify(cachedData));
-        }
+        await dispatch(fetchUsers(page));  // Fetch users for the specific page
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
     };
 
-    const cachedUsers = localStorage.getItem("users");
-    if (cachedUsers) {
-      const cachedData = JSON.parse(cachedUsers);
-      const usersForPage = cachedData[page] || [];
-      if (usersForPage.length > 0) {
-        dispatch({ type: "user/setUsers", payload: usersForPage });
-      } else {
-        fetchUsersData(page);
-      }
-    } else {
-      fetchUsersData(page);
-    }
+    fetchUsersData(page);
   }, [page, dispatch]);
 
   const handleDeleteUser = async (id: string) => {
     try {
       await axios.delete(`http://localhost:8081/api/v1/users/delete-profile/${id}`);
-      // Refetch users after deletion
-      await dispatch(fetchUsers(page)); // This will update the Redux store
-      updateLocalStorageAfterDelete(id); // Update local storage
+      await dispatch(fetchUsers(page));  // Re-fetch users after deletion
     } catch (error) {
       console.error("Failed to delete user:", error);
     }
   };
 
-  const updateLocalStorageAfterDelete = (id: string) => {
-    const cachedData = JSON.parse(localStorage.getItem("users") || "{}");
-    // Update local storage to remove the user from the current page
-    cachedData[page] = cachedData[page].filter((user: User) => user.id !== id);
-    localStorage.setItem("users", JSON.stringify(cachedData));
-  };
-
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
-      setPage(newPage);
+      setPage(newPage);  // Change the page
     }
   };
 
   const handleRefresh = async () => {
-    localStorage.removeItem("users");
-    await dispatch(fetchUsers(0)); // Fetch users for the first page
-    setPage(0); // Reset to the first page
-  };  
+    await dispatch(fetchUsers(0));  // Refresh by fetching the first page
+    setPage(0);  // Reset page to 0
+  };
 
   const openDeleteDialog = (id: string) => {
     setUserIdToDelete(id);
@@ -114,7 +85,7 @@ const ListUsers: React.FC = () => {
     if (userIdToDelete && confirmText === "delete") {
       handleDeleteUser(userIdToDelete);
       setIsDialogOpen(false);
-      setUserIdToDelete(null); // Reset user ID after delete
+      setUserIdToDelete(null); 
     }
   };
 
@@ -143,7 +114,7 @@ const ListUsers: React.FC = () => {
           <TableBody>
             {users.map((user: User, index) => (
               <TableRow key={user.id}>
-                <TableCell>{index+1}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -175,7 +146,6 @@ const ListUsers: React.FC = () => {
         Refresh
       </Button>
 
-      {/* Delete confirmation dialog */}
       <DeleteConfirmDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

@@ -2,15 +2,12 @@
 
 import { motion } from "motion/react"; // Correct import for motion
 import { Button } from "@/components/ui/button";
-import { Truck, Package, RefreshCw, Ruler } from "lucide-react";
-
-type IconName = "truck" | "package" | "refresh-cw" | "ruler";
 
 export interface FaqCategory {
   id: string;
   name: string;
   description: string;
-  icon: IconName; // Icon name as a string (e.g., "Truck")
+  icon: any; 
 }
 
 interface FaqCategoriesProps {
@@ -18,13 +15,6 @@ interface FaqCategoriesProps {
   selectedCategory: string | null;
   onSelectCategory: (categoryId: string | null) => void;
 }
-
-const faqIcons: Record<IconName, React.ElementType> = {
-  truck: Truck,
-  package: Package,
-  "refresh-cw": RefreshCw,
-  ruler: Ruler,
-};
 
 export function FaqCategories({
   categories,
@@ -39,8 +29,6 @@ export function FaqCategories({
     >
       {categories.map((category) => {
         // Dynamically import the icon based on its name
-
-        const Icon = faqIcons[category.icon]; // Dynamically import the icon based on its name
         return (
           <motion.div
             key={category.id}
@@ -56,7 +44,10 @@ export function FaqCategories({
                 )
               }
             >
-              <Icon className="h-16 w-16" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <category.icon className="w-8 h-8" />
+              </div>
+
               <div className="text-center">
                 <div className="font-semibold">{category.name}</div>
                 <div className="text-sm text-muted-foreground text-ellipsis overflow-hidden line-clamp-3 whitespace-normal">

@@ -6,31 +6,33 @@ import { FaqSearch } from "./faq-search";
 import { FaqCategories, FaqCategory } from "./faq-categories";
 import { FaqItem } from "./faq-item";
 import { faqItems } from "./data";
+import { Truck, Package, RefreshCw, Ruler } from "lucide-react";
+
 
 export const faqCategories: FaqCategory[] = [
   {
     id: "shipping",
     name: "Shipping & Delivery",
     description: "Information about shipping methods and delivery times",
-    icon: "truck"
+    icon: Truck
   },
   {
     id: "returns",
     name: "Returns & Refunds",
     description: "Our return policy and refund process",
-    icon: "refresh-cw" 
+    icon: RefreshCw 
   },
   {
     id: "sizing",
     name: "Sizing & Fit",
     description: "Help finding your perfect size",
-    icon: "ruler"
+    icon: Ruler
   },
   {
     id: "orders",
     name: "Orders",
     description: "Managing and tracking your orders",
-    icon: "package" 
+    icon: Package 
   }
 ];
 

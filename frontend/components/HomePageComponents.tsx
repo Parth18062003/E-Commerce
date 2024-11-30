@@ -7,13 +7,12 @@ import ProductCarousel from "@/components/ProductDisplay/ProductCarousel";
 import { HorizontalScrollCarousel } from "@/components/ScrollCarousel";
 import HeroBackground from "@/components/ui/custom-grid";
 import HeroText from "@/components/ui/hero-text";
-import { useProduct } from "@/hooks/useProduct";
 import { CTASection } from "./cta-section";
 import { Carousel } from "./carousel/carousel";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
-import { Button } from "./ui/button";
 import { Alert, AlertBanner } from "./ui/banner";
+import { HeroSection } from "./careers/hero-section";
 
 const categories = [
   {
@@ -111,15 +110,16 @@ export async function HomePageComponents() {
     <>
       <Navbar />
       <AlertBanner alerts={alerts} />
-      <div className="items-center justify-items-center min-h-screen p-8 pb-16 gap-16 sm:px-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="items-center justify-items-center min-h-screen px-8 -12 gap-16 sm:px-20 font-[family-name:var(--font-geist-sans)]">
         <ProductSearch />
         <main className="w-full">
           <HeroBackground />
-          <div className="flex items-end justify-start min-h-screen -translate-y-1/4 -translate-x-10">
+          <div className="flex items-end justify-start min-h-screen mx-3 lg:mx-0 -my-20 lg:-my-0 -translate-y-1/4 -translate-x-10">
             <HeroText />
           </div>
           <FullscreenVideo videoSrc="https://videos.pexels.com/video-files/4613367/4613367-sd_960_506_25fps.mp4" />
           <Carousel />
+          <HeroSection />
           <div className="relative">
             <Suspense fallback={<Loading />}>
               <h2 className="text-5xl font-bold text-black mb-2">

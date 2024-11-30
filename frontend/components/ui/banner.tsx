@@ -102,7 +102,7 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 right-0">
+                <div className="hidden lg:flex items-center gap-2 right-0">
                   {alerts.length > 1 && (
                     <span className="text-sm opacity-75">
                       {currentAlertIndex + 1}/{alerts.length}
