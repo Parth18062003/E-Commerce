@@ -57,6 +57,10 @@ public class OAuthController {
             String lastName = (String) attributes.get("family_name");
             String profileImageUrl = (String) attributes.get("picture");
 
+            final int maxImageUrlLength = 255;
+            if (profileImageUrl != null && profileImageUrl.length() > maxImageUrlLength) {
+                profileImageUrl = "https://res.cloudinary.com/dvl7demzb/image/upload/v1728062880/4979e4e2-2e81-4e86-9fbb-4cb1b022b556.png"; // Use default image URL
+            }
             // Check if the user exists
             log.info("Checking for existing user with email: {}", email);
             Optional<User> existingUserOpt = userService.findByEmail(email);
@@ -103,10 +107,9 @@ public class OAuthController {
         newUser.setPassword(passwordEncoder.encode(generateValidPassword()));
         newUser.setUsername(generateUniqueUsername(firstName, lastName));
         newUser.setProfileImageUrl(profileImageUrl != null ? profileImageUrl : "");
-        Role userRole = roleRepository.findByName("USER");
-        if (userRole == null) {
-            throw new RuntimeException("USER role not found in the database");
-        }
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("USER role not found in the database"));
+
         newUser.setRoles(new HashSet<>(Collections.singleton(userRole)));
 
         log.info("Creating new user: {}", newUser);

@@ -2,6 +2,7 @@ package com.hypehouse.user_service.monitoring;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
+@Document(collection = "activity_logs")
 public interface ActivityLogRepository extends MongoRepository<ActivityLog, String> {
 
     // Pagination support for user logs
