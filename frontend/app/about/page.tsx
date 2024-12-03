@@ -6,6 +6,12 @@ import { Stats } from "@/components/about/stats";
 import { ContactCTA } from "@/components/about/contact-cta";
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Metadata } from "next";
+
+export const metadata: Metadata ={
+  title: 'HH | About',
+  description: 'Learn more about our mission, values, and team.',
+}
 
 export default function AboutPage() {
   return (

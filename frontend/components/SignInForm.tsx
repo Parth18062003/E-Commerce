@@ -19,24 +19,18 @@ import { Eye, EyeOff } from "lucide-react";
 import ImageContainer from "./ShaderCanvas";
 import { SignInSchema } from "@/schema/schema";
 import { useRouter } from "next/navigation";
-import Notification from "./ui/notification";
 import { TransitionLink } from "./utils/TransitionLink";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
+import { toast } from "sonner";
 
 type SignInFormData = z.infer<typeof SignInSchema>;
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
 
 export function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -69,7 +63,7 @@ export function SignInForm() {
   
       if (response.data["2FARequired"]) {
         // Redirect to the 2FA page if required
-        addNotification("2fa code has been sent. Please check your email.", "info");
+        toast.info("2fa code has been sent. Please check your email.");
         setLoading(true);
         router.push(`/authentication/2fa?email=${encodeURIComponent(data.email)}`);
       } else if (response.data.token) {
@@ -78,12 +72,12 @@ export function SignInForm() {
         dispatch(login({ token: response.data.token })); // Dispatch the login action
         // Dispatch the login action
   
-        addNotification("Login successful!", "success");
+        toast("Login successful!");
         console.log("User ID:", response.data.userId);
         router.push(`/dashboard/user/${response.data.userId}`);
       } else {
         const message = response.data.message || "An unknown error occurred.";
-        addNotification(message, "error");
+        toast.error(message);
         setApiError(message);
       }
   
@@ -94,10 +88,10 @@ export function SignInForm() {
       // Improved error handling
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data?.message || "An error occurred while logging in.";
-        addNotification(errorMessage, "error");
+        toast.error(errorMessage);
         setApiError(errorMessage);
       } else {
-        addNotification("An unexpected error occurred. Please try again.", "error");
+        toast.error("An unexpected error occurred. Please try again.", error);
         setApiError("An unexpected error occurred.");
       }
     } finally {
@@ -111,20 +105,9 @@ export function SignInForm() {
       window.location.href = "http://localhost:8081/oauth2/authorization/google";
     } catch (error: any) {
       console.error("Error during Google login:", error);
-      addNotification("An error occurred while logging in with Google. Please try again.", "error");
+      toast("An error occurred while logging in with Google. Please try again.", error);
     }
   }
-
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
-  };
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-zinc-100 dark:bg-zinc-900">
@@ -247,18 +230,6 @@ export function SignInForm() {
         <ImageContainer imageUrl="https://static.nike.com/a/images/f_auto/dpr_1.3,cs_srgb/h_700,c_limit/56e7677b-c5b6-4b84-9f09-5db7740fb885/image.png" />
       </div>
 
-      {/* Notifications */}
-      <div className="fixed top-2 right-2 z-50 pointer-events-none">
-        {notifications.map((notif) => (
-          <Notification
-            key={notif.id}
-            id={notif.id}
-            text={notif.text}
-            type={notif.type}
-            removeNotif={removeNotification}
-          />
-        ))}
-      </div>
     </div>
   );
 }

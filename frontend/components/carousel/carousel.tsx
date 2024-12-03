@@ -70,7 +70,7 @@ export function Carousel() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative p-8 lg:p-12">
       {/* Previous Button */}
       <Button
         variant="secondary"
@@ -84,7 +84,7 @@ export function Carousel() {
       {/* Carousel */}
       <motion.div
         ref={carouselRef}
-        className="flex gap-6 overflow-x-scroll scrollbar-hide lg:mx-6 py-8"
+        className="flex gap-6 overflow-x-scroll scrollbar-hide lg:mx-6 pt-8 pb-4"
         whileTap={{ cursor: "grabbing" }}
       >
         {CARDS.map((card, index) => (
@@ -104,7 +104,7 @@ export function Carousel() {
 
       {/* Progress Bar */}
       <motion.div
-        className="h-3 bg-zinc-500 origin-left"
+        className="h-3 bg-zinc-500 origin-left mb-8"
         style={{ scaleX }}
       ></motion.div>
     </div>

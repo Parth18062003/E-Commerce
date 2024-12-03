@@ -4,15 +4,15 @@ import { Footer } from "@/components/Footer";
 import FullscreenVideo from "@/components/HeroVideo";
 import Navbar from "@/components/Navbar";
 import ProductCarousel from "@/components/ProductDisplay/ProductCarousel";
-import { HorizontalScrollCarousel } from "@/components/ScrollCarousel";
 import HeroBackground from "@/components/ui/custom-grid";
 import HeroText from "@/components/ui/hero-text";
-import { CTASection } from "./cta-section";
+import { CTASection } from "./CtaSection";
 import { Carousel } from "./carousel/carousel";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
 import { Alert, AlertBanner } from "./ui/banner";
-import { HeroSection } from "./careers/hero-section";
+import HeroImage from "./main-page/hero-image";
+import CTA from "./CTA";
 
 const categories = [
   {
@@ -51,7 +51,8 @@ const alerts: Alert[] = [
     id: "2",
     type: "info",
     title: "Exclusive Early Access",
-    message: "Get early access to the latest Nike releases before anyone else. Sign up today!",
+    message:
+      "Get early access to the latest Nike releases before anyone else. Sign up today!",
     link: {
       text: "Sign Up",
       url: "/early-access",
@@ -62,7 +63,8 @@ const alerts: Alert[] = [
     id: "3",
     type: "info",
     title: "Holiday Sale Now Live",
-    message: "Our biggest sale of the year is here! Save up to 40% on select items.",
+    message:
+      "Our biggest sale of the year is here! Save up to 40% on select items.",
     link: {
       text: "Shop Holiday Sale",
       url: "/holiday-sale",
@@ -73,30 +75,14 @@ const alerts: Alert[] = [
     id: "4",
     type: "info",
     title: "New Loyalty Program Launch",
-    message: "Earn points with every purchase and unlock exclusive rewards with our new loyalty program.",
+    message:
+      "Earn points with every purchase and unlock exclusive rewards with our new loyalty program.",
     link: {
       text: "Learn More",
       url: "/loyalty-program",
     },
     expiresAt: new Date("2025-09-30"),
-  }
-/*   {
-    id: "2",
-    type: "warning",
-    title: "Limited Stock Alert",
-    message: "Popular items are selling fast. Don't miss out!",
-    link: {
-      text: "View Trending",
-      url: "/trending",
-    },
   },
-  {
-    id: "3",
-    type: "success",
-    title: "Free Shipping",
-    message: "Enjoy free shipping on all orders over $100",
-    expiresAt: new Date("2024-03-31"),
-  }, */
 ];
 
 export async function HomePageComponents() {
@@ -110,30 +96,46 @@ export async function HomePageComponents() {
     <>
       <Navbar />
       <AlertBanner alerts={alerts} />
-      <div className="items-center justify-items-center min-h-screen px-8 -12 gap-16 sm:px-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="relative font-[family-name:var(--font-geist-sans)]">
         <ProductSearch />
         <main className="w-full">
           <HeroBackground />
-          <div className="flex items-end justify-start min-h-screen mx-3 lg:mx-0 -my-20 lg:-my-0 -translate-y-1/4 -translate-x-10">
+          <div className="relative h-[65vh] lg:h-[75vh] bottom-0 left-0 flex items-end">
             <HeroText />
           </div>
-          <FullscreenVideo videoSrc="https://videos.pexels.com/video-files/4613367/4613367-sd_960_506_25fps.mp4" />
-          <Carousel />
-          <HeroSection />
-          <div className="relative">
-            <Suspense fallback={<Loading />}>
-              <h2 className="text-5xl font-bold text-black mb-2">
+          <div className="mt-10 p-5 lg:p-20">
+            <FullscreenVideo videoSrc="https://videos.pexels.com/video-files/4613367/4613367-sd_960_506_25fps.mp4" />
+          </div>
+          <CTA
+            mainHeading="Your New Look Awaits"
+            bottomdescription="Stay ahead of the curve with our bold new releases and limited editions."
+            buttonText="Explore Now"
+          />
+          <Suspense fallback={<Loading />}>
+            <div className="py-12 px-8">
+              <CategoryCards categories={categories} />
+            </div>
+            <div className="relative my-12 px-8 lg:px-20">
+              <h2 className="text-4xl lg:text-5xl font-bold text-black">
                 New Arrivals
               </h2>
               <ProductCarousel products={displayProducts} />
-            </Suspense>
-          </div>
-
-          <CategoryCards categories={categories} />
+            </div>
+            <HeroImage />
+            <CTA
+              topdescription="Step Into the Future"
+              mainHeading="Unleash Your Potential"
+              bottomdescription="Explore the latest in performance gear and lifestyle collections."
+              buttonText="Shop Now"
+            />
+            <Carousel />
+          </Suspense>
         </main>
       </div>
-      <CTASection />
-      <Footer />
+      <Suspense fallback={<Loading />}>
+        <CTASection />
+        <Footer />
+      </Suspense>
     </>
   );
 }

@@ -7,22 +7,15 @@ import { RootState } from "@/store/store";
 import { update2FAStatus } from "@/store/authSlice";
 import Cookies from "js-cookie";
 import axios from "axios";
-import Notification from "./ui/notification";
 import DeviceLogsComponent from "./DeviceLog";
 import DeleteConfirmDialog from "./ui/deleteDialog";
 import { useRouter } from "next/navigation";
 import TestGeolocation from "./GeoLocation";
-
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
+import { toast } from "sonner";
 
 const UserSecurity = () => {
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const loading = !reduxUser;
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog
@@ -49,15 +42,15 @@ const UserSecurity = () => {
       );
 
       if (response.status !== 200) {
-        addNotification("Failed to update 2FA status", "error");
+        toast.error("Failed to update 2FA status");
         throw new Error("Failed to update 2FA status");
       }
 
       dispatch(update2FAStatus(enable));
-      addNotification(`2FA has been ${enable ? "enabled" : "disabled"} successfully.`, "success");
+      toast.success(`2FA has been ${enable ? "enabled" : "disabled"} successfully.`);
     } catch (error) {
       console.error(error);
-      addNotification("There was an error updating the 2FA status. Please try again.", "error");
+      toast.error("There was an error updating the 2FA status. Please try again.");
     }
   };
 
@@ -77,14 +70,14 @@ const UserSecurity = () => {
 
       if (response.status === 204) {
         dispatch({ type: "auth/logout" });
-        addNotification("Your account has been deleted successfully.", "success");
+        toast.success("Your account has been deleted successfully.");
         router.push("/authentication/sign-up");
       } else {
-        addNotification("Failed to delete account.", "error");
+        toast.error("Failed to delete account.");
       }
     } catch (error) {
       console.error(error);
-      addNotification("There was an error deleting your account. Please try again.", "error");
+      toast.error("There was an error deleting your account. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -95,14 +88,6 @@ const UserSecurity = () => {
       deleteUserAccount();
       setIsDialogOpen(false);
     }
-  };
-
-  const addNotification = (text: string, type: "info" | "success" | "error") => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   return (
@@ -158,7 +143,6 @@ const UserSecurity = () => {
           <DeviceLogsComponent userId={reduxUser?.id || ""} firstName={reduxUser?.firstName || ""} />
         }
       </div>
-      <Notifications notifications={notifications} removeNotification={removeNotification} />
       <DeleteConfirmDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -167,28 +151,5 @@ const UserSecurity = () => {
     </>
   );
 };
-
-// Notifications component with type annotations
-interface NotificationsProps {
-  notifications: NotificationType[];
-  removeNotification: (id: number) => void;
-}
-
-const Notifications: React.FC<NotificationsProps> = ({
-  notifications,
-  removeNotification,
-}) => (
-  <div className="fixed top-2 right-2 z-50 pointer-events-none">
-    {notifications.map((notif) => (
-      <Notification
-        key={notif.id}
-        id={notif.id}
-        text={notif.text}
-        type={notif.type}
-        removeNotif={removeNotification}
-      />
-    ))}
-  </div>
-);
 
 export default UserSecurity;

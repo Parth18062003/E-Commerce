@@ -1,5 +1,11 @@
 import { SizeGuide } from '@/components/size-guide/size-guide'
 import React from 'react'
+import { Metadata } from "next";
+
+export const metadata: Metadata ={
+  title: 'HH Size Guide',
+  description: 'Find your perfect fit with our comprehensive size guide',
+}
 
 const SizeGuidePage = () => {
   return (

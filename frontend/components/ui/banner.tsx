@@ -113,8 +113,9 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => dismissAlert(currentAlert.id)}
+                    aria-label="Close Banner"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4"/>
                   </Button>
                 </div>
               </div>
@@ -127,6 +128,7 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
         size="sm"
         className="absolute right-4 -bottom-6 h-6"
         onClick={() => setIsExpanded(!isExpanded)}
+        aria-label="Toggle Banner"
       >
         {isExpanded ? (
           <ChevronUp className="h-4 w-4" />

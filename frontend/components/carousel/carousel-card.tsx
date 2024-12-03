@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
 
 interface CarouselCardProps {
@@ -22,9 +21,9 @@ export function CarouselCard({ image, title, category }: CarouselCardProps) {
         <Image
           src={image}
           alt={title}
-          fill
-          className="object-cover"
-          priority
+          width={600}
+          height={800}
+          className="object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-10 left-10 right-0 p-4">

@@ -47,6 +47,7 @@ export function NavUser({
   const router = useRouter();
   const handleLogout = () => {   
     dispatch(logoutUser());
+    console.log("Logging out");
     router.push("/authentication/sign-in");
   };
   return (

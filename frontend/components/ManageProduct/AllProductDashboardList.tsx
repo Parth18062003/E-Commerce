@@ -25,19 +25,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import Notification from "../ui/notification";
-
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
+import { toast } from "sonner";
 
 const AllProducts: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const products = useSelector((state: RootState) => state.product.products);
@@ -77,9 +70,9 @@ const AllProducts: React.FC = () => {
     if (selectedProduct) {
       try {
         await dispatch(deleteProduct(selectedProduct.id)).unwrap();
-        addNotification("Product deleted successfully.", "success");
+        toast.success("Product deleted successfully.");
       } catch {
-        addNotification("Failed to delete product.", "error");
+        toast.error("Failed to delete product.");
       } finally {
         setDeleting(false);
         setShowConfirmDialog(false);
@@ -99,22 +92,10 @@ const AllProducts: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotif = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
-
   const formatPrice = (price: number) => {
-    
     // Format the number with commas as thousands separators
-    const formattedPrice = price.toLocaleString('en-IN'); // 'en-IN' for Indian numbering system (1,24,532)
-  
+    const formattedPrice = price.toLocaleString("en-IN"); // 'en-IN' for Indian numbering system (1,24,532)
+
     return `$${formattedPrice}`;
   };
 
@@ -245,7 +226,7 @@ const AllProducts: React.FC = () => {
                   <strong>Description:</strong> {selectedProduct.description}
                 </span>
                 <span>
-                  <strong>Price:</strong> {(selectedProduct.price)}
+                  <strong>Price:</strong> {selectedProduct.price}
                 </span>
                 <span>
                   <strong>SKU:</strong> {selectedProduct.sku}
@@ -307,16 +288,6 @@ const AllProducts: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
-
-      {notifications.map((notif) => (
-        <Notification
-          key={notif.id}
-          id={notif.id}
-          text={notif.text}
-          type={notif.type}
-          removeNotif={() => removeNotif(notif.id)}
-        />
-      ))}
 
       {showConfirmDialog && (
         <Dialog open={showConfirmDialog} onOpenChange={handleCancel}>

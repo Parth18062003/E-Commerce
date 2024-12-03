@@ -25,8 +25,7 @@ import {
 import { createProduct } from "@/store/productSlice";
 import UploadProductImage from "./UploadProductImage";
 import { AppDispatch } from "@/store/store";
-import Notification from "./ui/notification";
-
+import { toast } from "sonner";
 interface SizeVariant {
   size: string;
   stockQuantity: number;
@@ -69,12 +68,6 @@ interface Product {
   variants: Variant[];
 }
 
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
-
 interface ProductFormProps {
   existingProduct?: Product;
 }
@@ -111,7 +104,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
   );
   const [currentTag, setCurrentTag] = useState("");
   const [currentColor, setCurrentColor] = useState("");
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -187,7 +179,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
   };
 
-/*   const handleAddSize = (variantIndex: number) => {
+  /*   const handleAddSize = (variantIndex: number) => {
     const updatedVariants = [...product.variants];
     updatedVariants[variantIndex].sizes.push({ size: "", stockQuantity: 0 });
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
@@ -201,25 +193,31 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
   const handleAddSize = (variantIndex: number) => {
     const updatedVariants = [...product.variants];
     updatedVariants[variantIndex].sizes.push({ size: "", stockQuantity: 0 });
-  
+
     // Recalculate the stock quantity
-    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce((sum, size) => sum + size.stockQuantity, 0);
+    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce(
+      (sum, size) => sum + size.stockQuantity,
+      0
+    );
     updatedVariants[variantIndex].stockQuantity = newStockQuantity;
-  
+
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
   };
-  
+
   const handleRemoveSize = (variantIndex: number, sizeIndex: number) => {
     const updatedVariants = [...product.variants];
     updatedVariants[variantIndex].sizes.splice(sizeIndex, 1);
-  
+
     // Recalculate the stock quantity after removal
-    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce((sum, size) => sum + size.stockQuantity, 0);
+    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce(
+      (sum, size) => sum + size.stockQuantity,
+      0
+    );
     updatedVariants[variantIndex].stockQuantity = newStockQuantity;
-  
+
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
   };
-  
+
   const handleSizeChange = <T extends keyof SizeVariant>(
     variantIndex: number,
     sizeIndex: number,
@@ -231,16 +229,19 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
     setProduct((prev) => ({ ...prev, variants: updatedVariants })); */
     const updatedSize = {
       ...updatedVariants[variantIndex].sizes[sizeIndex],
-      [field]: value
+      [field]: value,
     };
-    
+
     // Update the size in the variant
     updatedVariants[variantIndex].sizes[sizeIndex] = updatedSize;
-  
+
     // Recalculate the stock quantity of the variant
-    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce((sum, size) => sum + size.stockQuantity, 0);
+    const newStockQuantity = updatedVariants[variantIndex].sizes.reduce(
+      (sum, size) => sum + size.stockQuantity,
+      0
+    );
     updatedVariants[variantIndex].stockQuantity = newStockQuantity;
-  
+
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
   };
 
@@ -249,10 +250,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
     console.log(product);
     try {
       dispatch(createProduct(product));
-      addNotification("Product created successfully", "success");
+      toast.success("Product created successfully");
       resetData();
     } catch (error: any) {
-      addNotification(error, "error");
+      toast.error(error);
     }
   };
 
@@ -272,17 +273,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
       e.preventDefault(); // Prevent form submission
       handleAddColorOption(); // Add color option
     }
-  };
-
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotif = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   return (
@@ -549,12 +539,18 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
                       </div>
                     </div>
                     <Label htmlFor="stockQuantity">Stock Quantity</Label>
-                    <Input 
-                    name="stockQuantity"
-                    type="number"
-                    value={variant.stockQuantity}
-                    onChange={(e) => handleVariantChange(variantIndex, "stockQuantity", Number(e.target.value))}
-                    className="mt-1"
+                    <Input
+                      name="stockQuantity"
+                      type="number"
+                      value={variant.stockQuantity}
+                      onChange={(e) =>
+                        handleVariantChange(
+                          variantIndex,
+                          "stockQuantity",
+                          Number(e.target.value)
+                        )
+                      }
+                      className="mt-1"
                     />
                     <Button
                       type="button"
@@ -697,15 +693,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
           </CardContent>
         </Card>
       </form>
-      {notifications.map((notif) => (
-        <Notification
-          key={notif.id}
-          id={notif.id}
-          text={notif.text}
-          type={notif.type}
-          removeNotif={removeNotif}
-        />
-      ))}
     </>
   );
 };

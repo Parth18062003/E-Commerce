@@ -14,7 +14,7 @@ const FullscreenVideo: React.FC<{ videoSrc: string }> = ({ videoSrc }) => {
   };
 
   return (
-    <div className="relative w-full h-[30rem] md:h-screen overflow-hidden">
+    <div className="relative w-full h-[30rem] md:h-[90vh]  overflow-hidden">
       <video
         ref={videoRef}
         src={videoSrc}

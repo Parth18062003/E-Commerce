@@ -15,26 +15,20 @@ import {
 } from "@/components/ui/card";
 import ImageContainer from "./ShaderCanvas";
 import { signUpSchema } from "@/schema/schema";
-import { Eye, EyeOff, Image } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Notification from "./ui/notification";
 import { TransitionLink } from "./utils/TransitionLink";
+import { toast } from "sonner";
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
 
 export function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const {
     register,
     handleSubmit,
@@ -66,14 +60,11 @@ export function SignUpForm() {
       // Check if response contains a token or other expected data
       if (response.status === 201) {
         // Redirect to sign-in page
-        addNotification("User created successfully!", "success");
+        toast.success("User created successfully!");
         router.push(`/authentication/sign-in`);
       } else {
         // Handle unexpected status
-        addNotification(
-          response.data.message || "An unknown error occurred.",
-          "error"
-        );
+        toast.error(response.data.message || "An unknown error occurred.");
         setApiError("An unexpected error occurred.");
       }
 
@@ -82,15 +73,14 @@ export function SignUpForm() {
     } catch (error: any) {
       // Handle errors
       if (error.response && error.response.data) {
-        addNotification(
-          error.response.data.message || "An error occurred while registering.",
-          "error"
+        toast.error(
+          error.response.data.message || "An error occurred while registering."
         );
         setApiError(
           error.response.data.message || "An error occurred while registering."
         );
       } else {
-        addNotification("An error occurred while registering.", "error");
+        toast.error("An error occurred while registering.");
         setApiError("An error occurred while registering.");
       }
     } finally {
@@ -101,21 +91,14 @@ export function SignUpForm() {
 
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = "http://localhost:8081/oauth2/authorization/google";
+      window.location.href =
+        "http://localhost:8081/oauth2/authorization/google";
     } catch (error: any) {
       console.error("Error during Google login:", error);
-      addNotification("An error occurred while logging in with Google. Please try again.", "error");
+      toast.error(
+        "An error occurred while logging in with Google. Please try again."
+      );
     }
-  }
-
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   return (
@@ -220,7 +203,11 @@ export function SignUpForm() {
                   "Create an account"
                 )}
               </Button>
-              <Button variant="outline" className="w-full mt-2" onClick={handleGoogleLogin}>
+              <Button
+                variant="outline"
+                className="w-full mt-2"
+                onClick={handleGoogleLogin}
+              >
                 Sign up with Google{" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -264,18 +251,6 @@ export function SignUpForm() {
       </div>
       <div className="relative lg:w-1/2">
         <ImageContainer imageUrl="https://static.nike.com/a/images/w_480,c_limit,f_auto,q_auto/b4841c0f-9f30-49a1-8f21-48f77e2052c4/what-you-got-sndr-edition-x-linus.jpg" />
-      </div>
-      {/* Notifications */}
-      <div className="fixed top-2 right-2 z-50 pointer-events-none">
-        {notifications.map((notif) => (
-          <Notification
-            key={notif.id}
-            id={notif.id}
-            text={notif.text}
-            type={notif.type}
-            removeNotif={removeNotification}
-          />
-        ))}
       </div>
     </div>
   );

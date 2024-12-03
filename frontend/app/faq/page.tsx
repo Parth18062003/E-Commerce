@@ -2,6 +2,12 @@ import { FAQ } from "@/components/faq/faq";
 import { Footer } from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import React from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata ={
+  title: "HH FAQ's",
+  description: 'Frequently asked questions',
+}
 
 const FaqPage = () => {
   return (

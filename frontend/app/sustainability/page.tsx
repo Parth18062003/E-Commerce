@@ -7,6 +7,12 @@ import { Certifications } from "@/components/sustainability/certifications";
 import { Pledge } from "@/components/sustainability/pledge";
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Metadata } from "next";
+
+export const metadata: Metadata ={
+  title: 'HH Sustainability',
+  description: 'Get to know how we are working towards a sustainable future.',
+}
 
 export default function SustainabilityPage() {
   return (

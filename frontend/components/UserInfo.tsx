@@ -24,22 +24,16 @@ import { z } from "zod";
 import { UpdateUserSchema } from "@/schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Notification from "./ui/notification";
 import axios from "axios";
 import UserSecurity from "./UserSecurity";
 import ProfileImageUpload from "./ProfileImageUpload";
+import { toast } from "sonner";
 
 type UpdateUserData = z.infer<typeof UpdateUserSchema>;
-type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
 
 const UserInfo = () => {
   const { loading, error } = useUser();
   const [apiError, setApiError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const dispatch = useDispatch();
   const reduxUser = useSelector((state: RootState) => state.auth.user);
 
@@ -103,7 +97,7 @@ const UserInfo = () => {
 
   const onSubmit: SubmitHandler<UpdateUserData> = async (data) => {
     if (JSON.stringify(data) === JSON.stringify(originalData)) {
-      addNotification("No changes detected.", "info");
+      toast.info("No changes detected.");
       return; // Ensure this returns void
     }
     setPendingData(data);
@@ -131,7 +125,7 @@ const UserInfo = () => {
       dispatch(updateUser(response.data));
       setIsEditing(false);
       setOriginalData(data);
-      addNotification("Profile updated successfully", "success");
+      toast.success("Profile updated successfully");
     } catch (error) {
       handleError(error);
     }
@@ -139,26 +133,12 @@ const UserInfo = () => {
 
   const handleError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
-      addNotification(
-        error.response?.data?.message || "Failed to update profile",
-        "error"
-      );
+      toast.error(error.response?.data?.message || "Failed to update profile");
       setApiError(error.message);
     } else {
-      addNotification("An unexpected error occurred", "error");
+      toast.error("An unexpected error occurred");
       setApiError("An unexpected error occurred.");
     }
-  };
-
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   const handleConfirm = async () => {
@@ -193,9 +173,7 @@ const UserInfo = () => {
             {reduxUser.firstName}'s Profile
           </CardTitle>
           <ProfileImageUpload
-            defaultImageUrl={
-              reduxUser?.profileImageUrl
-            }
+            defaultImageUrl={reduxUser?.profileImageUrl}
             userId={reduxUser?.id}
           />
         </CardHeader>
@@ -222,10 +200,6 @@ const UserInfo = () => {
         </div>
         {apiError && <p className="text-red-500 text-center">{apiError}</p>}
       </Card>
-      <Notifications
-        notifications={notifications}
-        removeNotification={removeNotification}
-      />
 
       {/* Confirm Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -319,29 +293,6 @@ const EditButton: React.FC<EditButtonProps> = ({
   >
     {isEditing ? "Save" : "Edit"}
   </button>
-);
-
-// Notifications component with type annotations
-interface NotificationsProps {
-  notifications: NotificationType[];
-  removeNotification: (id: number) => void;
-}
-
-const Notifications: React.FC<NotificationsProps> = ({
-  notifications,
-  removeNotification,
-}) => (
-  <div className="fixed top-2 right-2 z-50 pointer-events-none">
-    {notifications.map((notif) => (
-      <Notification
-        key={notif.id}
-        id={notif.id}
-        text={notif.text}
-        type={notif.type}
-        removeNotif={removeNotification}
-      />
-    ))}
-  </div>
 );
 
 // DialogActions component with type annotations

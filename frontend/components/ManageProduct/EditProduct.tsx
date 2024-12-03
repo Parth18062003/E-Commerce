@@ -26,15 +26,15 @@ import { UpdateProductSchema } from "@/schema/schema";
 import ProductImageUpdate from "./ProductImageUpdate";
 import { z } from "zod";
 import Image from "next/image";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import Notification from "../ui/notification";
-
-// Types for notifications
-export type NotificationType = {
-  id: number;
-  text: string;
-  type: "info" | "success" | "error";
-};
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { toast } from "sonner";
 
 // EditProduct Component
 const EditProduct: React.FC = () => {
@@ -56,7 +56,6 @@ const EditProduct: React.FC = () => {
     (state: RootState) => state.product.cache[productId]
   );
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const EditProduct: React.FC = () => {
           ).unwrap();
           setOriginalProduct(product);
           setEditedProduct(product);
-          addNotification("Product Edited successfully", "success");
+          toast.success("Product Edited successfully");
         } else {
           setOriginalProduct(cachedProduct);
           setEditedProduct(cachedProduct);
@@ -78,7 +77,7 @@ const EditProduct: React.FC = () => {
       } catch (error) {
         // Handle error
         console.error("Failed to load product details:", error);
-        addNotification("Failed to load product details", "error");
+        toast.error("Failed to load product details");
       } finally {
         setLoading(false);
       }
@@ -148,7 +147,7 @@ const EditProduct: React.FC = () => {
       // After successful update, set originalProduct to the new editedProduct
       setOriginalProduct(editedProduct);
 
-      addNotification("Product updated successfully!", "success");
+      toast.success("Product updated successfully!");
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errors: { [key: string]: string } = {};
@@ -157,22 +156,11 @@ const EditProduct: React.FC = () => {
         });
         setFormErrors(errors);
       } else {
-        addNotification("Failed to update product", "error");
+        toast.error("Failed to update product");
       }
     } finally {
       setSaving(false);
     }
-  };
-
-  const addNotification = (
-    text: string,
-    type: "info" | "success" | "error"
-  ) => {
-    setNotifications((prev) => [{ id: Math.random(), text, type }, ...prev]);
-  };
-
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   const hasChanges = (): boolean => {
@@ -633,16 +621,6 @@ const EditProduct: React.FC = () => {
               ))}
             </div>
           </div>
-
-          {notifications.map((notif) => (
-            <Notification
-              key={notif.id}
-              id={notif.id}
-              text={notif.text}
-              type={notif.type}
-              removeNotif={removeNotification}
-            />
-          ))}
           {/* Confirm Save Dialog */}
           <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
             <DialogTrigger />

@@ -1,10 +1,11 @@
 "use client";
 
-import { motion } from "motion/react"
+import { motion } from "motion/react";
 import Link from "next/link";
 import { ArrowRight, Facebook, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import { TransitionLink } from "./utils/TransitionLink";
 
 const links = {
   company: [
@@ -55,7 +56,9 @@ export function CTASection() {
         >
           {/* Newsletter Signup */}
           <motion.div variants={item} className="space-y-4">
-            <h3 className="text-xl font-bold text-zinc-700">Join Our Newsletter</h3>
+            <h3 className="text-xl font-bold text-zinc-700">
+              Join Our Newsletter
+            </h3>
             <p className="text-muted-foreground">
               Sign up for exclusive offers, original stories, events and more.
             </p>
@@ -64,16 +67,32 @@ export function CTASection() {
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <div className="flex space-x-4 pt-4">
-              <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
+              <Link
+                href="https://www.facebook.com/"
+                target="_blank"
+                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
+              <Link
+                href="https://www.twitter.com/"
+                target="_blank"
+                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+              >
                 <TwitterLogoIcon className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
+              <Link
+                href="https://www.instagram.com/"
+                target="_blank"
+                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+              >
                 <InstagramLogoIcon className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-indigo-400 transition-colors">
+              <Link
+                href="https://www.youtube.com/"
+                target="_blank"
+                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+              >
                 <Youtube className="h-5 w-5" />
               </Link>
             </div>
@@ -82,16 +101,18 @@ export function CTASection() {
           {/* Link Sections */}
           {Object.entries(links).map(([title, items]) => (
             <motion.div key={title} variants={item} className="space-y-4">
-              <h3 className="text-xl font-bold capitalize text-zinc-700">{title}</h3>
+              <h3 className="text-xl font-bold capitalize text-zinc-700">
+                {title}
+              </h3>
               <ul className="space-y-3">
                 {items.map((link) => (
                   <li key={link.href}>
-                    <Link
+                    <TransitionLink
                       href={link.href}
                       className="text-muted-foreground hover:text-indigo-400 transition-colors"
                     >
                       {link.label}
-                    </Link>
+                    </TransitionLink>
                   </li>
                 ))}
               </ul>

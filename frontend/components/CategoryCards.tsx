@@ -26,15 +26,15 @@ const CategoryCard: React.FC<{ category: Category; isHovered: boolean; isCurrent
     >
       <TransitionLink href={link}>
         <div className="flex flex-col items-center justify-center overflow-hidden bg-white shadow-md rounded-lg w-full">
-          <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs font-semibold py-1 px-3 rounded-full">
+          <div className="absolute top-4 right-4 bg-indigo-500 text-white text-xs font-semibold py-1 px-3 rounded-full">
             {category.title}
           </div>
           <Image
             src={category.imageUrl}
-            alt={category.title}
+            alt={`${category.title}'s image`}
             width={512}
             height={512}
-            className="object-cover w-full h-[35rem] rounded-lg"
+            className="object-cover w-full lg:h-[35rem] rounded-lg"
             loading='lazy'
           />
         </div>

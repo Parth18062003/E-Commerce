@@ -1,21 +1,46 @@
-"use client"
-
-import React from "react";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import Image from "next/image";
 
 const Loading = () => {
   return (
-    <div className="flex flex-col h-full w-full justify-center items-center">
-      
-      <DotLottieReact
-      src="https://lottie.host/3035aa98-762e-481f-a03f-b085c7a0f96a/HnD9NokJMO.json"
-      loop
-      autoplay
-      speed={0.5}
-      className="w-20 h-20 md:w-80 md:h-80"
-    />
-      <h2 className="text-2xl md:text-4xl font-semibold text-zinc-700 dark:text-zinc-200 ml-4">
-        Loading...</h2>
+    <div>
+      <CutoutTextLoader
+        height="100vh"
+        background="rgba(0, 0, 0, 0.5)" // Optional: Adds a semi-transparent overlay
+        imgUrl="https://res.cloudinary.com/dvl7demzb/image/upload/v1733170440/ezgif-5-77250cce93_lgr9cc.gif"
+      />
+    </div>
+  );
+};
+
+const CutoutTextLoader = ({
+  height,
+  background,
+  imgUrl,
+}: {
+  height: string;
+  background: string;
+  imgUrl: string;
+}) => {
+  return (
+    <div className="relative" style={{ height }}>
+      <Image
+        src={imgUrl}
+        fill
+        alt="Loading..."
+        sizes="50vw"
+        className="absolute inset-0 z-0"
+      />
+      <div style={{ background }} className="absolute inset-0 z-10" />
+      <span
+        className="font-black absolute inset-0 z-20 text-center bg-clip-text text- pointer-events-none"
+        style={{
+          backgroundPosition: "center",
+          fontSize: "clamp(3rem, 12vw, 10rem)",
+          lineHeight: height,
+        }}
+      >
+        Loading...
+      </span>
     </div>
   );
 };

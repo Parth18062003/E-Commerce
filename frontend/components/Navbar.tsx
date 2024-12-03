@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import Logo from "./utils/Logo";
 import { DropdownTabs } from "./ui/dropdown/dropdown-tabs";
 import {
@@ -18,18 +18,20 @@ import { DropdownLinks } from "./ui/dropdown/dropdown-links";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { SearchBox } from "react-instantsearch";
-import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
-  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;  
+  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
   return (
     <nav className="bg-zinc-50 dark:bg-zinc-950 text-white dark:text-black relative z-50">
+      {/* Desktop Navbar */}
       <div className="hidden md:flex bg-zinc-800 dark:bg-zinc-200 max-w-full px-5 justify-end space-x-3 text-base dark:text-black text-white">
         <TransitionLink href="/authentication/sign-up">Sign up</TransitionLink>
         <span>|</span>
@@ -50,7 +52,7 @@ const Navbar = () => {
         </div>
 
         {/* Hamburger Menu Button */}
-        <div className="lg:hidden">
+        <div className="lg:hidden flex items-center space-x-3">
           <ThemeToggle />
           <button
             onClick={toggleMenu}
@@ -118,21 +120,17 @@ const Navbar = () => {
       </div>
       <div className="h-[2px] bg-zinc-300 dark:bg-zinc-700 mx-10" />
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu with Framer Motion */}
       {isOpen && (
-        <div
-          className={`fixed top-0 right-0 w-full h-full bg-zinc-900 bg-opacity-90 z-50 flex flex-col p-4 transition-opacity duration-300 ${
-            isOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          }`}
+        <motion.div
+          className="fixed top-0 right-0 w-full h-full bg-zinc-900/70 z-50 flex flex-col p-4"
+          initial={{ opacity: 0, x: 100 }} // Start offscreen
+          animate={{ opacity: 1, x: 0 }} // Animate to visible position
+          exit={{ opacity: 0, y: 100 }} // Animate out of screen
+          transition={{ duration: 0.3 }} // Control the duration of the animation
         >
           {/* Backdrop blur effect */}
-          <div
-            className={`absolute inset-0 backdrop-blur-md transition-opacity duration-300 ${
-              isOpen ? "opacity-100" : "opacity-0"
-            }`}
-          ></div>
+          <div className="absolute inset-0 backdrop-blur-md"></div>
           <button
             onClick={toggleMenu}
             className="text-zinc-400 text-2xl self-end mb-4 z-10"
@@ -159,20 +157,20 @@ const Navbar = () => {
             <TransitionLink href="/cart" onClick={toggleMenu}>
               Cart
             </TransitionLink>
-            {/* Add more links as needed */}
+            {/* Search Box */}
             <SearchBox
-                placeholder="Search products..."
-                classNames={{
-                  root: "w-full",
-                  form: "w-full",
-                  input:
-                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
-                  submit: "hidden",
-                  reset: "hidden",
-                }}
-              />
+              placeholder="Search products..."
+              classNames={{
+                root: "w-full",
+                form: "w-full",
+                input:
+                  "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                submit: "hidden",
+                reset: "hidden",
+              }}
+            />
           </div>
-        </div>
+        </motion.div>
       )}
     </nav>
   );
