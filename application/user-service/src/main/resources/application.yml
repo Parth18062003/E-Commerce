@@ -19,8 +19,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 436274334861-782058r34orv1r49tpeu6trarqrkd5e8.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 436274334861-.apps.googleusercontent.com
+            client-secret: GOCSPX--
             scope: email,profile
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
@@ -31,7 +31,7 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
   data:
     mongodb:
-      uri: mongodb+srv://2021parthkadam:VfwwJ3uV0l0C6l1O@cluster0.oc0ol.mongodb.net/user_service
+      uri:
   rabbitmq:
     host: localhost
     port: 5672
