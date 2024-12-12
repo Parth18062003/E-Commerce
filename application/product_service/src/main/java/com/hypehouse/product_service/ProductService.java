@@ -4,12 +4,19 @@ import com.algolia.search.SearchClient;
 import com.algolia.search.SearchIndex;
 import com.algolia.search.models.indexing.Query;
 import com.algolia.search.models.indexing.SearchResult;
+import com.hypehouse.common.model.InventoryUpdateMessage;
+import com.hypehouse.product_service.config.RabbitConfig;
 import com.hypehouse.product_service.model.IndexableProduct;
+import com.hypehouse.common.model.ProductDTO;
 import com.hypehouse.product_service.model.UpdateProductDTO;
 import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,11 +24,12 @@ import org.springframework.scheduling.annotation.Async;
 import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Field;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -29,12 +37,15 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final SearchIndex<IndexableProduct> productIndex;
+    private final RabbitTemplate productRabbitTemplate;
+    private final ConcurrentMap<String, CompletableFuture<Boolean>> inventoryCheckFutures = new ConcurrentHashMap<>();
 
     private static final String PRODUCTS_CACHE = "products";
 
-    public ProductService(ProductRepository productRepository, SearchClient searchClient) {
+    public ProductService(ProductRepository productRepository, SearchClient searchClient, RabbitTemplate productRabbitTemplate) {
         this.productRepository = productRepository;
         this.productIndex = searchClient.initIndex("products", IndexableProduct.class);
+        this.productRabbitTemplate = productRabbitTemplate;
     }
 
     // Fetch all products with pagination
@@ -116,6 +127,44 @@ public class ProductService {
         return savedProduct;
     }
 
+    public void sendProductToInventory(Product product) {
+        // Convert savedProduct to ProductDTO
+        log.debug("Sending product to Inventory Service: {}", product);
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setSku(product.getSku());
+
+        log.debug("Sending ProductDTO to RabbitMQ: {}", productDTO);
+        // Convert the variant list into ProductDTO.VariantDTO objects
+        List<ProductDTO.VariantDTO> variantDTOList = product.getVariantList().stream()
+                .map(variant -> {
+                    ProductDTO.VariantDTO variantDTO = new ProductDTO.VariantDTO();
+                    variantDTO.setSku(variant.getSku());  // Variant SKU
+                    variantDTO.setColor(variant.getColor());  // Variant color (optional)
+                    // Convert sizes to SizeDTO objects
+                    List<ProductDTO.SizeDTO> sizeDTOList = variant.getSizes().stream()
+                            .map(size -> {
+                                ProductDTO.SizeDTO sizeDTO = new ProductDTO.SizeDTO();
+                                sizeDTO.setSize(size.getSize());
+                                sizeDTO.setStockQuantity(size.getStockQuantity());  // Set stock quantity
+                                return sizeDTO;
+                            })
+                            .collect(Collectors.toList());
+
+                    variantDTO.setSizes(sizeDTOList);  // Set sizes for this variant
+                    return variantDTO;
+                })
+                .collect(Collectors.toList());
+
+        productDTO.setVariants(variantDTOList);  // Set the list of variants
+
+        // Log the ProductDTO being sent
+        log.debug("Sending ProductDTO to RabbitMQ: {}", productDTO);
+
+        // Send the ProductDTO to RabbitMQ
+        productRabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "", productDTO);
+    }
+
     // Update product and index asynchronously
     //@CacheEvict(value = PRODUCTS_CACHE, allEntries = true)
     public Product updateProduct(String id, @Valid UpdateProductDTO updateProductDTO) {
@@ -149,6 +198,7 @@ public class ProductService {
         if (!productRepository.existsById(String.valueOf(productId))) {
             throw new ProductNotFoundException(id);
         }
+        deleteInventoryForProduct(String.valueOf(productId));
         productRepository.deleteById(String.valueOf(productId));
         CompletableFuture.runAsync(() -> deleteProductFromAlgolia(id));
     }
@@ -252,5 +302,97 @@ public class ProductService {
         indexableProduct.setVariants(variants);
 
         return indexableProduct;
+    }
+
+
+    @Transactional
+    public void updateInventory(String productId, String variantSku, Map<String, Integer> sizeStockMap) {
+        log.debug("Updating inventory for product ID: {}, variant SKU: {}", productId, variantSku);
+
+        // Retrieve the product by ID (throws exception if not found)
+        Product product = getProductById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        // Find the variant by SKU
+        Product.Variant variant = product.getVariantList().stream()
+                .filter(v -> v.getSku().equals(variantSku))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Variant not found for SKU: " + variantSku));
+
+        // Update the sizes in the variant based on sizeStockMap
+        sizeStockMap.forEach((sizeName, stockQuantity) -> {
+            // Check if the size already exists in the variant
+            Optional<Product.SizeVariant> existingSizeVariant = variant.getSizes().stream()
+                    .filter(sizeVariant -> sizeVariant.getSize().equals(sizeName)) // Fixed reference to sizeName
+                    .findFirst();
+
+            if (existingSizeVariant.isPresent()) {
+                // Update stock for the existing size
+                existingSizeVariant.get().setStockQuantity(stockQuantity);
+            } else {
+                // If size doesn't exist, add the new size to the variant
+                Product.SizeVariant newSizeVariant = new Product.SizeVariant(sizeName, stockQuantity);
+                variant.getSizes().add(newSizeVariant);
+            }
+        });
+
+        // Recalculate total stock quantity for the variant
+        int newVariantStockQuantity = variant.getSizes().stream()
+                .mapToInt(Product.SizeVariant::getStockQuantity)  // Correct reference to SizeVariant
+                .sum();
+
+        variant.setStockQuantity(newVariantStockQuantity);  // Update the variant's total stock quantity
+
+        // Save the updated product to the database
+        productRepository.save(product);
+
+        // Asynchronously index the updated product in Algolia
+        indexProductAsync(product);
+    }
+
+    @Transactional
+    public void addInventory(String productId, String variantSku, String color, Map<String, Integer> sizeStockMap) {
+        log.debug("Adding inventory for product ID: {}, variant SKU: {}, color: {}", productId, variantSku, color);
+
+        // Retrieve the product by ID (throws exception if not found)
+        Product product = getProductById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        // Find the variant by SKU
+        Product.Variant variant = product.getVariantList().stream()
+                .filter(v -> v.getSku().equals(variantSku))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Variant not found for SKU: " + variantSku));
+
+        // Update the sizes in the variant
+        variant.getSizes().forEach(size -> {
+            String sizeName = size.getSize();
+            if (sizeStockMap.containsKey(sizeName)) {
+                size.setStockQuantity(sizeStockMap.get(sizeName));
+            }
+        });
+
+        // Calculate total stock quantity for the variant
+        int newVariantStockQuantity = variant.getSizes().stream()
+                .mapToInt(Product.SizeVariant::getStockQuantity)  // Correct reference to SizeVariant
+                .sum();
+
+        variant.setStockQuantity(newVariantStockQuantity);
+        // Save the updated product to the database
+        productRepository.save(product);
+
+        // Asynchronously index the updated product in Algolia
+        indexProductAsync(product);
+    }
+
+    @Transactional
+    public void deleteInventoryForProduct(String productId) {
+        log.debug("Deleting inventory for product ID: {}", productId);
+        // Send message to Inventory service to delete inventory
+        InventoryUpdateMessage message = new InventoryUpdateMessage();
+        message.setProductId(productId);
+        message.setVariantSku(null); // Indicating to delete all inventories for this product
+        message.setSizeStockMap(null); // Not needed for deletion
+        productRabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, RabbitConfig.INVENTORY_UPDATE_ROUTING_KEY, message);
     }
 }

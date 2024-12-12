@@ -76,8 +76,11 @@ public class ProductController {
             throw new ProductAlreadyExistsException(product.getSku());
         });
 
-        // Save and return the product
+        // Save the product
         Product savedProduct = productService.saveProduct(product);  // Async indexing happens in service
+
+        // Send the product to the InventoryService
+        productService.sendProductToInventory(savedProduct);
         log.info("Product created successfully with ID: {}", savedProduct.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);  // Return Created status
     }

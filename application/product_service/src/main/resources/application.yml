@@ -5,7 +5,7 @@ spring:
     port: 8082
   data:
     mongodb:
-      uri: mongodb+srv://=
+      uri: mongodb+srv://.net/product_service
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
@@ -13,9 +13,11 @@ spring:
     level:
       org:
         springframework:
+          security: DEBUG
           web: DEBUG
       com:
         hypehouse: DEBUG
+      org.springframework.data.mongodb: TRACE
   mongodb:
     repositories:
       enabled: true

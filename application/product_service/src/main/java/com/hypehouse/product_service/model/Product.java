@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -403,6 +404,7 @@ public class Product implements Serializable {
 
     public static class SizeVariant implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 3L;
 
         @NotBlank(message = "Size is mandatory")
@@ -412,6 +414,11 @@ public class Product implements Serializable {
         @NotNull(message = "Stock quantity is mandatory for size variant")
         @Min(value = 0, message = "Size variant stock quantity must be zero or greater")
         private Integer stockQuantity;
+
+        public SizeVariant(String size, Integer stockQuantity) {
+            this.size = size;
+            this.stockQuantity = stockQuantity;
+        }
 
         // Getters and Setters
 
