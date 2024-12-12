@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: inventory_service
+  server:
+    port: 8083
+  data:
+    mongodb:
+      uri: mongodb+srv://.mongodb.net/inventory_service
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
+  logging:
+    level:
+      org:
+        springframework:
+          security: DEBUG
+          web: DEBUG
+      com:
+        hypehouse: DEBUG
+      org.springframework.data.mongodb: TRACE
+  mongodb:
+    repositories:
+      enabled: true
