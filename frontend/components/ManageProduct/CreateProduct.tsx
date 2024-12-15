@@ -58,7 +58,7 @@ interface Product {
   dimensions: string;
   weight: string;
   colorOptions: string[];
-  isActive: boolean;
+  productStatus?: string;
   isFeatured: boolean;
   productURL: string;
   material: string;
@@ -72,7 +72,7 @@ interface ProductFormProps {
   existingProduct?: Product;
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
+const CreateProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const initialProductState: Product = {
@@ -89,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
     dimensions: "",
     weight: "",
     colorOptions: [],
-    isActive: true,
+    productStatus: "Available",
     isFeatured: false,
     productURL: "",
     material: "",
@@ -642,14 +642,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
             {/* Status Toggles */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <Switch
-                  id="isActive"
-                  checked={product.isActive}
-                  onCheckedChange={(checked) =>
-                    setProduct((prev) => ({ ...prev, isActive: checked }))
-                  }
+                <Label htmlFor="productStatus">Status</Label>
+                <Input
+                  id="productStatus"
+                  name="productStatus"
+                  type="text"
+                  value={product.productStatus}
+                  onChange={handleInputChange}
+                  className="mt-1"
                 />
-                <Label htmlFor="isActive">Active</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -697,4 +698,4 @@ const ProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
   );
 };
 
-export default ProductForm;
+export default CreateProductForm;

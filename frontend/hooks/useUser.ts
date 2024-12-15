@@ -67,7 +67,7 @@ const useUser = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/v1/users/${userId}`,
+          `http://192.168.29.159:8081/api/v1/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

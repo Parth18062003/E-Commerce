@@ -108,7 +108,7 @@ const UserInfo = () => {
     if (!reduxUser) return;
 
     const userId = reduxUser.id;
-    const url = `http://localhost:8081/api/v1/users/update-profile/${userId}`;
+    const url = `http://192.168.29.159:8081/api/v1/users/update-profile/${userId}`;
     const token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("token="))

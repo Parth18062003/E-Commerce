@@ -20,9 +20,9 @@ const UserSearchComponent: React.FC<UserSearchComponentProps> = ({ onUserIdFetch
 
       // Check if the search term is an email or username
       if (searchTerm.includes("@")) {
-        response = await axios.get<string>(`http://localhost:8081/api/v1/users/email/${searchTerm}`);
+        response = await axios.get<string>(`http://192.168.29.159:8081/api/v1/users/email/${searchTerm}`);
       } else {
-        response = await axios.get<string>(`http://localhost:8081/api/v1/users/username/${searchTerm}`);
+        response = await axios.get<string>(`http://192.168.29.159:8081/api/v1/users/username/${searchTerm}`);
       }
 
       // Parse the response to extract the user ID

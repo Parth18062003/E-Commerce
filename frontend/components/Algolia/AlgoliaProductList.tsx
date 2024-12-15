@@ -137,7 +137,6 @@ export default AlgoliaProductList;
  */import React from 'react';
 import { useHits } from 'react-instantsearch';
 import AlgoliaProductCard from './AlgoliaProductCard';
-import { Configure } from 'react-instantsearch';
 import { CustomConfigure } from './CustomConfigure'; // Import the custom Configure
 import { Hit } from 'algoliasearch';
 

@@ -34,7 +34,7 @@ export interface Product {
     dimensions: string;
     weight: string;
     colorOptions: string[]; 
-    isActive?: boolean;
+    productStatus?: string;
     featured?: boolean;
     productURL: string;
     material: string;
@@ -80,7 +80,7 @@ type AsyncActionTypes =
     | "deleteProduct"
     | "fetchProductsByIds";
 
-const API_BASE_URL = "http://localhost:8082/api/v1/products";
+const API_BASE_URL = "http://192.168.29.159:8082/api/v1/products";
 const productAPI = {
     fetchProduct: (id: string) => axios.get<Product>(`${API_BASE_URL}/${id}`),
     fetchProducts: (page: number, size: number) => axios.get<ProductsResponse>(`${API_BASE_URL}?page=${page}&size=${size}`),

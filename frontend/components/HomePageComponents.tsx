@@ -96,8 +96,9 @@ export async function HomePageComponents() {
     <>
       <Navbar />
       <AlertBanner alerts={alerts} />
+      <ProductSearch />
       <div className="relative font-[family-name:var(--font-geist-sans)]">
-        <ProductSearch />
+        
         <main className="w-full">
           <HeroBackground />
           <div className="relative h-[65vh] lg:h-[75vh] bottom-0 left-0 flex items-end">

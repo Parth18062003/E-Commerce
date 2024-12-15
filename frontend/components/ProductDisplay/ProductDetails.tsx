@@ -351,7 +351,9 @@ const ProductDetails: React.FC = () => {
   const params = useParams();
   const productId = params.productId as string;
 
-  const { product, loading, error } = useSelector((state: RootState) => state.product);
+  const { product, loading, error } = useSelector(
+    (state: RootState) => state.product
+  );
   const { ratings, cache } = useSelector((state: RootState) => state.rating);
 
   const [mainImages, setMainImages] = useState<string[]>([]);
@@ -362,30 +364,43 @@ const ProductDetails: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState<number>(0);
-  const [sizes, setSizes] = useState<{ size: string; stockQuantity: number }[]>([]);
+  const [sizes, setSizes] = useState<{ size: string; stockQuantity: number }[]>(
+    []
+  );
 
   // Track both product ID and initialization status
-  const initialSetupRef = useRef<{ productId: string | null; completed: boolean }>({
+  const initialSetupRef = useRef<{
+    productId: string | null;
+    completed: boolean;
+  }>({
     productId: null,
     completed: false,
   });
 
   // Fetch product and ratings only when the productId changes
   useEffect(() => {
-    if (productId && (!product || product.id !== productId)) {
+    if (productId) {
       console.log("Fetching product details and ratings");
-      dispatch(fetchProductDetails(productId));
+  
+      // Fetch product details if the product is not in the cache or not already loaded
+      if (!product || product.id !== productId) {
+        dispatch(fetchProductDetails(productId));
+      }
+  
+      // Fetch ratings if not already cached
       if (!cache[productId]) {
         dispatch(fetchRatingsByProduct(productId));
       }
     }
-  }, [dispatch, productId, product, cache]);
+  }, [dispatch, productId, product, cache]); // Only depend on productId and cache to trigger the effect
+  
 
   // Initial setup effect - runs only once per unique product
   useEffect(() => {
     if (
       product &&
-      (!initialSetupRef.current.completed || initialSetupRef.current.productId !== product.id)
+      (!initialSetupRef.current.completed ||
+        initialSetupRef.current.productId !== product.id)
     ) {
       // Check URL for variant SKU
       const skuFromUrl = window.location.pathname.split("/").pop();
@@ -419,7 +434,9 @@ const ProductDetails: React.FC = () => {
     setSelectedVariant(variant);
     setMainImages(variant.colorOptionImages);
     setSizes(variant.sizes);
-    setDiscountedPrice(calculateDiscountedPrice(variant.price, variant.discount));
+    setDiscountedPrice(
+      calculateDiscountedPrice(variant.price, variant.discount)
+    );
   };
 
   // Calculate the discounted price
@@ -429,7 +446,9 @@ const ProductDetails: React.FC = () => {
 
   // Handle color change when a thumbnail is clicked
   const handleColorChange = (color: string) => {
-    const newVariant = product?.variants.find((variant) => variant.color === color);
+    const newVariant = product?.variants.find(
+      (variant) => variant.color === color
+    );
     if (!newVariant) {
       console.error(`No variant found for color: ${color}`);
       return;
@@ -440,11 +459,18 @@ const ProductDetails: React.FC = () => {
 
     // Update the URL to reflect the selected variant
     if (product) {
-      const colorUrl = `/products/${createSlug(product.name)}/${product.id}/${createSlug(newVariant.sku)}`;
+      const colorUrl = `/products/${createSlug(product.name)}/${
+        product.id
+      }/${createSlug(newVariant.sku)}`;
       if (window.location.pathname !== colorUrl) {
         router.replace(colorUrl);
       }
     }
+  };
+
+  const swipeCaorusel = (index: number) => {
+    setCurrentIndex(index);
+    api?.scrollTo(index);
   };
 
   const openModal = (index: number) => {
@@ -495,10 +521,10 @@ const ProductDetails: React.FC = () => {
                 {mainImages.map((_, index) => (
                   <button
                     key={`${selectedColor}-dot-${index}`}
-                    className={`w-2 h-2 mx-1 rounded-full ${
+                    className={`w-16 h-2  rounded-full ${
                       index === currentIndex ? "bg-zinc-500" : "bg-gray-300"
                     }`}
-                    onClick={() => api?.scrollTo(index)}
+                    onClick={() => swipeCaorusel(index)}
                   />
                 ))}
               </div>
@@ -560,7 +586,7 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
 
-          <div className="hidden lg:grid grid-cols-4 my-2 p-0 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 my-2 p-0 gap-3">
             {product.variants.map((variant, index) => (
               <div
                 key={`color-${variant.color}-${index}`}

@@ -52,7 +52,7 @@ export function SignInForm() {
   
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/v1/auth/login",
+        "http://192.168.29.159:8081/api/v1/auth/login",
         {
           username: data.email,
           password: data.password,
@@ -102,7 +102,7 @@ export function SignInForm() {
   
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = "http://localhost:8081/oauth2/authorization/google";
+      window.location.href = "http://192.168.29.159:8081/oauth2/authorization/google";
     } catch (error: any) {
       console.error("Error during Google login:", error);
       toast("An error occurred while logging in with Google. Please try again.", error);

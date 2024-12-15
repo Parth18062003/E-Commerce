@@ -1,3 +1,115 @@
+/* "use client";
+
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useInstantSearch, Hits, Configure, useSearchBox, SearchBox } from "react-instantsearch";
+import Hit from "../Hits";
+import CustomPagination from "./CustomPagination";
+import { Input } from "../ui/input"; // Shadcn Input component
+
+const SearchWithAlgoliaDialog = () => {
+  const { results } = useInstantSearch(); // Algolia search results
+  const { query, refine } = useSearchBox(); // Algolia SearchBox state management
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog open state
+
+  // Trigger dialog opening when query changes
+  useEffect(() => {
+    if (query?.length > 0) {
+      setIsDialogOpen(true); // Open dialog if query exists
+    } else {
+      setIsDialogOpen(false); // Close dialog if query is empty
+    }
+  }, [query]);
+
+  // Function to handle search box changes
+  const handleSearchStateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    refine(e.target.value); // Use Algolia's refine to update the query
+  };
+
+  // Close dialog handler
+  const handleDialogClose = () => {
+    setIsDialogOpen(false); // Close dialog when clicking close button
+  };
+
+  return (
+    <div>
+      <Input
+        placeholder="Search products..."
+        value={query}  // Bind query state to the search input
+        onChange={handleSearchStateChange}  // Update query when user types
+        className="px-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400 w-full"
+      />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="hidden" />
+        </DialogTrigger>
+
+        <DialogContent className="fixed lg:min-w-[60rem] overflow-y-auto max-h-[90vh] transition-all bg-zinc-100 text-black">
+          <DialogHeader>
+            <DialogTitle className="text-black">Search Results</DialogTitle>
+            <DialogDescription>
+              Here are the results for{" "}
+              <span className="font-semibold text-zinc-600 ">{query}</span>
+            </DialogDescription>
+            <SearchBox
+             placeholder="Search products..."
+             classNames={{
+               root: "w-full",
+               form: "w-full",
+               input:
+                 "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+               submit: "hidden",
+               reset: "hidden",
+             }}
+           /> 
+          </DialogHeader>
+
+          <div className="p-4">
+            {query && query.length > 0 && results && results.hits.length > 0 ? (
+              <div>
+                <div className="text-sm text-gray-600 mb-2">
+                  {results.hits.length} Results found
+                </div>
+                <Configure hitsPerPage={5} />
+                <Hits
+                  hitComponent={Hit}  // Custom component to render hits
+                  classNames={{
+                    list: "divide-x divide-gray-200",
+                    item: "p-0",
+                  }}
+                />
+                <CustomPagination />
+              </div>
+            ) : query && query.length > 0 ? (
+              <div className="text-sm text-gray-600">
+                No results found for {query}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-600">
+                Please enter a query to search.
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleDialogClose}  // Close the dialog on click
+              className="text-black"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default SearchWithAlgoliaDialog;
+ */
 "use client";
 
 import React, { useState, useEffect } from "react";

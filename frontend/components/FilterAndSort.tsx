@@ -9,6 +9,7 @@ import CustomPagination from "./Algolia/CustomPagination";
 import CustomHitsPerPage from "./Algolia/CustomHitsPerPage";
 import CustomCurrentRefinements from "./Algolia/CustomCurrentRefinements";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { Configure } from "react-instantsearch";
 
 const FilterAndSort = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -88,6 +89,7 @@ const FilterAndSort = () => {
       <div className="flex-grow flex flex-col">
         <div className="flex justify-end items-center text-black mx-6 gap-4 mt-5">
           <div className="flex items-center gap-4">
+            <Configure hitsPerPage={9} />
             <CustomCurrentRefinements />
             <FilterProducts toggleFilterSidebar={toggleFilterSidebar} />
             <CustomSortBy items={sortOptions} />

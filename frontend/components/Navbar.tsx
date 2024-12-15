@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "./utils/Logo";
 import { DropdownTabs } from "./ui/dropdown/dropdown-tabs";
 import {
@@ -19,11 +19,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { SearchBox } from "react-instantsearch";
 import { motion } from "motion/react";
+import { Input } from "./ui/input";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   const reduxUser = useSelector((state: RootState) => state.auth.user);
-  const dashboardLink = `/dashboard/user/${reduxUser?.id}`;
+  const dashboardLink = reduxUser ? `/dashboard/user/${reduxUser.id}` : "/authentication/sign-up";
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -73,7 +75,8 @@ const Navbar = () => {
         <div className="items-center hidden lg:flex space-x-4 px-4">
           <div className="relative">
             <div className="flex-grow max-w-xl">
-              <SearchBox
+              {/* Search Box */}
+              {/*               <SearchBox
                 placeholder="Search products..."
                 classNames={{
                   root: "w-full",
@@ -83,6 +86,11 @@ const Navbar = () => {
                   submit: "hidden",
                   reset: "hidden",
                 }}
+              /> */}
+              <Input
+                type="search"
+                placeholder="Search products..."
+                className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400"
               />
               <div className="absolute inset-y-0 left-3 flex items-center text-zinc-400">
                 <Search />
@@ -110,7 +118,7 @@ const Navbar = () => {
             <span className="sr-only">Cart</span>
           </TransitionLink>
           <TransitionLink
-            href={dashboardLink}
+            href={dashboardLink ? dashboardLink : "/authentication/sign-up"}
             className="text-zinc-600 dark:text-zinc-400 hover:text-indigo-400 transition"
           >
             <UserRound />
@@ -158,7 +166,7 @@ const Navbar = () => {
               Cart
             </TransitionLink>
             {/* Search Box */}
-            <SearchBox
+            {/*             <SearchBox
               placeholder="Search products..."
               classNames={{
                 root: "w-full",
@@ -168,6 +176,11 @@ const Navbar = () => {
                 submit: "hidden",
                 reset: "hidden",
               }}
+            /> */}
+            <Input
+              type="search"
+              placeholder="Search products..."
+              className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400"
             />
           </div>
         </motion.div>

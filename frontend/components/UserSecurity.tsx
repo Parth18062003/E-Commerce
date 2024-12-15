@@ -30,7 +30,7 @@ const UserSecurity = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8081/api/v1/users/update-2fa/${userId}`,
+        `http://192.168.29.159:8081/api/v1/users/update-2fa/${userId}`,
         null,
         {
           params: { enable },
@@ -62,7 +62,7 @@ const UserSecurity = () => {
     setIsDeleting(true);
 
     try {
-      const response = await axios.delete(`http://localhost:8081/api/v1/users/delete-profile/${userId}`, {
+      const response = await axios.delete(`http://192.168.29.159:8081/api/v1/users/delete-profile/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

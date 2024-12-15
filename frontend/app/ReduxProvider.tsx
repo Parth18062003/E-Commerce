@@ -1,38 +1,19 @@
-"use client"; // Ensure this runs on the client side
+"use client";
 
 import { Provider } from "react-redux";
 import store from "../store/store";
-import { liteClient as algoliasearch } from "algoliasearch/lite";
-import { Configure, InstantSearch } from "react-instantsearch";
-import {
-    InstantSearchSSRProvider,
-    InstantSearchServerState,
-} from "react-instantsearch"; // Import SSR-related components
-import { CustomConfigure } from "@/components/Algolia/CustomConfigure";
-import ProductSearch from "@/components/Algolia/ProductSearch";
+import AlgoliaSearch from "./AlgoliaSearch";
 
-// Assuming `serverState` is passed from the server-side (getServerSideProps or similar)
 type ReduxProviderProps = {
-    children: React.ReactNode;
-    serverState?: InstantSearchServerState; // Optional prop for server state
+  children: React.ReactNode;
 };
 
-const ReduxProvider = ({ children, serverState }: ReduxProviderProps) => {
-    const searchClient = algoliasearch(
-        "G66MRCQA66",
-        "cc985da48044a74a507f8d64c7a32265"
-    );
-
-    return (
-        <InstantSearchSSRProvider {...serverState}> {/* Wrap with SSR provider */}
-            <InstantSearch searchClient={searchClient} indexName="products">
-                <CustomConfigure hitsPerPage={9}/>
-                <Provider store={store}>
-                    {children}
-                </Provider>
-            </InstantSearch>
-        </InstantSearchSSRProvider>
-    );
+const ReduxProvider = ({ children }: ReduxProviderProps) => {
+  return (
+    <AlgoliaSearch>
+      <Provider store={store}>{children}</Provider>
+    </AlgoliaSearch>
+  );
 };
 
 export default ReduxProvider;

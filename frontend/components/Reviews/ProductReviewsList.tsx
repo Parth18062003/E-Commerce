@@ -12,7 +12,7 @@ interface ReviewsListProps {
 const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId, ratings }) => {
   
   if (ratings.length === 0) {
-    return <div className="flex justify-start items-center text-black px-4">No reviews yet.</div>;
+    return <div className="flex justify-start text-center items-center text-black px-20">No reviews yet. Be the first one Review</div>;
   }
 
   const handleReportReview = (id: string, reason: string) => {
@@ -20,7 +20,7 @@ const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId, ratings }) 
   };
 
   return (
-    <div className="max-w-4xl mx-16 py-12 px-4">
+    <div className="max-w-4xl mx-6 lg:mx-16 py-12 lg:px-4">
       <h2 className="text-3xl font-bold mb-8 text-black">Customer Reviews</h2>
       
       <ReviewsList onReportReview={handleReportReview} reviews={ratings} />

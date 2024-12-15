@@ -26,7 +26,7 @@ export function CarouselCard({ image, title, category }: CarouselCardProps) {
           className="object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-10 left-10 right-0 p-4">
+        <div className="absolute bottom-0 left-0 lg:bottom-10 lg:left-10 right-0 p-4">
           <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
           <Button variant="secondary" className="rounded-full bg-zinc-100 text-black backdrop-blur-sm">
             {category}
