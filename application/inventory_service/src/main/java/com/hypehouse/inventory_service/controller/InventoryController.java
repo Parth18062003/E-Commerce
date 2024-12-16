@@ -5,6 +5,8 @@ import com.hypehouse.inventory_service.model.Inventory;
 import com.hypehouse.inventory_service.service.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,24 @@ public class InventoryController {
 
     public InventoryController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
+    }
+
+    /**
+     * Fetch all inventory records.
+     *
+     * @return List of all inventory records.
+     */
+    @GetMapping
+    @RateLimit(limitForPeriod = 5, limitRefreshPeriod = 60)
+    public ResponseEntity<Page<Inventory>> getAllInventory(Pageable pageable) {
+        logger.info("Fetching all inventory records");
+        Page<Inventory> inventories = inventoryService.getAllInventory(pageable);
+        if(inventories.isEmpty()){
+            logger.warn("No inventory records found");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        logger.info("Fetched {} inventory records", inventories.getTotalElements());
+        return ResponseEntity.ok(inventories);
     }
 
     /**
@@ -71,7 +91,7 @@ public class InventoryController {
      *
      * @param productId  The ID of the product.
      * @param variantSku The SKU of the variant.
-     * @param sizeStock  A map of size and quantity to be added.
+     * @param inventoryRequest The request body containing color and size stock.
      * @return The updated inventory.
      */
     @PostMapping("/add/{productId}/{variantSku}")
@@ -79,10 +99,10 @@ public class InventoryController {
     public ResponseEntity<Inventory> addInventory(
             @PathVariable String productId,
             @PathVariable String variantSku,
-            @RequestBody String color, Map<String, Integer> sizeStock) {
+            @RequestBody InventoryRequest inventoryRequest) {
         logger.info("Adding inventory for productId: {}, variantSku: {}", productId, variantSku);
         try {
-            Inventory updatedInventory = inventoryService.addInventory(productId, variantSku, color ,sizeStock);
+            Inventory updatedInventory = inventoryService.addInventory(productId, variantSku, inventoryRequest.getColor(), inventoryRequest.getSizeStock());
             logger.info("Successfully added inventory for productId: {}, variantSku: {}", productId, variantSku);
             return ResponseEntity.status(HttpStatus.CREATED).body(updatedInventory);
         } catch (RuntimeException e) {
@@ -250,4 +270,27 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    public static class InventoryRequest {
+        private String color;
+        private Map<String, Integer> sizeStock;
+
+        // Getters and setters
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public Map<String, Integer> getSizeStock() {
+            return sizeStock;
+        }
+
+        public void setSizeStock(Map<String, Integer> sizeStock) {
+            this.sizeStock = sizeStock;
+        }
+    }
+
 }

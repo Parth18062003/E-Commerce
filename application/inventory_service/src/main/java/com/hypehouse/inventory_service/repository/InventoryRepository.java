@@ -13,5 +13,4 @@ public interface InventoryRepository extends MongoRepository<Inventory, String> 
     Optional<Inventory> findByProductIdAndVariantSku(String productId, String variantSku);
 
     List<Inventory> findByProductId(String productId);
-
 }
