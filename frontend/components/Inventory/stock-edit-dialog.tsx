@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { updateStock } from "@/store/inventorySlice";
 import { AppDispatch } from "@/store/store";
 import { InventoryItem } from "./types";
+import { toast } from "sonner";
 
 const stockSchema = z.object({
     stockQuantity: z.number().min(0, "Stock quantity cannot be negative"),
@@ -44,8 +45,10 @@ export function StockEditDialog({ item, onClose }: StockEditDialogProps) {
                 size: item.size,
                 quantity: data.stockQuantity,
             })).unwrap();
+            toast.success(`Stock for size ${item.size} updated successfully`);
             onClose();
         } catch (error) {
+            toast.error("Failed to update stock");
             console.error("Failed to update stock:", error);
         } finally {
             setLoading(false);

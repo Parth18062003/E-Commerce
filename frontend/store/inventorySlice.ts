@@ -24,7 +24,7 @@ const initialState: InventoryState = {
   error: null,
   sort: { key: 'updatedAt', direction: 'desc' },
   filter: { sku: '', productId: '', color: '' },
-  pagination: { page: 0, pageSize: 10, totalItems: 0 },
+  pagination: { page: 0, pageSize: 10, totalPages: 0 },
 };
 
 // Utility function to update an item in the items array
@@ -32,10 +32,9 @@ const updateItemInArray = (items: InventoryItem[], updatedItem: InventoryItem): 
   return items.map(item => (item.variantSku === updatedItem.variantSku ? updatedItem : item));
 };
 
-// Async Thunks
 export const fetchAllInventory = createAsyncThunk<InventoryItem[],{page: number, pageSize: number}>(
   'inventory/fetchAllInventory',
-  async ({page, pageSize}, { rejectWithValue }) => {
+  async ({page, pageSize}, { dispatch, rejectWithValue }) => {
     try {
       const response = await axios.get<{
         content: InventoryItem[];
@@ -44,6 +43,11 @@ export const fetchAllInventory = createAsyncThunk<InventoryItem[],{page: number,
       }>('http://192.168.29.159:8083/api/v1/inventory', {
         params: { page, size: pageSize }
       });
+      dispatch(setPagination({
+        //page: response.data.pageable.pageNumber,
+        //pageSize: response.data.pageable.pageSize,
+        totalItems: response.data.totalElements,
+      }));
       return response.data.content;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -52,7 +56,7 @@ export const fetchAllInventory = createAsyncThunk<InventoryItem[],{page: number,
       return rejectWithValue('An unexpected error occurred');
     }
   }
-);
+); 
 
 export const fetchInventoryItem = createAsyncThunk<InventoryItem, { productId: string; variantSku: string }>(
   'inventory/fetchInventoryItem',
@@ -245,7 +249,7 @@ const inventorySlice = createSlice({
       .addCase(fetchAllInventory.fulfilled, (state, action) => {
         state.items = action.payload;     
         state.loading.fetch = false;
-      })
+      }) 
       .addCase(fetchAllInventory.rejected, (state, action) => {
         state.loading.fetch = false;
         state.error = action.payload as string;

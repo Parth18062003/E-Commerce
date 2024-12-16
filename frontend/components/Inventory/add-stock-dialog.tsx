@@ -12,6 +12,7 @@ import { addStock } from "@/store/inventorySlice";
 import { InventoryItem } from "./types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 import { AppDispatch } from "@/store/store";
+import { toast } from "sonner";
 
 const schema = z.object({
   size: z.string({ required_error: "Size is required" }).min(1, "Size must be at least 1 character"),
@@ -42,8 +43,10 @@ export const AddStockDialog: React.FC<AddStockDialogProps> = ({ item, onClose })
 
       try {
         await dispatch(addStock({ productId, variantSku, size, quantity }));
+        toast.success(`Stock for size ${size} added successfully`);
         onClose();
       } catch (error) {
+        toast.error("Failed to add stock");
         console.error("Failed to add size:", error);
       }
     }

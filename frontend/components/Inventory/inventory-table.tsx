@@ -56,7 +56,7 @@ export function InventoryTable({ searchTerm }: InventoryTableProps) {
 
   useEffect(() => {
     if (filter.productId) dispatch(fetchInventoryItems(filter.productId)); // Fetch inventory when `productId` changes
-  }, [filter.productId, dispatch]);
+  }, [dispatch, filter.productId]);
 
   const filteredItems = items.flatMap((item) => {
     const { sku, color } = filter;
@@ -88,7 +88,9 @@ export function InventoryTable({ searchTerm }: InventoryTableProps) {
       return a.variant.color.localeCompare(b.variant.color) * modifier;
     }
     if (key === "sizeStock.size") {
-      return a.size.localeCompare(b.size) * modifier;
+      const sizeA = parseFloat(a.size); // Convert size to number
+      const sizeB = parseFloat(b.size); // Convert size to number
+      return (sizeA - sizeB) * modifier;
     }
 
     // Fallback to direct property comparison
@@ -99,11 +101,6 @@ export function InventoryTable({ searchTerm }: InventoryTableProps) {
     return 0;
   });
 
-/*   const paginatedItems = sortedItems.slice(
-    (pagination.page - 1) * pagination.pageSize,
-    pagination.page * pagination.pageSize
-  );
- */
   return (
     <>
       {items.length === 0 ? (

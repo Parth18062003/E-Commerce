@@ -66,7 +66,7 @@ const data = {
         },
         {
           title: "Inventory",
-          url: "#",
+          url: "/dashboard/admin/inventory",
         },
       ],
     },

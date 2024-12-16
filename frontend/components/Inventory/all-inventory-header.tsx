@@ -1,27 +1,27 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Search, Download, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { Search, Download, RefreshCw, PackagePlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { exportToCSV } from "../utils/exportInventory";
 import { AppDispatch, RootState } from "@/store/store";
-import { fetchInventoryItems } from "@/store/inventorySlice";
+import { fetchAllInventory } from "@/store/inventorySlice";
+import { CreateInventoryDialog } from "./create-inventory-dialog";
 
 interface InventoryHeaderProps {
   onSearch: (term: string) => void;
 }
 
-export function InventoryHeader({ onSearch }: InventoryHeaderProps) {
+export function AllInventoryHeader({ onSearch }: InventoryHeaderProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { items, loading, error } = useSelector(
     (state: RootState) => state.inventory
   );
-  const params = useParams();
-  const productIdFromUrl = params.productId as string;
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isAddInventoryDialogOpen, setIsAddInventoryDialogOpen] =
+    useState<boolean>(false);
 
   // Handle search term changes and dispatch filter updates
   const handleSearch = (value: string) => {
@@ -31,24 +31,17 @@ export function InventoryHeader({ onSearch }: InventoryHeaderProps) {
 
   // Export inventory data to CSV
   const handleExport = () => {
-    if (productIdFromUrl) {
-      exportToCSV(items, `inventory-export-${productIdFromUrl}.csv`);
-    }
+    exportToCSV(
+      items,
+      `inventory-export-${new Date().toLocaleString("en-ca")}.csv`
+    );
   };
 
   // Refresh inventory by fetching items
   const handleRefresh = () => {
-    if (productIdFromUrl) {
-      dispatch(fetchInventoryItems(productIdFromUrl));
-    } 
+    dispatch(fetchAllInventory({ page: 0, pageSize: 10 }));
   };
 
-  useEffect(() => {
-    if (productIdFromUrl) {
-      dispatch(fetchInventoryItems(productIdFromUrl));
-    }
-  }, [dispatch, productIdFromUrl]);
-  
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
       <div className="relative flex-1 max-w-md">
@@ -73,8 +66,18 @@ export function InventoryHeader({ onSearch }: InventoryHeaderProps) {
           <Download className="h-4 w-4 mr-2" />
           Export
         </Button>
+
+        <Button onClick={() => setIsAddInventoryDialogOpen(true)}>
+        <PackagePlus className="h-4 w-4 mr-2" />
+          New Inventory
+        </Button>
       </div>
       {error && <div className="text-red-500 mt-2">{error}</div>}
+      {isAddInventoryDialogOpen && (
+        <CreateInventoryDialog
+          onClose={() => setIsAddInventoryDialogOpen(false)}
+        />
+      )}
     </div>
   );
 }
