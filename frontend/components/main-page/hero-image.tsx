@@ -23,7 +23,7 @@ const HeroImage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl md:text-6xl font-bold mb-6"
         >
-          Join the Future of Fashion
+          Step Into Comfort. Run With Style.
         </motion.h1>
 
         <motion.p
@@ -32,8 +32,7 @@ const HeroImage = () => {
           transition={{ delay: 0.2 }}
           className="text-xl text-white/90 max-w-2xl mx-auto mb-8"
         >
-          Be part of a team that's redefining streetwear culture and pushing the
-          boundaries of retail innovation.
+          Elevate your footwear game with innovative designs, unbeatable comfort, and unmatched performance.
         </motion.p>
 
         <motion.div
@@ -42,7 +41,7 @@ const HeroImage = () => {
           transition={{ delay: 0.4 }}
         >
           <Button size="lg" className="rounded-full">
-            View Open Positions
+            View Collection
           </Button>
         </motion.div>
       </div>

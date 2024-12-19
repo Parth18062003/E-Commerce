@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { 
-  Info, 
-  AlertTriangle, 
-  CheckCircle2, 
+import {
+  Info,
+  AlertTriangle,
+  CheckCircle2,
   AlertCircle,
   X,
   ChevronUp,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type AlertType = 'info' | 'success' | 'warning' | 'error';
+export type AlertType = "info" | "success" | "warning" | "error";
 
 export interface Alert {
   id: string;
@@ -37,14 +37,14 @@ const alertTypeIcons: Record<AlertType, React.ElementType> = {
   info: Info,
   warning: AlertTriangle,
   success: CheckCircle2,
-  error: AlertCircle
+  error: AlertCircle,
 };
 
 const alertTypeStyles: Record<AlertType, string> = {
-  info: "bg-indigo-500/10 text-blue-700 dark:text-blue-300",
+  info: "bg-zinc-500/50 text-zinc-100 dark:text-blue-300",
   warning: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
   success: "bg-green-500/10 text-green-700 dark:text-green-300",
-  error: "bg-red-500/10 text-red-700 dark:text-red-300"
+  error: "bg-red-500/10 text-red-700 dark:text-red-300",
 };
 
 export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
@@ -75,7 +75,7 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
   const Icon = alertTypeIcons[currentAlert.type];
 
   return (
-    <div className="relative z-10">
+    <div className="hidden lg:block absolute left-0 top-0 right-0 z-40">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -83,14 +83,20 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.5 }} // Adjusts the speed of the transition
-            className={`relative ${alertTypeStyles[currentAlert.type]} transition-colors`}
+            className={`relative ${
+              alertTypeStyles[currentAlert.type]
+            } transition-colors`}
           >
             <div className="max-w-7xl mx-auto px-4 py-3">
               <div className="flex items-center justify-center gap-4">
                 <div className="flex items-center gap-4 flex-1">
                   <div className="flex flex-col items-center justify-center w-full">
-                    <p className="font-medium text-center text-lg">{currentAlert.title}</p>
-                    <p className="text-sm opacity-90 text-center text-md">{currentAlert.message}</p>
+                    <p className="font-medium text-center text-lg">
+                      {currentAlert.title}
+                    </p>
+                    <p className="text-sm opacity-90 text-center text-md">
+                      {currentAlert.message}
+                    </p>
                     {currentAlert.link && (
                       <Link
                         href={currentAlert.link.url}
@@ -115,7 +121,7 @@ export function AlertBanner({ alerts: initialAlerts }: AlertBannerProps) {
                     onClick={() => dismissAlert(currentAlert.id)}
                     aria-label="Close Banner"
                   >
-                    <X className="h-4 w-4"/>
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

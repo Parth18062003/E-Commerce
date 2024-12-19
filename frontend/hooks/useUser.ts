@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/authSlice";
 import { RootState } from "@/store/store";
 import Cookies from "js-cookie";
 
 interface Role {
-  id: string; 
+  id: string;
   name: string;
 }
 
@@ -22,7 +22,7 @@ interface User {
   lastName: string;
   address: string;
   phoneNumber: string;
-  roles: Role[]; 
+  roles: Role[];
   city: string;
   state: string;
   country: string;
@@ -33,7 +33,7 @@ interface User {
   is2FAEnabled: boolean;
 }
 
-const useUser = () => {
+const useUser = async () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const pathname = usePathname();
@@ -41,10 +41,11 @@ const useUser = () => {
   const reduxUser = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    const isBrowser = () => typeof window !== "undefined";
+    // Check if window is available
+    const isBrowser = typeof window !== "undefined";
 
     const loadUserFromLocalStorage = () => {
-      if (isBrowser()) {
+      if (isBrowser) {
         const storedUser = localStorage.getItem("userData");
         if (storedUser) {
           dispatch(setUser(JSON.parse(storedUser)));
@@ -63,7 +64,12 @@ const useUser = () => {
         return;
       }
 
-      const token = Cookies.get("token"); 
+      const token = Cookies.get("token"); // Get token from cookies
+      if (!token) {
+        setError("Authentication token is missing.");
+        setLoading(false);
+        return;
+      }
 
       try {
         const response = await axios.get(
@@ -75,9 +81,8 @@ const useUser = () => {
           }
         );
 
-        
-    console.log("reduxUser", response.data);
-        dispatch(setUser(response.data)); // Set user in Redux
+        // Store user data in Redux
+        dispatch(setUser(response.data));
       } catch (error) {
         if (axios.isAxiosError(error)) {
           setError(error.response?.data?.message || "Failed to fetch user data.");
@@ -89,19 +94,16 @@ const useUser = () => {
       }
     };
 
-    if (!reduxUser && isBrowser()) {
-      // Check if user is stored in local storage first
-      loadUserFromLocalStorage();
-    }
-
+    // Ensure data is loaded from localStorage or API
     if (!reduxUser) {
-      fetchUser();
+      loadUserFromLocalStorage(); // Try loading user from local storage first
+      fetchUser(); // Fetch from API if user is not available
     } else {
-      setLoading(false); // User is already in Redux store
+      setLoading(false); // If the user is already in Redux, no need to fetch
     }
-  }, [dispatch, pathname]); // Depend on pathname for URL changes
+  }, [dispatch, pathname, reduxUser]); // `reduxUser` added to ensure no unnecessary calls
 
-  return { user: reduxUser, loading, error }; // Return reduxUser directly
+  return { user: reduxUser, loading, error };
 };
 
 export default useUser;

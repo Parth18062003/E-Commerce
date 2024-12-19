@@ -50,7 +50,7 @@ const HeroText = () => {
   }, []);
 
   return (
-    <h1 className="hover-text text-center text-9xl md:text-[15rem] lg:text-[25rem] font-thin text-indigo-400 dark:text-indigo-300 uppercase select-none">
+    <h1 className="hover-text text-center text-9xl md:text-[5rem] lg:text-[15rem] font-thin text-indigo-400 dark:text-indigo-300 uppercase select-none">
       <Text>Hype</Text>
     </h1>
   );

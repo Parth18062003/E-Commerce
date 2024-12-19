@@ -5,32 +5,38 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CarouselCard } from "./carousel-card";
 import { motion, useScroll, useSpring } from "motion/react";
+import { link } from "fs";
 
 const CARDS = [
   {
     image: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_750,c_limit/d8eba42a-99d7-4910-8ab5-91f431124728/image.jpg",
     title: "Nike Air Max",
     category: "Running",
+    link: "/collections/nike-air-max",
   },
   {
     image: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_750,c_limit/459497c0-24bb-4c2d-92ce-0924ef452857/image.png",
     title: "Air Jordan 1",
     category: "Basketball",
+    link: "/collections/air-jordan-1",
   },
   {
     image: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_749,c_limit/0bf28d64-7630-4151-b130-e6ee10c892e6/image.png",
     title: "Yeezy Boost",
     category: "Lifestyle",
+    link: "/collections/yeezy-boost",
   },
   {
     image: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_749,c_limit/4f637392-183f-4bd2-b326-1dcb15a9afc6/image.png",
     title: "New Balance 990",
     category: "Running",
+    link: "/collections/new-balance-990",
   },
   {
     image: "https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_749,c_limit/a9767bce-db10-41ff-9eb5-f5daf8bbb3e6/nike-just-do-it.png",
     title: "Adidas Ultra Boost",
     category: "Running",
+    link: "/collections/adidas-ultra-boost",
   },
 ];
 
@@ -70,7 +76,8 @@ export function Carousel() {
   };
 
   return (
-    <div className="relative p-8 lg:p-12">
+    <div className="relative p-8 lg:p-12 my-8">
+       <h3 className="text-black mx-3 text-3xl font-medium ">Member Benefits</h3>
       {/* Previous Button */}
       <Button
         variant="secondary"
@@ -88,7 +95,7 @@ export function Carousel() {
         whileTap={{ cursor: "grabbing" }}
       >
         {CARDS.map((card, index) => (
-          <CarouselCard key={index} {...card} />
+          <CarouselCard key={index} {...card} className=" w-60 h-96 lg:w-[30rem] lg:h-[35rem]"/>
         ))}
       </motion.div>
 

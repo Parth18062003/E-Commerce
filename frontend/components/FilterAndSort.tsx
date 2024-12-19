@@ -95,8 +95,8 @@ const FilterAndSort = () => {
             <CustomSortBy items={sortOptions} />
             <CustomHitsPerPage
               items={[
-                { label: "9 products per page", value: 9, default: true },
-                { label: "18 products per page", value: 18 },
+                { label: "36 products per page", value: 36, default: true },
+                { label: "54 products per page", value: 72 },
               ]}
             />
           </div>

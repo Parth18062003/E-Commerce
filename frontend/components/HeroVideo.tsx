@@ -22,7 +22,10 @@ const FullscreenVideo: React.FC<{ videoSrc: string }> = ({ videoSrc }) => {
         loop
         muted={isMuted}
         className="absolute top-0 left-0 w-full h-full object-cover"
-      />
+      >
+        <source src={videoSrc} type='video/mp4'/>
+        Your browser does not support the video tag.
+      </video>
       <button
         onClick={toggleMute}
         className="absolute bottom-10 left-10 p-2 bg- rounded shadow"

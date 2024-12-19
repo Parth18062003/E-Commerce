@@ -1,10 +1,15 @@
+"use client";
 
 import AllProducts from '@/components/ManageProduct/AllProductDashboardList'
-import React from 'react'
+import { ProductHeader } from '@/components/ManageProduct/product-header';
+import React, { useState } from 'react'
 
 const ProductsPage = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   return (
-    <div><AllProducts /></div>
+    <div>
+      <ProductHeader onSearch={setSearchTerm} />
+      <AllProducts searchTerm={searchTerm} /></div>
   )
 }
 

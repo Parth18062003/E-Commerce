@@ -27,7 +27,11 @@ import {
 } from "../ui/dialog";
 import { toast } from "sonner";
 
-const AllProducts: React.FC = () => {
+interface AllProductsProps {
+  searchTerm: string;
+}
+
+const AllProducts: React.FC<AllProductsProps> = ({ searchTerm }) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +46,7 @@ const AllProducts: React.FC = () => {
   );
   const error = useSelector((state: RootState) => state.product.error);
   const [deleting, setDeleting] = useState(false);
-  const productsPerPage = 10;
+  const productsPerPage = 30;
   const totalPages = useSelector(
     (state: RootState) => state.product.totalPages
   );
@@ -99,6 +103,13 @@ const AllProducts: React.FC = () => {
     return `$${formattedPrice}`;
   };
 
+  const filteredProducts = products.filter(
+    (product) =>
+      product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading)
     return (
       <div className="text-center">
@@ -126,7 +137,7 @@ const AllProducts: React.FC = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.map((product, index) => {
+          {filteredProducts.map((product, index) => {
             const imageSrc =
               product.variants[0]?.colorOptionImages[0] || "/default-image.jpg";
             const totalStock = product.variants[0]?.sizes.reduce(
@@ -194,12 +205,13 @@ const AllProducts: React.FC = () => {
           open={!!selectedProduct}
           onOpenChange={() => setSelectedProduct(null)}
         >
-          <DialogContent className="mt-6 p-4 border border-zinc-300 rounded bg-white shadow text-black">
-            <DialogTitle className="flex flex-col text-xl font-bold mb-2">
+          <DialogContent className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg border border-zinc-200 overflow-y-scroll max-h-screen text-black">
+            <DialogTitle className="text-2xl font-semibold text-center mb-4">
               Product Details
             </DialogTitle>
-            <DialogDescription className="w-full">
-              {" "}
+
+            {/* Banner Image Section */}
+            <div className="w-full h-64 mb-6">
               <Image
                 src={
                   selectedProduct.variants[0]?.colorOptionImages[0] ||
@@ -207,24 +219,14 @@ const AllProducts: React.FC = () => {
                 }
                 alt={selectedProduct.name}
                 height={512}
-                width={512}
-                className="w-32 h-32 object-cover rounded mr-4"
+                width={1024}
+                className="w-full h-full object-cover rounded-lg shadow-lg"
               />
-            </DialogDescription>
-            <div className="flex items-start">
+            </div>
+
+            {/* Product Details - Displayed in Two Columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex flex-col">
-                <span>
-                  <strong>ID:</strong> {selectedProduct.id}
-                </span>
-                <span>
-                  <strong>Name:</strong> {selectedProduct.name}
-                </span>
-                <span>
-                  <strong>Brand:</strong> {selectedProduct.brand}
-                </span>
-                <span>
-                  <strong>Description:</strong> {selectedProduct.description}
-                </span>
                 <span>
                   <strong>Price:</strong> {selectedProduct.price}
                 </span>
@@ -243,6 +245,12 @@ const AllProducts: React.FC = () => {
                   <strong>Discount:</strong> {selectedProduct.discount}%
                 </span>
                 <span>
+                  <strong>Release Date:</strong> {selectedProduct.releaseDate}
+                </span>
+              </div>
+
+              <div className="flex flex-col">
+                <span>
                   <strong>Dimensions:</strong> {selectedProduct.dimensions}
                 </span>
                 <span>
@@ -252,39 +260,42 @@ const AllProducts: React.FC = () => {
                   <strong>Material:</strong> {selectedProduct.material}
                 </span>
                 <span>
-                  <strong>Release Date:</strong> {selectedProduct.releaseDate}
-                </span>
-                <span>
                   <strong>Gender:</strong> {selectedProduct.gender}
                 </span>
                 <span>
                   <strong>Type:</strong> {selectedProduct.type}
                 </span>
+              </div>
+
+              <div className="flex flex-col">
                 <span>
-                  <strong>Rating:</strong> {selectedProduct.rating}
-                  {" | "}
-                  {selectedProduct.reviewCount} (reviews)
-                </span>
-                <span>
-                  <strong>Product URL:</strong>{" "}
-                  <a
-                    href={selectedProduct.productURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {selectedProduct.productURL}
-                  </a>
+                  <strong>Rating:</strong> {selectedProduct.rating} |{" "}
+                  {selectedProduct.reviewCount} reviews
                 </span>
               </div>
+
+              <div className="flex flex-col">
+                <strong>Product URL:</strong>
+                <a
+                  href={selectedProduct.productURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {selectedProduct.productURL}
+                </a>
+              </div>
             </div>
-            <DialogFooter>
+
+            {/* Footer with Action Buttons */}
+            <div className="mt-6 flex justify-center gap-4">
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                className="bg-zinc-500 text-white px-6 py-2 rounded-lg hover:bg-zinc-600 transition"
               >
                 Close
               </button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -304,7 +315,7 @@ const AllProducts: React.FC = () => {
             <DialogFooter>
               <button
                 onClick={handleCancel}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                className="bg-zinc-500 text-white px-4 py-2 rounded hover:bg-zinc-600"
               >
                 Cancel
               </button>
@@ -323,7 +334,6 @@ const AllProducts: React.FC = () => {
       )}
 
       <div className="mt-4 flex items-center justify-center space-x-2">
-        {/* Previous Button */}
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage <= 1}
@@ -335,9 +345,7 @@ const AllProducts: React.FC = () => {
           </span>
         </button>
 
-        {/* Page Numbers */}
         <div className="flex space-x-1">
-          {/* First Page */}
           {currentPage > 3 && (
             <>
               <button
@@ -346,11 +354,10 @@ const AllProducts: React.FC = () => {
               >
                 1
               </button>
-              <span className="px-3 py-2 text-sm text-gray-500">...</span>
+              <span className="px-3 py-2 text-sm text-zinc-500">...</span>
             </>
           )}
 
-          {/* Previous Pages */}
           {currentPage > 1 && currentPage < totalPages && (
             <button
               onClick={() => handlePageChange(currentPage - 1)}
@@ -360,12 +367,10 @@ const AllProducts: React.FC = () => {
             </button>
           )}
 
-          {/* Current Page */}
           <span className="px-3 py-2 text-sm font-semibold text-white bg-zinc-500 rounded-lg">
             {currentPage}
           </span>
 
-          {/* Next Pages */}
           {currentPage < totalPages && currentPage < totalPages - 1 && (
             <button
               onClick={() => handlePageChange(currentPage + 1)}
@@ -375,10 +380,9 @@ const AllProducts: React.FC = () => {
             </button>
           )}
 
-          {/* Last Page */}
           {currentPage < totalPages - 2 && (
             <>
-              <span className="px-3 py-2 text-sm text-gray-500">...</span>
+              <span className="px-3 py-2 text-sm text-zinc-500">...</span>
               <button
                 onClick={() => handlePageChange(totalPages)}
                 className="px-3 py-2 text-sm font-medium text-zinc-500 rounded-lg hover:bg-zinc-100 transition-colors"
@@ -389,7 +393,6 @@ const AllProducts: React.FC = () => {
           )}
         </div>
 
-        {/* Next Button */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
@@ -405,4 +408,4 @@ const AllProducts: React.FC = () => {
   );
 };
 
-export default AllProducts;
+export default AllProducts; 

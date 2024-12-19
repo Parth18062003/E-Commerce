@@ -13,6 +13,8 @@ import Loading from "@/app/loading";
 import { Alert, AlertBanner } from "./ui/banner";
 import HeroImage from "./main-page/hero-image";
 import CTA from "./CTA";
+import HeroSection from "./HeroSection";
+import { SportCarousel } from "./carousel/sport-carousel";
 
 const categories = [
   {
@@ -95,18 +97,19 @@ export async function HomePageComponents() {
   return (
     <>
       <Navbar />
-      <AlertBanner alerts={alerts} />
       <ProductSearch />
       <div className="relative font-[family-name:var(--font-geist-sans)]">
-        
         <main className="w-full">
           <HeroBackground />
-          <div className="relative h-[65vh] lg:h-[75vh] bottom-0 left-0 flex items-end">
+          <HeroSection />
+          <div className="relative bottom-0 lg:mx-20 flex items-end">
             <HeroText />
           </div>
+          <Suspense fallback={<Loading />}>
           <div className="mt-10 p-5 lg:p-20">
-            <FullscreenVideo videoSrc="https://videos.pexels.com/video-files/4613367/4613367-sd_960_506_25fps.mp4" />
+            <FullscreenVideo videoSrc="/hero_video.mp4" />
           </div>
+          </Suspense>
           <CTA
             mainHeading="Your New Look Awaits"
             bottomdescription="Stay ahead of the curve with our bold new releases and limited editions."
@@ -129,6 +132,7 @@ export async function HomePageComponents() {
               bottomdescription="Explore the latest in performance gear and lifestyle collections."
               buttonText="Shop Now"
             />
+            <SportCarousel />
             <Carousel />
           </Suspense>
         </main>
