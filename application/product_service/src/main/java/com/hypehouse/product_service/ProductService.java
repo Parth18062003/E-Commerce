@@ -13,7 +13,6 @@ import com.hypehouse.product_service.exception.ProductNotFoundException;
 import com.hypehouse.product_service.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -162,7 +161,7 @@ public class ProductService {
         log.debug("Sending ProductDTO to RabbitMQ: {}", productDTO);
 
         // Send the ProductDTO to RabbitMQ
-        productRabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "", productDTO);
+        productRabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, "product.created", productDTO);
     }
 
     // Update product and index asynchronously
