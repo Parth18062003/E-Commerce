@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://192.168.29.159:3000"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("Content-Type", "Authorization", "header3")
+                .allowedHeaders("*")
                 .exposedHeaders("header1", "header2")
                 .allowCredentials(true)
                 .maxAge(3600);

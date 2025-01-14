@@ -1,0 +1,38 @@
+syntax = "proto3";
+package com.hypehouse.common;
+
+option java_multiple_files = true;
+option java_package = "com.hypehouse.common.grpc";
+
+service InventoryService {
+    rpc ReserveStock(ReserveStockRequest) returns (ReserveStockResponse) {}
+    rpc ReleaseStock(ReleaseStockRequest) returns (ReleaseStockResponse) {}
+}
+
+message ReserveStockRequest {
+    string productId = 1;
+    string variantSku = 2;
+    string size = 3;
+    int32 quantity = 4;
+    string cartId = 5;
+}
+
+message ReserveStockResponse {
+    bool success = 1;
+    string message = 2;
+    int32 available_quantity = 3;
+    int32 reserved_quantity = 4;
+}
+
+message ReleaseStockRequest {
+    string productId = 1;
+    string variantSku = 2;
+    string size = 3;
+    int32 quantity = 4;
+    string cartId = 5;
+}
+
+message ReleaseStockResponse {
+    bool success = 1;
+    string message = 2;
+}
