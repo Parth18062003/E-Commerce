@@ -124,6 +124,7 @@ public class Inventory {
     public static class SizeStock {
         private String size;
         private int stockQuantity;
+        private int reservedStock;
 
         // Constructors
         public SizeStock() {}
@@ -148,6 +149,14 @@ public class Inventory {
 
         public void setStockQuantity(int stockQuantity) {
             this.stockQuantity = stockQuantity;
+        }
+
+        public int getReservedStock() {
+            return reservedStock;
+        }
+
+        public void setReservedStock(int reservedStock) {
+            this.reservedStock = reservedStock;
         }
     }
 }

@@ -16,6 +16,7 @@ public class InventoryServiceApplication {
 }
 /*
 
+
 Communication Between Product and Inventory Microservices using RabbitMQ
 Context: We are building a microservices architecture for an e-commerce platform, where there are two key services involved:
 

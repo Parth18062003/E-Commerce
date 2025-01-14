@@ -5,7 +5,7 @@ spring:
     port: 8083
   data:
     mongodb:
-      uri: mongodb+srv://.mongodb.net/inventory_service
+      uri: mongodb+srv://@cluster0.oc0ol.mongodb.net/inventory_service
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false # Prevents errors on empty beans
@@ -21,3 +21,10 @@ spring:
   mongodb:
     repositories:
       enabled: true
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: false
+    negotiationType: PLAINTEXT
+

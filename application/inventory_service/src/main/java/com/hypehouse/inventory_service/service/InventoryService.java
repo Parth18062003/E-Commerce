@@ -320,7 +320,7 @@ public class InventoryService {
         return updatedInventory;
     }
 
-    /**
+/*    *//**
      * Reserve stock for a specific product variant (e.g., when a customer adds to cart).
      *
      * @param productId The ID of the product.
@@ -328,7 +328,7 @@ public class InventoryService {
      * @param size The size of the product variant.
      * @param quantity The quantity to reserve.
      * @return The updated inventory with reserved stock.
-     */
+     *//*
     public Inventory reserveStock(String productId, String variantSku, String size, int quantity) {
         Inventory inventory = getInventoryWithValidSize(productId, variantSku, size);
         Variant variant = inventory.getVariant();
@@ -366,7 +366,7 @@ public class InventoryService {
         return updatedInventory;
     }
 
-    /**
+    *//**
      * Release reserved stock if a customer cancels an order or removes items from their cart.
      *
      * @param productId The ID of the product.
@@ -374,7 +374,7 @@ public class InventoryService {
      * @param size The size of the product variant.
      * @param quantity The quantity to release.
      * @return The updated inventory.
-     */
+     *//*
     public Inventory releaseReservedStock(String productId, String variantSku, String size, int quantity) {
         Inventory inventory = getInventoryWithValidSize(productId, variantSku, size);
         int newReservedStock = inventory.getReservedStock() - quantity;
@@ -388,6 +388,110 @@ public class InventoryService {
         Inventory updatedInventory = inventoryRepository.save(inventory);
 
         // Send message to Product service
+        sendInventoryUpdateMessage(updatedInventory);
+
+        return updatedInventory;
+    }*/
+    /**
+     * Reserve stock for a specific product variant (e.g., when a customer adds to cart).
+     *
+     * @param productId The ID of the product.
+     * @param variantSku The SKU of the variant.
+     * @param size The size of the product variant.
+     * @param quantity The quantity to reserve.
+     * @return The updated inventory with reserved stock.
+     */
+    public Inventory reserveStock(String productId, String variantSku, String size, int quantity) {
+        // Fetch inventory for the specific product, variant, and size
+        Inventory inventory = getInventoryWithValidSize(productId, variantSku, size);
+        Variant variant = inventory.getVariant();
+        List<SizeStock> sizeStock = variant.getSizeStock();
+
+        boolean found = false;
+        // Loop through each size in the variant to find the correct size
+        for (SizeStock sizeStockItem : sizeStock) {
+            if (sizeStockItem.getSize().equals(size)) {
+                int currentStock = sizeStockItem.getStockQuantity();
+                int reservedStock = inventory.getReservedStock();  // Global reserved stock for the inventory
+
+                // Check if enough stock exists for the requested quantity
+                int availableStock = currentStock - reservedStock;
+                if (availableStock < quantity) {
+                    throw new RuntimeException("Not enough available stock to reserve.");
+                }
+
+                // Reserve stock for this specific size
+                sizeStockItem.setStockQuantity(currentStock - quantity);  // Update size stock
+                inventory.setReservedStock(reservedStock + quantity);  // Increase the global reserved stock
+                found = true;
+                break;
+            }
+        }
+
+        // If size not found, throw an exception
+        if (!found) {
+            throw new RuntimeException("Size " + size + " not found in inventory.");
+        }
+
+        // Update available stock dynamically: inventory available stock = stock quantity - reserved stock
+        inventory.setAvailableStock(inventory.getStockQuantity() - inventory.getReservedStock());
+        inventory.setUpdatedAt(LocalDateTime.now());
+
+        // Save the updated inventory
+        Inventory updatedInventory = inventoryRepository.save(inventory);
+
+        // Send message to Product service to notify about inventory update
+        sendInventoryUpdateMessage(updatedInventory);
+
+        return updatedInventory;
+    }
+
+    /**
+     * Release reserved stock if a customer cancels an order or removes items from their cart.
+     *
+     * @param productId The ID of the product.
+     * @param variantSku The SKU of the variant.
+     * @param size The size of the product variant.
+     * @param quantity The quantity to release.
+     * @return The updated inventory.
+     */
+    public Inventory releaseReservedStock(String productId, String variantSku, String size, int quantity) {
+        // Fetch inventory for the specific product, variant, and size
+        Inventory inventory = getInventoryWithValidSize(productId, variantSku, size);
+        Variant variant = inventory.getVariant();
+        List<SizeStock> sizeStock = variant.getSizeStock();
+
+        boolean found = false;
+        for (SizeStock sizeStockItem : sizeStock) {
+            if (sizeStockItem.getSize().equals(size)) {
+                int currentStock = sizeStockItem.getStockQuantity();
+                int reservedStock = inventory.getReservedStock();
+
+                // Release reserved stock for this specific size
+                if (reservedStock < quantity) {
+                    throw new RuntimeException("No reserved stock to release.");
+                }
+
+                sizeStockItem.setStockQuantity(currentStock + quantity); // Update size stock
+                inventory.setReservedStock(reservedStock - quantity); // Decrease global reserved stock
+                found = true;
+                break;
+            }
+        }
+
+        // If size not found, throw an exception
+        if (!found) {
+            throw new RuntimeException("Size " + size + " not found in inventory.");
+        }
+
+        // Update available stock dynamically: inventory available stock = stock quantity - reserved stock
+        inventory.setAvailableStock(inventory.getStockQuantity() - inventory.getReservedStock());
+        inventory.setUpdatedAt(LocalDateTime.now());
+
+        // Save the updated inventory
+        Inventory updatedInventory = inventoryRepository.save(inventory);
+
+        // Send message to Product service to notify about inventory update
         sendInventoryUpdateMessage(updatedInventory);
 
         return updatedInventory;
