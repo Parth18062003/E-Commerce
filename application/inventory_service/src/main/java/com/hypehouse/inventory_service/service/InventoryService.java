@@ -340,6 +340,12 @@ public class InventoryService {
                 if (currentStock < quantity) {
                     throw new RuntimeException("Not enough stock to reserve.");
                 }
+
+                int availableStock = currentStock - inventory.getReservedStock();
+                if (availableStock < quantity) {
+                    throw new RuntimeException("Not enough available stock to reserve.");
+                }
+
                 found = true;
                 break;
             }
@@ -349,6 +355,7 @@ public class InventoryService {
         }
 
         inventory.setReservedStock(inventory.getReservedStock() + quantity);
+        inventory.setAvailableStock(inventory.getStockQuantity() - inventory.getReservedStock());
         inventory.setUpdatedAt(LocalDateTime.now());
 
         Inventory updatedInventory = inventoryRepository.save(inventory);
@@ -375,6 +382,7 @@ public class InventoryService {
             throw new RuntimeException("No reserved stock to release.");
         }
         inventory.setReservedStock(newReservedStock);
+        inventory.setAvailableStock(inventory.getStockQuantity() - inventory.getReservedStock());
         inventory.setUpdatedAt(LocalDateTime.now());
 
         Inventory updatedInventory = inventoryRepository.save(inventory);

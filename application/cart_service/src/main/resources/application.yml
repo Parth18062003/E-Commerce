@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: cart_service
+  server:
+    port: 8084
+  logging:
+    level:
+      org:
+        springframework:
+          security: DEBUG
+          web: DEBUG
+        com:
+          hypehouse: DEBUG
+      net:
+        devh:
+          boot:
+            grpc: DEBUG
+grpc:
+  client:
+    inventory_service:
+      address: static://localhost:9090
+      negotiationType: PLAINTEXT
+      enableKeepAlive: true
