@@ -8,6 +8,7 @@ import productSliceReducer from './productSlice';
 import wishListSliceReducer from './wishListSlice';
 import ratingSliceReducer from './ratingSlice';
 import inventorySliceReducer from './inventorySlice';
+import cartSliceReducer from './cartSlice';
 import { thunk, ThunkAction } from 'redux-thunk';
 
 const store = configureStore({
@@ -19,7 +20,8 @@ const store = configureStore({
     product: productSliceReducer,
     wishList: wishListSliceReducer,
     rating: ratingSliceReducer,
-    inventory: inventorySliceReducer
+    inventory: inventorySliceReducer,
+    cart: cartSliceReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

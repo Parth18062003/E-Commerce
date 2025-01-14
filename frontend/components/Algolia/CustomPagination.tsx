@@ -105,7 +105,7 @@ function CustomPagination(props: UsePaginationProps) {
             aria-label={`Page ${label}`}
             href={createURL(page)}
             onClick={() => refine(page)}
-            className={currentRefinement === page ? 'mx-auto px-3 py-1 rounded-full bg-zinc-500 text-white' : ''}
+            className={currentRefinement === page ? 'mx-auto px-3 py-1 rounded-full bg-zinc-500 text-white' : 'px-3 py-1 rounded-full text-zinc-600'}
           >
             {label}
           </PaginationItem>

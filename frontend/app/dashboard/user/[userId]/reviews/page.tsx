@@ -1,9 +1,12 @@
-import UserReviewsList from '@/components/UserReviewsList'
-import React from 'react'
+import UserReviewsList from "@/components/Reviews/UserReviewsList";
+import React from "react";
 const UserReviewsPage = () => {
   return (
-    <div><UserReviewsList /></div>
-  )
-}
+    <div className="h-screen p-4 lg:p-16">
+      <h2 className="text-4xl text-black font-semibold">Your Reviews</h2>
+      <UserReviewsList />
+    </div>
+  );
+};
 
-export default UserReviewsPage
+export default UserReviewsPage;

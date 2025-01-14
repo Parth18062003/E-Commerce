@@ -61,7 +61,7 @@ const authSlice = createSlice({
     login(state, action: PayloadAction<{ token: string }>) {
       state.token = action.payload.token;
       if (isBrowser()) {
-        Cookies.set("token", action.payload.token, { expires: 7, path: "/" });
+        Cookies.set("token", action.payload.token, { expires: 30, path: "/" });
       }
     },
     logout(state) {
@@ -74,6 +74,7 @@ const authSlice = createSlice({
         localStorage.removeItem("lastDeviceInfo");
         localStorage.removeItem("users");
         localStorage.removeItem("currentPage");
+        localStorage.removeItem("cart");
         localStorage.removeItem("hasLoggedDeviceInfo");
       }
     },

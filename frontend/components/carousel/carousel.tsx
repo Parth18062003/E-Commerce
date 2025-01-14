@@ -76,8 +76,8 @@ export function Carousel() {
   };
 
   return (
-    <div className="relative p-8 lg:p-12 my-8">
-       <h3 className="text-black mx-3 text-3xl font-medium ">Member Benefits</h3>
+    <div className="relative lg:p-12 my-8">
+       <h3 className="text-black mx-3 lg:mx-3 text-3xl font-medium ">Member Benefits</h3>
       {/* Previous Button */}
       <Button
         variant="secondary"

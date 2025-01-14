@@ -6,6 +6,9 @@ import { Clock, ArrowRight } from "lucide-react";
 import { BlogPost } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { createSlug } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -13,6 +16,7 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, index }: BlogCardProps) {
+  const router = useRouter();
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -20,6 +24,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
       transition={{ delay: index * 0.1 }}
       className="group bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
     >
+      <Link href={`/blog/${createSlug(post.title)}/${post.id}`}>
       <div className="relative h-48 overflow-hidden">
         <Image
           src={post.image}
@@ -29,15 +34,15 @@ export function BlogCard({ post, index }: BlogCardProps) {
         />
         <Badge className="absolute top-4 left-4">{post.category}</Badge>
       </div>
-      
+      </Link>
       <div className="p-6">
         <div className="flex items-center gap-4 mb-4">
           <Image
             src={post.author.avatar}
             alt={post.author.name}
-            width={32}
-            height={32}
-            className="rounded-full"
+            width={256}
+            height={256}
+            className="h-12 w-12 object-cover rounded-full"
           />
           <div>
             <p className="text-sm font-medium text-zinc-600">{post.author.name}</p>
@@ -57,7 +62,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
         </h3>
         <p className="text-muted-foreground mb-4">{post.excerpt}</p>
 
-        <Button variant="outline" className="group/btn text-zinc-600">
+        <Button variant="outline" className="group/btn text-zinc-600" onClick={() => {router.push(`/blog/${createSlug(post.title)}/${post.id}`)}}>
           Read More
           <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
         </Button>

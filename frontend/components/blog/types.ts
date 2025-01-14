@@ -1,4 +1,3 @@
-
 export interface BlogPost {
     id: string;
     title: string;
@@ -10,5 +9,7 @@ export interface BlogPost {
     author: {
       name: string;
       avatar: string;
+      bio: string;
     };
+    content: string;  
   }

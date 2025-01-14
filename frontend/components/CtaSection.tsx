@@ -18,13 +18,13 @@ const links = {
     { label: "Order Status", href: "/orders" },
     { label: "Shipping & Delivery", href: "/shipping" },
     { label: "Returns", href: "/returns" },
-    { label: "Size Guide", href: "/size-guide" },
+    { label: "Size Guide", href: "/products/size-guide" },
   ],
   resources: [
     { label: "FAQ", href: "/faq" },
     { label: "Blog", href: "/blog" },
     { label: "Community", href: "/community" },
-    { label: "Student Discount", href: "/student-discount" },
+    { label: "Student Offers", href: "/student-offers" },
   ],
 };
 

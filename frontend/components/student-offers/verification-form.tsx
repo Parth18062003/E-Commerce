@@ -12,9 +12,9 @@ export function VerificationForm() {
   const [email, setEmail] = useState("");
   const { verifyEmail, status, loading, error } = useVerification();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    verifyEmail(email);
+    await verifyEmail(email);
   };
 
   return (
@@ -44,7 +44,7 @@ export function VerificationForm() {
 
         {status.isVerified ? (
           <Alert>
-            <AlertDescription>
+            <AlertDescription className="text-zinc-600">
               Verified student at {status.university?.name}
             </AlertDescription>
           </Alert>

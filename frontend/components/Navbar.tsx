@@ -20,6 +20,7 @@ import { RootState } from "@/store/store";
 import { SearchBox } from "react-instantsearch";
 import { motion } from "motion/react";
 import { Input } from "./ui/input";
+import CartButton from "./Cart/CartButton";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,10 +112,10 @@ const Navbar = () => {
             <span className="sr-only">Liked items</span>
           </TransitionLink>
           <TransitionLink
-            href="/signup"
+            href="/cart"
             className="text-zinc-600 dark:text-zinc-400 hover:text-indigo-400 transition"
           >
-            <ShoppingBag />
+            <CartButton />
             <span className="sr-only">Cart</span>
           </TransitionLink>
           <TransitionLink

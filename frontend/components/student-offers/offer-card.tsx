@@ -11,22 +11,22 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { StudentOffer } from "./types";
+import { StudentOffer } from "@/components/student-offers/types";
 
 interface OfferCardProps {
   offer: StudentOffer;
   onFavorite?: (id: string) => void;
   isFavorite?: boolean;
+  isVerified?: boolean;
 }
 
-export function OfferCard({ offer, onFavorite, isFavorite }: OfferCardProps) {
+export function OfferCard({ offer, onFavorite, isVerified }: OfferCardProps) {
   const [copied, setCopied] = useState(false);
 
   const copyPromoCode = async () => {
     if (offer.promoCode) {
       await navigator.clipboard.writeText(offer.promoCode);
-      setCopied(true);/* 
-      toast.success("Promo code copied!"); */
+      setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -38,8 +38,8 @@ export function OfferCard({ offer, onFavorite, isFavorite }: OfferCardProps) {
         text: offer.description,
         url: window.location.href,
       });
-    } catch (err) {/* 
-      toast.error("Sharing failed"); */
+    } catch (err) {
+      // Handle sharing error
     }
   };
 
@@ -52,8 +52,9 @@ export function OfferCard({ offer, onFavorite, isFavorite }: OfferCardProps) {
         <Image
           src={offer.logo}
           alt={offer.companyName}
-          fill
-          className="object-cover"
+          width={512}
+          height={512}
+          className="w-full h-full object-cover"
         />
         <Badge className="absolute top-4 left-4">
           {offer.category}
@@ -80,7 +81,8 @@ export function OfferCard({ offer, onFavorite, isFavorite }: OfferCardProps) {
         <p className="text-muted-foreground mb-4">{offer.description}</p>
 
         <div className="flex items-center gap-2 text-zinc-700">
-          {offer.promoCode && (
+          {!isVerified && (<Badge variant="secondary">Verify to redeem</Badge>)}
+          {isVerified && offer.promoCode && (
             <Button
               variant="outline"
               className="flex-1"
@@ -94,7 +96,7 @@ export function OfferCard({ offer, onFavorite, isFavorite }: OfferCardProps) {
               {offer.promoCode}
             </Button>
           )}
-          
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

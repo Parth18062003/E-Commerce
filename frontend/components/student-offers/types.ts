@@ -1,4 +1,4 @@
-export type OfferCategory = 'food' | 'tech' | 'entertainment' | 'fashion' | 'travel' | 'education';
+export type OfferCategory = 'food' | 'tech' | 'entertainment' | 'fashion' | 'travel' | 'education' | "sneakers" | "sportswear" | "accessories" | "electronics" | "beauty" | "books" | "music" | "games" | "health" | "fitness" | "services" | "other" | "apparel";
 
 export interface StudentOffer {
   id: string;

@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { createSlug } from "@/lib/utils";
+import { formatCurrency } from "../utils/formatCurrency";
 
 // ProductCardProps updated to accept only searchFilter as a prop
 export type ProductCardProps = {
@@ -149,15 +150,15 @@ const AlgoliaProductCard: React.FC<ProductCardProps> = ({ hit, searchFilter }) =
                       {selectedVariant.discount > 0 ? (
                         <>
                           <span className="text-indigo-500 text-lg font-semibold">
-                            ${finalPrice}
+                            {formatCurrency(finalPrice)}
                           </span>
                           <span className="mx-2 text-zinc-600 line-through">
-                            ${selectedVariant.price.toFixed(2)}
+                            {formatCurrency(selectedVariant.price.toFixed(2))}
                           </span>
                         </>
                       ) : (
                         <span className="text-indigo-500 text-lg font-semibold">
-                          ${finalPrice}
+                          {formatCurrency(finalPrice)}
                         </span>
                       )}
                     </>

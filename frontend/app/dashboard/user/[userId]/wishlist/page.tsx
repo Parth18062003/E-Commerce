@@ -1,10 +1,13 @@
+"use client";
 
 import WishList from '@/components/WishList/WishList'
+import { useParams } from 'next/navigation'
 import React from 'react'
 
 const WishListPage = () => {
+  const { userId } = useParams()
   return (
-    <div><WishList userId='b0c03b40-e11f-4bfa-9120-316b88349d46' /></div>
+    <div><WishList userId={userId} /></div>
   )
 }
 

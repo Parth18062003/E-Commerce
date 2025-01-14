@@ -129,7 +129,7 @@ const UserReviewsList = () => {
           }
 
           return (
-            <div key={review.id} className="review mb-6 p-4 border border-gray-300 rounded-lg shadow-lg bg-white flex">
+            <div key={review.id} className="max-w-3xl mb-6 p-4 border border-gray-300 rounded-lg shadow-lg bg-white flex">
               <div className="flex-1">
                 {/* Review Images */}
                 {review.imageUrls && review.imageUrls.length > 0 && (
@@ -165,7 +165,7 @@ const UserReviewsList = () => {
                 {/* Product Details below the review */}
                 <div>
                   <h3 className="text-lg font-bold text-black mt-4">{product.name}</h3>
-                  <p className="text-gray-700">{product.description}</p>
+                  <p className="text-gray-700 line-clamp-2">{product.description}</p>
                   <div className="text-black font-semibold">${product.price}</div>
                 </div>
               </div>

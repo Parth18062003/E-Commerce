@@ -15,7 +15,7 @@ const HeroImage = () => {
         width={1800}
         className="absolute w-full h-full object-cover object-left"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/5" />
 
       <div className="hidden lg:block relative z-10 text-center text-white max-w-4xl mx-auto px-4">
         <motion.h1
