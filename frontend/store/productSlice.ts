@@ -956,7 +956,7 @@ export const fetchProducts = createAsyncThunk<
   return data;
 });
 
-export const fetchProductsByIds = createAsyncThunk<
+/* export const fetchProductsByIds = createAsyncThunk<
   Product[],
   string[],
   { state: RootState }
@@ -973,6 +973,21 @@ export const fetchProductsByIds = createAsyncThunk<
   const { data } = await productAPI.fetchProductsByIds(ids);
   return Array.isArray(data.content) ? data.content : [];
 });
+ */
+export const fetchProductsByIds = createAsyncThunk<Product[], string[], { state: RootState }>(
+  "products/fetchProductsByIds",
+  async (ids, { getState }) => {
+    const state = getState().product;
+    const uncachedIds = ids.filter(id => !state.cache[id]);
+    
+    if (uncachedIds.length === 0) {
+      return ids.map(id => state.cache[id]!);
+    }
+
+    const { data } = await productAPI.fetchProductsByIds(uncachedIds);
+    return data.content || [];
+  }
+)
 
 export const createProduct = createAsyncThunk<Product, Partial<Product>>(
   "product/createProduct",
@@ -1063,12 +1078,26 @@ const productSlice = createSlice({
         state.cache[action.payload.id] = action.payload;
         state.loading.fetchProductDetails = false;
       })
-      .addCase(fetchProductsByIds.fulfilled, (state, action) => {
+/*       .addCase(fetchProductsByIds.fulfilled, (state, action) => {
         const products = action.payload;
-        products.forEach((product) => {
+        action.payload.forEach((product) => {
           state.cache[product.id] = product;
         });
-      })
+        
+        state.loading.fetchProductsByIds = false;
+      }) */
+      .addCase(fetchProductsByIds.fulfilled, (state, action) => {
+        action.payload.forEach(product => {
+          if (product && product.id) {
+            state.cache[product.id] = product;
+            // Add to products array if not already present
+            if (!state.products.some(p => p.id === product.id)) {
+              state.products.push(product);
+            }
+          }
+        });
+          state.loading.fetchProductsByIds = false;
+        })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.products.push(action.payload);
         state.cache[action.payload.id] = action.payload;

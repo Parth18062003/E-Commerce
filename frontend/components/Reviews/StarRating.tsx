@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addRating, Rating } from "@/store/ratingSlice";

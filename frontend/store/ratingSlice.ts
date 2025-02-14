@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { fetchProductsByIds } from './productSlice';
+import { RootState } from './store';
 
 export interface Rating {
     id: string;
@@ -76,7 +78,7 @@ export const fetchRatingsByProduct = createAsyncThunk<Rating[], string>(
 );
 
 // Fetch Ratings by User
-export const fetchRatingsByUser = createAsyncThunk<Rating[], string>(
+/* export const fetchRatingsByUser = createAsyncThunk<Rating[], string>(
     'rating/fetchRatingsByUser',
     async (userId, { getState }) => {
         const state = getState() as { rating: RatingState };
@@ -89,6 +91,20 @@ export const fetchRatingsByUser = createAsyncThunk<Rating[], string>(
         return response.data;
     }
 );
+ */
+export const fetchRatingsByUser = createAsyncThunk<Rating[], string, { state: RootState }>(
+    "rating/fetchRatingsByUser",
+    async (userId, { dispatch }) => {
+      const response = await axios.get<Rating[]>(`http://192.168.29.159:8082/api/v1/ratings/users/${userId}`);
+      const ratings = response.data;
+      
+/*       // Extract unique product IDs and dispatch
+      const productIds = Array.from(new Set(ratings.map(r => r.productId)));
+      dispatch(fetchProductsByIds(productIds)); */
+      
+      return ratings;
+    }
+  );
 
 // Update Rating
 export const updateRating = createAsyncThunk<Rating, { ratingId: string; rating: Rating }>(
