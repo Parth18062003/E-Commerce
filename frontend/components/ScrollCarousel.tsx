@@ -97,7 +97,7 @@ export const HorizontalScrollCarousel = ({ products }: HorizontalScrollCarouselP
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         <motion.div style={{ x }} className="flex gap-4">
           {featuredProducts.map((product) => (
-            <div key={product.id} className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl flex-shrink-0">
+            <div key={product.id} className="group relative h-[450px] w-[450px] overflow-hidden rounded-2xl shadow-xl shrink-0">
               {/* Images for the selected color variant */}
               <div className="absolute inset-0 z-0 transition-transform duration-300 group-hover:scale-110">
                 <Image

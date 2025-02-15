@@ -40,7 +40,7 @@ const CartAddedDialog: React.FC<CartAddedDialogProps> = ({ isOpen, onClose, main
         </DialogHeader>
         <DialogDescription className="text-zinc-600">Add item to Cart</DialogDescription>
         <div className="flex items-center gap-4 mt-4 flex-col sm:flex-row">
-          <div className="relative w-32 h-32 flex-shrink-0">
+          <div className="relative w-32 h-32 shrink-0">
             <Image
               src={mainImage}
               alt={productName}

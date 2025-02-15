@@ -218,7 +218,7 @@ function RelatedPosts({ currentPost }: { currentPost: BlogPost
         <form className="mt-6">
           <textarea
             placeholder="Add a comment..."
-            className="w-full p-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 text-black"
+            className="w-full p-3 border border-zinc-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-zinc-500 text-black"
             rows={4}
           />
           <button

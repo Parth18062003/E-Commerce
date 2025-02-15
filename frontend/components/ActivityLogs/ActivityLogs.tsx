@@ -56,15 +56,15 @@ const ActivityLogs: React.FC = () => {
       <div className="mb-6">
         <h3 className="text-xl font-medium mb-2">Counts</h3>
         <div className="grid grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg shadow">
+          <div className="p-4 rounded-lg shadow-sm">
             <h4 className="font-bold">Login Failures</h4>
             <p className="text-lg">{loginFailuresCount}</p>
           </div>
-          <div className="p-4 rounded-lg shadow">
+          <div className="p-4 rounded-lg shadow-sm">
             <h4 className="font-bold">Login Successes</h4>
             <p className="text-lg">{loginSuccessesCount}</p>
           </div>
-          <div className="p-4 rounded-lg shadow">
+          <div className="p-4 rounded-lg shadow-sm">
             <h4 className="font-bold">Unique Logins</h4>
             <p className="text-lg">{uniqueLoginsCount}</p>
           </div>
@@ -73,7 +73,7 @@ const ActivityLogs: React.FC = () => {
 
       <div>
         <h3 className="text-xl font-medium mb-2">Last Activities</h3>
-        <ul className="rounded-lg shadow p-4">
+        <ul className="rounded-lg shadow-sm p-4">
           {lastUserActivities.length > 0 ? (
             lastUserActivities.map((log: ActivityLog) => (
               <li key={log.timestamp} className="border-b last:border-b-0 py-2">

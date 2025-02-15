@@ -28,9 +28,9 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName("localhost"); //
+        configuration.setHostName("localhost"); //redis-13863.c12.us-east-1-4.ec2.redns.redis-cloud.com
         configuration.setPort(6379);
-        //configuration.setPassword(""); // Replace with your actual Redis password
+        //configuration.setPassword("JEL3UYPoNBozmA9yrnxBFTsYLkTSbM4X"); // Replace with your actual Redis password
         return new LettuceConnectionFactory(configuration);
     }
 

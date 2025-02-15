@@ -241,7 +241,7 @@ const UserReviewsList = () => {
                 </div>
 
                 {/* Product Main Image */}
-                <div className="md:w-1/3 flex-shrink-0">
+                <div className="md:w-1/3 shrink-0">
                   {mainImages[review.productId]?.[0] ? (
                     <Image
                       src={mainImages[review.productId][0]}

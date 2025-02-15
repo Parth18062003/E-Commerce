@@ -38,7 +38,7 @@ const SearchWithAlgoliaDialog = () => {
         placeholder="Search products..."
         value={query}  // Bind query state to the search input
         onChange={handleSearchStateChange}  // Update query when user types
-        className="px-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400 w-full"
+        className="px-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400 w-full"
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -59,7 +59,7 @@ const SearchWithAlgoliaDialog = () => {
                root: "w-full",
                form: "w-full",
                input:
-                 "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                 "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400",
                submit: "hidden",
                reset: "hidden",
              }}
@@ -188,7 +188,7 @@ const ProductSearch = () => {
                   root: "w-full",
                   form: "w-full",
                   input:
-                    "px-4 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400 w-full",
+                    "px-4 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400 w-full",
                   submit: "hidden",
                   reset: "hidden",
                 }}

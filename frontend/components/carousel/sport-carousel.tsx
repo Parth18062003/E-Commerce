@@ -76,7 +76,7 @@ export function SportCarousel() {
       <Button
         variant="secondary"
         size="icon"
-        className="hidden lg:block absolute top-1/2 left-8 -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white/90 z-10"
+        className="hidden lg:block absolute top-1/2 left-8 -translate-y-1/2 bg-white/80 backdrop-blur-xs hover:bg-white/90 z-10"
         onClick={handleScrollPrevious}
       >
         <ChevronRight className="h-4 w-4 transform rotate-180" />
@@ -97,7 +97,7 @@ export function SportCarousel() {
       <Button
         variant="secondary"
         size="icon"
-        className="hidden lg:block absolute top-1/2 right-10 -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white/90"
+        className="hidden lg:block absolute top-1/2 right-10 -translate-y-1/2 bg-white/80 backdrop-blur-xs hover:bg-white/90"
         onClick={handleScrollNext}
       >
         <ChevronRight className="h-4 w-4" />

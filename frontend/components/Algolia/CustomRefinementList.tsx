@@ -27,7 +27,7 @@ const CustomRefinementList = ({
             <input
               type="search"
               placeholder={`Search ${label.toLowerCase()}...`}
-              className="p-2 my-2 w-full border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-2 my-2 w-full border rounded-md shadow-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               onChange={(event) => searchForItems(event.currentTarget.value)}
             />
             {/* Checkbox list */}

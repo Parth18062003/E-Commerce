@@ -10,6 +10,6 @@ public class ResendConfig {
     @Bean
     public Resend resend() {
         // Replace "YOUR_API_KEY" with your actual Resend API key
-        return new Resend("");
+        return new Resend("re_GwH2m96d_4MGJHPedo6svYKdeL7pwicTu");
     }
 }

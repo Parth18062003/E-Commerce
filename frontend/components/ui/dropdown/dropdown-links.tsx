@@ -31,7 +31,7 @@ const OurServices = () => (
   <div className="flex gap-4 p-4 w-full h-full">
     <div
       className={
-        'text-white font-bold text-3xl flex items-end justify-start p-4 w-56 h-[200px] rounded-md bg-gradient-to-br [background-size:150%] from-orange-400 via-fuchsia-600 to-cyan-400'
+        'text-white font-bold text-3xl flex items-end justify-start p-4 w-56 h-[200px] rounded-md bg-linear-to-br [background-size:150%] from-orange-400 via-fuchsia-600 to-cyan-400'
       }
     >
       We <br /> Create
@@ -60,19 +60,19 @@ const OurServices = () => (
 const Components = () => (
   <div className="grid grid-cols-2 gap-4 p-4 ">
     <span
-      className={'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
+      className={'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
     >
       <h3 className={'dark:text-white text-zinc-950'}>Animated Charts</h3>
       <p className={'text-zinc-500 text-sm'}>Perfect for websites associated with finance</p>
     </span>
     <span
-      className={'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
+      className={'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
     >
       <h3 className={'dark:text-white text-zinc-950'}>Animated Cursor</h3>
       <p className={'text-zinc-500 text-sm'}>Useful for team work illustrations</p>
     </span>
     <span
-      className={'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
+      className={'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
     >
       <h3 className={'dark:text-white text-zinc-950'}>Tab List</h3>
       <p className={'text-zinc-500 text-sm'}>
@@ -80,7 +80,7 @@ const Components = () => (
       </p>
     </span>
     <span
-      className={'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
+      className={'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'}
     >
       <h3 className={'dark:text-white text-zinc-950'}>Pricing Component</h3>
       <p className={'text-zinc-500 text-sm'}>Neo Brutalist style animated pricing component</p>
@@ -94,7 +94,7 @@ const Blog = () => (
       <div className={'text-sm dark:text-zinc-500 text-zinc-400 px-3'}>info</div>
       <span
         className={
-          'block hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors w-fit'
+          'block dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors w-fit'
         }
       >
         <h3 className={'dark:text-white text-zinc-950 flex items-center gap-1'}>
@@ -109,7 +109,7 @@ const Blog = () => (
       <div className={'flex'}>
         <span
           className={
-            'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'
+            'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'
           }
         >
           <h3 className={'dark:text-white text-zinc-950 flex items-center gap-1'}>
@@ -122,7 +122,7 @@ const Blog = () => (
         </span>
         <span
           className={
-            'hover:dark:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'
+            'dark:hover:bg-zinc-900 hover:bg-zinc-100 p-3 rounded-md transition-colors'
           }
         >
           <h3 className={'dark:text-white text-zinc-950 flex items-center gap-1'}>

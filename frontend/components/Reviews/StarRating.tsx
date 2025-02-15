@@ -103,7 +103,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId, ratings }) =>
         layout
         initial={{ borderRadius: "2rem" }}
         animate={ratingValue ? { borderRadius: "0.5rem" } : { borderRadius: "2rem" }}
-        className="w-fit overflow-hidden border py-2 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
+        className="w-fit overflow-hidden border py-2 shadow-xs dark:border-neutral-800 dark:bg-neutral-950"
       >
         {isSubmitted ? (
           <div className="flex items-center justify-center gap-3 pl-4 pr-2">
@@ -165,7 +165,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId, ratings }) =>
                 <textarea
                   ref={textRef}
                   placeholder="Your feedback here..."
-                  className="min-h-36 w-full resize-none rounded-md border bg-transparent p-2 text-sm placeholder-neutral-400 focus:border-neutral-400 focus:outline-0 dark:border-neutral-800 focus:dark:border-white text-black"
+                  className="min-h-36 w-full resize-none rounded-md border bg-transparent p-2 text-sm placeholder-neutral-400 focus:border-neutral-400 focus:outline-0 dark:border-neutral-800 dark:focus:border-white text-black"
                   onChange={() => setComment(textRef.current?.value || "")}
                 />
                 <div className="flex justify-between items-center mt-2">
@@ -184,7 +184,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ productId, ratings }) =>
                       key={index}
                       src={url}
                       alt={`Uploaded Image ${index + 1}`}
-                      className="w-24 h-24 object-cover rounded-lg border border-gray-300 shadow-sm"
+                      className="w-24 h-24 object-cover rounded-lg border border-gray-300 shadow-xs"
                     />
                   ))}
                 </div>

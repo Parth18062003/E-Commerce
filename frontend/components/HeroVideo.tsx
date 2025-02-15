@@ -28,7 +28,7 @@ const FullscreenVideo: React.FC<{ videoSrc: string }> = ({ videoSrc }) => {
       </video>
       <button
         onClick={toggleMute}
-        className="absolute bottom-10 left-10 p-2 bg- rounded shadow"
+        className="absolute bottom-10 left-10 p-2 bg- rounded shadow-sm"
       >
         {isMuted ? 'Unmute' : 'Mute'}
       </button>

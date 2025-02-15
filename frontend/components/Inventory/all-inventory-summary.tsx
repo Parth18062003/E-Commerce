@@ -46,7 +46,7 @@ export function AllInventorySummary() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="bg-card p-6 rounded-lg shadow-sm"
+          className="bg-card p-6 rounded-lg shadow-xs"
         >
           <div className="flex items-center gap-4">
             <div className={`p-3 rounded-full bg-card ${item.color} bg-opacity-10`}>

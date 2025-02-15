@@ -102,7 +102,7 @@ const Content = ({
         opacity: 0,
         y: 8,
       }}
-      className="absolute left-0 top-[calc(100%_+_24px)] w-96 rounded-lg border border-zinc-400 bg-gradient-to-b from-zinc-200 dark:from-zinc-900 via-zinc-200 dark:via-zinc-900 to-zinc-100 dark:to-zinc-800 transition-all duration-300 backdrop-blur-xl p-4"
+      className="absolute left-0 top-[calc(100%_+_24px)] w-96 rounded-lg border border-zinc-400 bg-linear-to-b from-zinc-200 dark:from-zinc-900 via-zinc-200 dark:via-zinc-900 to-zinc-100 dark:to-zinc-800 transition-all duration-300 backdrop-blur-xl p-4"
     >
       <Bridge />
       <Nub selected={selected} />

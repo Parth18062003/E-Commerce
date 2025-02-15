@@ -86,7 +86,7 @@ const FilterAndSort = () => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-grow flex flex-col">
+      <div className="grow flex flex-col">
         <div className="flex justify-end items-center text-black mx-6 gap-4 mt-5">
           <div className="flex items-center gap-4">
             <Configure hitsPerPage={9} />

@@ -22,6 +22,9 @@ UserServiceApplication {
 /*
 host.docker.internal
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
+docker exec -it hypehouse redis-cli
+docker run --name hypehouse -d -p 6379:6379 redis
+docker start hypehouse
 6. User Notifications
 Email Notifications: Send email notifications for account activities, updates, or alerts.
 		In-App Notifications: Provide in-app notifications for important events.

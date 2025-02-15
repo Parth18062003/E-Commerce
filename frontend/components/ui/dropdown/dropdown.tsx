@@ -97,7 +97,7 @@ export const Tabs: React.FC<{
     >
       <div
         className={cn(
-          "rounded-lg border border-zinc-400 bg-gradient-to-b from-zinc-200 dark:from-zinc-900 via-zinc-200 dark:via-zinc-900 to-zinc-100 dark:to-zinc-800 transition-all duration-300 backdrop-blur-xl",
+          "rounded-lg border border-zinc-400 bg-linear-to-b from-zinc-200 dark:from-zinc-900 via-zinc-200 dark:via-zinc-900 to-zinc-100 dark:to-zinc-800 transition-all duration-300 backdrop-blur-xl",
           className
         )}
       >

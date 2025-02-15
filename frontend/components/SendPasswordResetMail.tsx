@@ -96,7 +96,7 @@ export default function SendPasswordResetMail() {
                     errors.email
                       ? "border-red-500"
                       : "border-zinc-300 dark:border-zinc-600"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  } focus:outline-hidden focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email.message}</p>

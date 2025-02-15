@@ -12,7 +12,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
             <Home /> <span className="sr-only">Home</span>
           </TransitionLink>
         </header>
-        <main className="flex-grow">{children}</main>
+        <main className="grow">{children}</main>
       </div>
     </>
   );

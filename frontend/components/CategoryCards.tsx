@@ -22,7 +22,7 @@ const CategoryCard: React.FC<{ category: Category; isHovered: boolean; isCurrent
     <div
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      className={`relative transition-transform duration-300 ${isCurrent ? 'scale-110 z-10' : ''} ${isHovered ? 'filter blur-sm' : ''}`}
+      className={`relative transition-transform duration-300 ${isCurrent ? 'scale-110 z-10' : ''} ${isHovered ? 'filter blur-xs' : ''}`}
     >
       <TransitionLink href={link}>
         <div className="flex flex-col items-center justify-center overflow-hidden bg-white shadow-md rounded-lg w-full">

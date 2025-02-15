@@ -59,7 +59,7 @@ const Navbar = () => {
           <ThemeToggle />
           <button
             onClick={toggleMenu}
-            className="text-2xl ml-3 text-zinc-800 dark:text-zinc-400 focus:outline-none"
+            className="text-2xl ml-3 text-zinc-800 dark:text-zinc-400 focus:outline-hidden"
           >
             {isOpen ? <X /> : <Menu />}
             <span className="sr-only">Menu</span>
@@ -75,7 +75,7 @@ const Navbar = () => {
         {/* Search Input and Icons on the right */}
         <div className="items-center hidden lg:flex space-x-4 px-4">
           <div className="relative">
-            <div className="flex-grow max-w-xl">
+            <div className="grow max-w-xl">
               {/* Search Box */}
               {/*               <SearchBox
                 placeholder="Search products..."
@@ -83,7 +83,7 @@ const Navbar = () => {
                   root: "w-full",
                   form: "w-full",
                   input:
-                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400",
                   submit: "hidden",
                   reset: "hidden",
                 }}
@@ -91,7 +91,7 @@ const Navbar = () => {
               <Input
                 type="search"
                 placeholder="Search products..."
-                className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400"
+                className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400"
               />
               <div className="absolute inset-y-0 left-3 flex items-center text-zinc-400">
                 <Search />
@@ -173,7 +173,7 @@ const Navbar = () => {
                 root: "w-full",
                 form: "w-full",
                 input:
-                  "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400",
+                  "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400",
                 submit: "hidden",
                 reset: "hidden",
               }}
@@ -181,7 +181,7 @@ const Navbar = () => {
             <Input
               type="search"
               placeholder="Search products..."
-              className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-none focus:ring-2 transition caret-indigo-400"
+              className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400"
             />
           </div>
         </motion.div>

@@ -34,7 +34,7 @@ const WishListItem: React.FC<WishListItemProps> = ({ product, onRemove }) => {
 
   return (
     <Card 
-      className="flex flex-col md:flex-row items-center p-6 border rounded-lg shadow-sm transition-transform duration-200 transform hover:scale-[1.02] bg-white cursor-pointer"
+      className="flex flex-col md:flex-row items-center p-6 border rounded-lg shadow-xs transition-transform duration-200 transform hover:scale-[1.02] bg-white cursor-pointer"
       onClick={handleCardClick}
     >
       {hasImages ? (
@@ -51,7 +51,7 @@ const WishListItem: React.FC<WishListItemProps> = ({ product, onRemove }) => {
         </div>
       )}
       
-      <div className="flex-grow w-full">
+      <div className="grow w-full">
         <CardHeader className="p-0 mb-4">
           <CardTitle className="text-xl font-bold text-zinc-800">
             {product.name}

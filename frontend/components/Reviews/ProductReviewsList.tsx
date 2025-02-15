@@ -52,7 +52,7 @@ const ProductReviewsList: React.FC<ReviewsListProps> = ({ productId, ratings }) 
                   alt={`Review Image ${index + 1}`}
                   width={100}
                   height={100}
-                  className="w-24 h-24 rounded object-cover border-2 border-gray-300 m-1 shadow-sm"
+                  className="w-24 h-24 rounded object-cover border-2 border-gray-300 m-1 shadow-xs"
                 />
               ))}
             </div>

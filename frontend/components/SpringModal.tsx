@@ -66,17 +66,17 @@ export const SpringModal = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={() => setIsOpen(false)}
-      className="bg-zinc-900/40 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer"
+      className="bg-zinc-900/40 backdrop-blur-sm p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer"
     >
       <motion.div
         initial={{ scale: 0, rotate: "12.5deg" }}
         animate={{ scale: 1, rotate: "0deg" }}
         exit={{ scale: 0, rotate: "0deg" }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-gradient-to-br from-zinc-200 to-zinc-100 text-black p-6 rounded-lg w-full max-w-2xl shadow-xl cursor-default relative overflow-hidden flex flex-col md:flex-row items-center"
+        className="bg-linear-to-br from-zinc-200 to-zinc-100 text-black p-6 rounded-lg w-full max-w-2xl shadow-xl cursor-default relative overflow-hidden flex flex-col md:flex-row items-center"
       >
         <AlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
-        <div className="relative z-10 flex-shrink-0 mb-4 md:mb-0 md:mr-4">
+        <div className="relative z-10 shrink-0 mb-4 md:mb-0 md:mr-4">
           <Image
             src={mainImage}
             alt={product.name}

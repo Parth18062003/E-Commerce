@@ -166,7 +166,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                     </h2>
                     {getDisplayPrice(product.price, product.discount)}
                   </div>
-                  <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden overflow-ellipsis line-clamp-2">
+                  <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden text-ellipsis line-clamp-2">
                     {product.description}
                   </p>
                 </CardContent>
@@ -316,7 +316,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                   </h2>
                   {getDisplayPrice(product.price, product.discount)}
                 </div>
-                <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden overflow-ellipsis line-clamp-2">
+                <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden text-ellipsis line-clamp-2">
                   {product.description}
                 </p>
               </CardContent>
@@ -496,7 +496,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                   </h2>
                   {getDisplayPrice(product.price, product.discount)}
                 </div>
-                <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden overflow-ellipsis line-clamp-2">
+                <p className="text-sm text-zinc-400 px-3 my-3 overflow-hidden text-ellipsis line-clamp-2">
                   {product.description}
                 </p>
               </CardContent>

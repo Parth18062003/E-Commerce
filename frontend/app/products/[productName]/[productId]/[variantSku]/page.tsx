@@ -16,7 +16,7 @@ const ProductInfoPage = async ({ params }: { params: { productId: string } }) =>
   const averageRating = await fetch(`http://localhost:8082/api/v1/ratings/products/${productId}/average`);
   const averageRatingData = await averageRating.json();
   return (
-    <div className="flex-grow min-h-screen">
+    <div className="grow min-h-screen">
       <ProductDetails product={productData} rating={ratingsData} averageRatingData={averageRatingData}/>
     </div>
   );
@@ -29,7 +29,7 @@ import React from "react";
 
 const ProductInfoPage = () => {
   return (
-    <div className="flex-grow min-h-screen">
+    <div className="grow min-h-screen">
       <ProductDetails />
     </div>
   );

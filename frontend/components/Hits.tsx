@@ -61,7 +61,7 @@ const Hit = ({ hit }: HitProps) => {
       <article className="bg-white relative border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group z-50 my-2">
         <Link href={`/products/${createSlug(hit.name)}/${hit.objectID}/${createSlug(hit.sku)}`}>
           <div className="flex gap-4 p-4">
-            <div className="flex-shrink-0 w-32 h-32 relative overflow-hidden rounded-md transition-transform transform group-hover:scale-105">
+            <div className="shrink-0 w-32 h-32 relative overflow-hidden rounded-md transition-transform transform group-hover:scale-105">
               <Image
                   src={mainImage || "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/7d12fa05-39c6-4d40-8c81-f5ccb5694fae/U+NIKE+ESC+CMPTNL+TRCK+JKT.png"} // Fallback image if mainImage is empty
                   alt={hit.name}
@@ -70,7 +70,7 @@ const Hit = ({ hit }: HitProps) => {
                   className="object-cover w-full h-full"
               />
             </div>
-            <div className="flex-grow">
+            <div className="grow">
               <h2 className="text-xl font-bold text-gray-900 mb-2">
               {/* <Highlight hit={hit} attribute="name" /> */} 
               {hit.name}
@@ -131,10 +131,10 @@ function Hit({ hit }: HitProps) {
     : (hit.price).toFixed(2);
 
   return (
-    <article className="bg-white relative border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group z-50 my-2 flex-shrink-0 w-[300px] md:w-[350px]">
+    <article className="bg-white relative border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group z-50 my-2 shrink-0 w-[300px] md:w-[350px]">
       <Link href={`/products/${hit.name}/${hit.objectID}`}>
         <div className="flex flex-col h-full">
-          <div className="flex-shrink-0 w-full h-48 relative overflow-hidden rounded-t-lg transition-transform transform group-hover:scale-105">
+          <div className="shrink-0 w-full h-48 relative overflow-hidden rounded-t-lg transition-transform transform group-hover:scale-105">
             <Image
               src={hit.colorOptionImages[hit.colorOptions[0]][0]}
               alt={hit.name}
@@ -144,7 +144,7 @@ function Hit({ hit }: HitProps) {
             />
           </div>
 
-          <div className="flex-grow p-4">
+          <div className="grow p-4">
             <h2 className="text-xl font-bold text-gray-900 mb-2">
               <Highlight hit={hit} attribute="name" />
             </h2>
