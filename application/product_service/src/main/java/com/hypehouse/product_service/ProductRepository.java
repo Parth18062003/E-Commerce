@@ -43,6 +43,9 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     @Query("{'releaseDate': { $lt: ?0 }}")
     Page<Product> findByReleaseDateBefore(String releaseDate, Pageable pageable);
 
+    @Query("{'releaseDate': { $gt: ?0 }}")
+    Page<Product> findByReleaseDateAfter(String releaseDate, Pageable pageable);
+
     // Find product by type (for example: electronics, clothing, etc.)
     Optional<Product> findByType(String type);
 

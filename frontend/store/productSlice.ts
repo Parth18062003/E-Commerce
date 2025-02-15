@@ -867,7 +867,7 @@ type AsyncActionTypes =
 const API_BASE_URL = "http://192.168.29.159:8082/api/v1/products";
 
 const fetchPaginated = <T>(endpoint: string, params: Record<string, any>) =>
-  axios.get<PaginatedResponse<T>>(`${API_BASE_URL}/${endpoint}`, { params });
+  axios.get<PaginatedResponse<T>>(`${API_BASE_URL}${endpoint}`, { params });
 
 const productAPI = {
   fetchProduct: (id: string) => axios.get<Product>(`${API_BASE_URL}/${id}`),
@@ -876,22 +876,22 @@ const productAPI = {
     fetchPaginated<Product>("", { page, size }),
   
   fetchProductsByCategory: (category: string, page: number, size: number) =>
-    fetchPaginated<Product>(`category/${category}`, { page, size }),
+    fetchPaginated<Product>(`/category/${category}`, { page, size }),
   
   fetchProductsByReleaseDate: (releaseDate: string, page: number, size: number) =>
-    fetchPaginated<Product>(`release-date/${releaseDate}`, { page, size }),
+    fetchPaginated<Product>(`/release-date/${releaseDate}`, { page, size }),
   
   fetchProductsByGender: (gender: string, page: number, size: number) =>
-    fetchPaginated<Product>(`gender/${gender}`, { page, size }),
+    fetchPaginated<Product>(`/gender/${gender}`, { page, size }),
   
   fetchProductsByBrand: (brand: string, page: number, size: number) =>
-    fetchPaginated<Product>(`brand/${brand}`, { page, size }),
+    fetchPaginated<Product>(`/brand/${brand}`, { page, size }),
   
   fetchProductsByTag: (tag: string, page: number, size: number) =>
-    fetchPaginated<Product>(`tags/${tag}`, { page, size }),
+    fetchPaginated<Product>(`/tags/${tag}`, { page, size }),
   
   fetchFeaturedProducts: (page: number, size: number) =>
-    fetchPaginated<Product>("featured", { page, size }),
+    fetchPaginated<Product>("/featured", { page, size }),
   
   createProduct: (data: Partial<Product>) =>
     axios.post<Product>(`${API_BASE_URL}/create-product`, data),

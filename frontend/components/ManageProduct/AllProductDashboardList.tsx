@@ -110,13 +110,6 @@ const AllProducts: React.FC<AllProductsProps> = ({ searchTerm }) => {
       product.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading)
-    return (
-      <div className="text-center">
-        <Loading />
-      </div>
-    );
-
   return (
     <div className="min-h-screen p-6 bg-zinc-100 text-black">
       <h1 className="text-3xl font-bold mb-6 text-zinc-800">All Products</h1>

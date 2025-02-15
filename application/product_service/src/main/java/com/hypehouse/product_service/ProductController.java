@@ -159,13 +159,26 @@ public class ProductController {
     }
 
     // Fetch products by release date with pagination
-    @GetMapping("/release-date/{releaseDate}")
+    @GetMapping("/before-release-date/{releaseDate}")
     @RateLimit(limitForPeriod = 10, limitRefreshPeriod = 60)
     public ResponseEntity<Page<Product>> getProductsByReleaseDate(
             @PathVariable String releaseDate,
             Pageable pageable) {
         log.info("Fetching products released before: {}", releaseDate);
         Page<Product> products = productService.getProductsByReleaseDate(releaseDate, pageable);
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  // Return No Content if no products found
+        }
+        return ResponseEntity.ok(products);  // Return OK status with products by release date
+    }
+
+    @GetMapping("/release-date/{releaseDate}")
+    @RateLimit(limitForPeriod = 10, limitRefreshPeriod = 60)
+    public ResponseEntity<Page<Product>> getLatestProducts(
+            @PathVariable String releaseDate,
+            Pageable pageable) {
+        log.info("Fetching products released after: {}", releaseDate);
+        Page<Product> products = productService.getLatestProducts(releaseDate, pageable);
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  // Return No Content if no products found
         }

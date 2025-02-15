@@ -6,6 +6,7 @@ import com.algolia.search.models.indexing.Query;
 import com.algolia.search.models.indexing.SearchResult;
 import com.hypehouse.common.model.InventoryUpdateMessage;
 import com.hypehouse.product_service.config.RabbitConfig;
+import com.hypehouse.product_service.model.DisplayProductDTO;
 import com.hypehouse.product_service.model.IndexableProduct;
 import com.hypehouse.common.model.ProductDTO;
 import com.hypehouse.product_service.model.UpdateProductDTO;
@@ -65,6 +66,7 @@ public class ProductService {
         log.debug("Fetching products by IDs: {} with pagination: {}", ids, pageable);
         return productRepository.findByIdIn(ids, pageable);
     }
+
     // Fetch products by category with pagination
     public Page<Product> getProductsByCategory(String category, Pageable pageable) {
         log.debug("Fetching products by category: {} with pagination: {}", category, pageable);
@@ -74,6 +76,11 @@ public class ProductService {
     public Page<Product> getProductsByReleaseDate(String releaseDate, Pageable pageable) {
         log.debug("Fetching products released before {} with pagination: {}", releaseDate, pageable);
         return productRepository.findByReleaseDateBefore(releaseDate, pageable);
+    }
+
+    public Page<Product> getLatestProducts(String releaseDate, Pageable pageable) {
+        log.debug("Fetching products released after {} with pagination: {}", releaseDate, pageable);
+        return productRepository.findByReleaseDateAfter(releaseDate, pageable);
     }
 
     // Fetch products by brand with pagination
