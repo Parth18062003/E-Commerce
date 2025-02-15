@@ -533,13 +533,13 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
           ))}
         </div>
       )}
-
+      <span className="text-xs text-zinc-500">The images may appear blur</span>
       {/* Confirmation button for image upload */}
       {newImageFiles.length > 0 && !urlMode && (
         <Button
           onClick={handleUploadImages}
           disabled={isLoading}
-          className="w-full bg-green-500 mt-4"
+          className="w-full bg-indigo-500 mt-4"
         >
           {isLoading ? "Uploading..." : "Confirm Image Upload"}
         </Button>
@@ -549,7 +549,7 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
       {previewUrls.length > 0 && urlMode && (
         <Button
           onClick={handleConfirmUrlUpload}
-          className="w-full mt-4 bg-green-500"
+          className="w-full mt-4 bg-indigo-500"
         >
           Confirm URL Upload
         </Button>
@@ -582,7 +582,7 @@ const UploadProductImage: React.FC<UploadProductImageProps> = ({
             <Button variant="outline" onClick={handleCancel} className="w-1/2">
               Cancel
             </Button>
-            <Button onClick={handleUploadImages} disabled={isLoading} className="w-1/2 bg-green-500">
+            <Button onClick={handleUploadImages} disabled={isLoading} className="w-1/2 bg-indigo-500">
               {isLoading ? "Uploading..." : "Confirm Upload"}
             </Button>
           </DialogFooter>

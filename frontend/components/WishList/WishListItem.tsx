@@ -6,6 +6,7 @@ import { createSlug } from '@/lib/utils';
 import Image from 'next/image';
 import { Product } from '@/store/productSlice';
 import { useEffect, useState } from 'react';
+import { formatCurrency } from "../utils/formatCurrency";
 
 interface WishListItemProps {
   product: Product;
@@ -64,10 +65,10 @@ const WishListItem: React.FC<WishListItemProps> = ({ product, onRemove }) => {
           </p>
           <div className="flex items-center gap-2">
             <p className="font-bold text-lg text-indigo-600">
-              ${discountedPrice.toFixed(2)}
+              {formatCurrency(discountedPrice.toFixed(2))}
             </p>
             <p className="font-bold text-lg line-through text-zinc-400">
-              ${product.price.toFixed(2)}
+              {formatCurrency(product.price.toFixed(2))}
             </p>
             {product.discount > 0 && (
               <span className="bg-indigo-200 text-indigo-600 px-3 py-1 rounded-full text-base font-medium">

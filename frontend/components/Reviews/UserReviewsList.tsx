@@ -11,6 +11,7 @@ import axios from "axios";
 import sha1 from "sha1";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "../utils/formatCurrency";
 
 const UserReviewsList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -199,12 +200,12 @@ const UserReviewsList = () => {
                       </p>
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-semibold text-gray-900">
-                          ${finalPrice.toFixed(2)}
+                          {formatCurrency(finalPrice.toFixed(2))}
                         </span>
                         {currentDiscount > 0 && (
                           <>
                             <span className="text-sm text-gray-400 line-through">
-                              ${currentPrice.toFixed(2)}
+                              {formatCurrency(currentPrice.toFixed(2))}
                             </span>
                             <span className="text-sm text-indigo-600">
                               ({currentDiscount}% off)

@@ -245,6 +245,15 @@ const CreateProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
     setProduct((prev) => ({ ...prev, variants: updatedVariants }));
   };
 
+  const handleDateChange = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setProduct((prev) => ({
+        ...prev,
+        releaseDate: selectedDate.toISOString().split("T")[0], // Set the date as "YYYY-MM-DD"
+      }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(product);
@@ -274,7 +283,7 @@ const CreateProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
       handleAddColorOption(); // Add color option
     }
   };
-
+  
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto p-6">
@@ -419,7 +428,7 @@ const CreateProductForm: React.FC<ProductFormProps> = ({ existingProduct }) => {
                 />
               </div>
               <div>
-                <Label htmlFor="releaseDate">Release Date</Label>
+                <Label htmlFor="releaseDate">Release Date</Label>            
                 <Input
                   id="releaseDate"
                   name="releaseDate"

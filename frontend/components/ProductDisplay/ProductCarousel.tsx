@@ -370,6 +370,7 @@ import { SpringModal } from "../SpringModal";
 import { createSlug } from "@/lib/utils";
 import { Product } from "@/store/productSlice";
 import { motion, useScroll, useSpring } from "motion/react";
+import { formatCurrency } from "../utils/formatCurrency";
 
 // Type definition for the props
 interface ProductCarouselProps {
@@ -431,17 +432,17 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
       return (
         <div className="flex flex-col">
           <span className="text-lg font-bold text-indigo-600">
-            ${discountedPrice.toFixed(2)}
+            {formatCurrency(discountedPrice.toFixed(2))}
           </span>
           <span className="text-sm text-zinc-500 line-through">
-            ${price.toFixed(2)}
+            {formatCurrency(price.toFixed(2))}
           </span>
         </div>
       );
     }
     return (
       <span className="text-lg font-bold text-zinc-950">
-        ${price.toFixed(2)}
+        {formatCurrency(price.toFixed(2))}
       </span>
     );
   };

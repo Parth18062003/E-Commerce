@@ -77,7 +77,7 @@ const Navbar = () => {
           <div className="relative">
             <div className="grow max-w-xl">
               {/* Search Box */}
-              {/*               <SearchBox
+{/*               <SearchBox
                 placeholder="Search products..."
                 classNames={{
                   root: "w-full",

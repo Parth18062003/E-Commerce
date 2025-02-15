@@ -89,7 +89,7 @@ const alerts: Alert[] = [
 
 export async function HomePageComponents() {
   //const date = new Date().toLocaleDateString("en-ca");
-  const date = "2024-03-01";
+  const date = "2024-12-01";
   const res = await fetch(
     `http://localhost:8082/api/v1/products/release-date/${date}`
   );
