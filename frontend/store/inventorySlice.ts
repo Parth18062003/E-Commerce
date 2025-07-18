@@ -40,7 +40,7 @@ export const fetchAllInventory = createAsyncThunk<InventoryItem[],{page: number,
         content: InventoryItem[];
         pageable: { pageNumber: number; pageSize: number; };
         totalElements: number;
-      }>('http://192.168.29.159:8083/api/v1/inventory', {
+      }>('http://192.168.29.152:8083/api/v1/inventory', {
         params: { page, size: pageSize }
       });
       dispatch(setPagination({
@@ -62,7 +62,7 @@ export const fetchInventoryItem = createAsyncThunk<InventoryItem, { productId: s
   'inventory/fetchInventoryItem',
   async ({ productId, variantSku }, { rejectWithValue }) => {
     try {
-      const response = await axios.get<InventoryItem>(`http://192.168.29.159:8083/api/v1/inventory/${productId}/variant/${variantSku}`);
+      const response = await axios.get<InventoryItem>(`http://192.168.29.152:8083/api/v1/inventory/${productId}/variant/${variantSku}`);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -77,7 +77,7 @@ export const fetchInventoryItems = createAsyncThunk<InventoryItem[], string>(
   'inventory/fetchInventoryItems',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get<InventoryItem[]>(`http://192.168.29.159:8083/api/v1/inventory/${productId}`);
+      const response = await axios.get<InventoryItem[]>(`http://192.168.29.152:8083/api/v1/inventory/${productId}`);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -94,7 +94,7 @@ export const addInventory = createAsyncThunk<InventoryItem, { productId: string;
     try {
       // Make API call to add inventory
       const response = await axios.post<InventoryItem>(
-        `http://192.168.29.159:8083/api/v1/inventory/add/${productId}/${variantSku}`,
+        `http://192.168.29.152:8083/api/v1/inventory/add/${productId}/${variantSku}`,
         inventoryRequest
       );
       
@@ -113,7 +113,7 @@ export const addStock = createAsyncThunk<InventoryItem, { productId: string; var
   async ({ productId, variantSku, size, quantity }, { rejectWithValue }) => {
     try {
       const response = await axios.post<InventoryItem>(
-        `http://192.168.29.159:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/add-stock`,
+        `http://192.168.29.152:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/add-stock`,
         null,
         { params: { quantity } }
       );
@@ -133,7 +133,7 @@ export const reduceStock = createAsyncThunk<InventoryItem, { productId: string; 
     try {
       // Make the PUT request to reduce stock
       const response = await axios.put<InventoryItem>(
-        `http://192.168.29.159:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/reduce-stock`,
+        `http://192.168.29.152:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/reduce-stock`,
         null, // No request body needed for this API
         {
           params: {
@@ -157,7 +157,7 @@ export const updateStock = createAsyncThunk<InventoryItem, { productId: string; 
   async ({ productId, variantSku, size, quantity }, { rejectWithValue }) => {
     try {
       const response = await axios.put<InventoryItem>(
-        `http://192.168.29.159:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/stock`,
+        `http://192.168.29.152:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/stock`,
         null,
         { params: { quantity } }
       );
@@ -176,7 +176,7 @@ export const reserveStock = createAsyncThunk<InventoryItem, { productId: string;
   async ({ productId, variantSku, size, quantity }, { rejectWithValue }) => {
     try {
       const response = await axios.put<InventoryItem>(
-        `http://192.168.29.159:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/reserve-stock`,
+        `http://192.168.29.152:8083/api/v1/inventory/${productId}/variant/${variantSku}/size/${size}/reserve-stock`,
         null,
         { params: { quantity } }
       );

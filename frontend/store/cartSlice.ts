@@ -123,7 +123,7 @@ export const fetchCart = createAsyncThunk<Cart, string, { state: RootState }>(
       }
 
       const response = await axios.get<Cart>(
-        `http://192.168.29.159:8084/api/v1/cart/get-cart`,
+        `http://192.168.29.152:8084/api/v1/cart/get-cart`,
         {
           headers: {
             'X-User-ID': userId,
@@ -151,7 +151,7 @@ export const addItemToCart = createAsyncThunk<Cart, { userId: string; request: A
   async ({ userId, request }, { getState, rejectWithValue }) => {
     try {
       const response = await axios.post<Cart>(
-        `http://192.168.29.159:8084/api/v1/cart/items/add-product`,
+        `http://192.168.29.152:8084/api/v1/cart/items/add-product`,
         request,
         {
           headers: { 'X-User-ID': userId },
@@ -180,7 +180,7 @@ export const updateItemQuantity = createAsyncThunk<
   async ({ userId, productId, variantSku, size, quantity }, { getState, rejectWithValue }) => {
     try {
       const response = await axios.put<Cart>(
-        `http://192.168.29.159:8084/api/v1/cart/items/update-product/${productId}/${variantSku}/${size}`,
+        `http://192.168.29.152:8084/api/v1/cart/items/update-product/${productId}/${variantSku}/${size}`,
         { quantity },
         {
           headers: { 'X-User-ID': userId },
@@ -209,7 +209,7 @@ export const removeItemFromCart = createAsyncThunk<
   async ({ userId, productId, variantSku, size }, { rejectWithValue, getState }) => {
     try {
       await axios.delete(
-        `http://192.168.29.159:8084/api/v1/cart/items/remove-product/${productId}/${variantSku}/${size}`,
+        `http://192.168.29.152:8084/api/v1/cart/items/remove-product/${productId}/${variantSku}/${size}`,
         {
           headers: { 'X-User-ID': userId },
         }
@@ -217,7 +217,7 @@ export const removeItemFromCart = createAsyncThunk<
       
       // After successful deletion, fetch the updated cart
       const response = await axios.get<Cart>(
-        `http://192.168.29.159:8084/api/v1/cart/get-cart`,
+        `http://192.168.29.152:8084/api/v1/cart/get-cart`,
         {
           headers: { 'X-User-ID': userId },
         }
@@ -456,7 +456,7 @@ const enrichCartItems = (cart: Cart, products: Product[]): Cart => {
 };
 
 // API Calls
-const API_BASE_URL = 'http://192.168.29.159:8084/api/v1/cart';
+const API_BASE_URL = 'http://192.168.29.152:8084/api/v1/cart';
 
 // Fetch cart from server
 const fetchCartFromServer = async (userId: string) => {

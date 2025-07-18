@@ -48,7 +48,7 @@ export const addRating = createAsyncThunk<Rating, {
     'rating/addRating',
     async (ratingData) => {
         const response = await axios.post(
-            `http://192.168.29.159:8082/api/v1/ratings/${ratingData.userId}/products/${ratingData.productId}`,
+            `http://192.168.29.152:8082/api/v1/ratings/${ratingData.userId}/products/${ratingData.productId}`,
             {
                 rating: {
                     rating: ratingData.rating,
@@ -72,7 +72,7 @@ export const fetchRatingsByProduct = createAsyncThunk<Rating[], string>(
             return state.rating.cache[productId];
         }
 
-        const response = await axios.get(`http://192.168.29.159:8082/api/v1/ratings/products/${productId}`);
+        const response = await axios.get(`http://192.168.29.152:8082/api/v1/ratings/products/${productId}`);
         return response.data;
     }
 );
@@ -87,7 +87,7 @@ export const fetchRatingsByProduct = createAsyncThunk<Rating[], string>(
             return state.rating.cache[userId];
         }
 
-        const response = await axios.get(`http://192.168.29.159:8082/api/v1/ratings/users/${userId}`);
+        const response = await axios.get(`http://192.168.29.152:8082/api/v1/ratings/users/${userId}`);
         return response.data;
     }
 );
@@ -95,7 +95,7 @@ export const fetchRatingsByProduct = createAsyncThunk<Rating[], string>(
 export const fetchRatingsByUser = createAsyncThunk<Rating[], string, { state: RootState }>(
     "rating/fetchRatingsByUser",
     async (userId, { dispatch }) => {
-      const response = await axios.get<Rating[]>(`http://192.168.29.159:8082/api/v1/ratings/users/${userId}`);
+      const response = await axios.get<Rating[]>(`http://192.168.29.152:8082/api/v1/ratings/users/${userId}`);
       const ratings = response.data;
       
 /*       // Extract unique product IDs and dispatch
@@ -110,7 +110,7 @@ export const fetchRatingsByUser = createAsyncThunk<Rating[], string, { state: Ro
 export const updateRating = createAsyncThunk<Rating, { ratingId: string; rating: Rating }>(
     'rating/updateRating',
     async ({ ratingId, rating }) => {
-        const response = await axios.put(`http://192.168.29.159:8082/api/v1/ratings/${ratingId}`, rating);
+        const response = await axios.put(`http://192.168.29.152:8082/api/v1/ratings/${ratingId}`, rating);
         return response.data;
     }
 );
@@ -121,7 +121,7 @@ export const fetchUserRating = createAsyncThunk<Rating | null, { userId: string;
     async ({ userId, productId }) => {
         try {
             const response = await axios.get(
-                `http://192.168.29.159:8082/api/v1/ratings/users/${userId}/products/${productId}`
+                `http://192.168.29.152:8082/api/v1/ratings/users/${userId}/products/${productId}`
             );
             return response.data;
         } catch (error) {
@@ -141,7 +141,7 @@ export const fetchAverageRating = createAsyncThunk<
     }
 
     const response = await axios.get(
-        `http://192.168.29.159:8082/api/v1/ratings/products/${productId}/average`
+        `http://192.168.29.152:8082/api/v1/ratings/products/${productId}/average`
     );
     return response.data;
 });
@@ -150,7 +150,7 @@ export const fetchAverageRating = createAsyncThunk<
 export const removeRating = createAsyncThunk<void, string>(
     'rating/removeRating',
     async (ratingId) => {
-        await axios.delete(`http://192.168.29.159:8082/api/v1/ratings/${ratingId}`);
+        await axios.delete(`http://192.168.29.152:8082/api/v1/ratings/${ratingId}`);
     }
 );
 

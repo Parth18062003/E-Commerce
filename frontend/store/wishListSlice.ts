@@ -28,7 +28,7 @@ const initialState: WishListState = {
 export const fetchWishList = createAsyncThunk<WishList, string>(
     'wishlist/fetchWishList',
     async (userId) => {
-        const response = await axios.get(`http://192.168.29.159:8082/api/v1/wishlist/${userId}`);
+        const response = await axios.get(`http://192.168.29.152:8082/api/v1/wishlist/${userId}`);
         return response.data;
     }
 );
@@ -37,7 +37,7 @@ export const fetchWishList = createAsyncThunk<WishList, string>(
 export const addProductToWishList = createAsyncThunk<WishList, { userId: string; productId: string }>(
     'wishlist/addProductToWishList',
     async ({ userId, productId }) => {
-        const response = await axios.post(`http://192.168.29.159:8082/api/v1/wishlist/${userId}/add`, productId);
+        const response = await axios.post(`http://192.168.29.152:8082/api/v1/wishlist/${userId}/add`, productId);
         return response.data; // Return the updated wishlist
     }
 );
@@ -46,7 +46,7 @@ export const addProductToWishList = createAsyncThunk<WishList, { userId: string;
 export const removeProductFromWishList = createAsyncThunk<WishList, { userId: string; productId: string }>(
     'wishlist/removeProductFromWishList',
     async ({ userId, productId }) => {
-        const response = await axios.delete(`http://192.168.29.159:8082/api/v1/wishlist/${userId}/remove/${productId}`);
+        const response = await axios.delete(`http://192.168.29.152:8082/api/v1/wishlist/${userId}/remove/${productId}`);
         return response.data; // Return the updated wishlist
     }
 );

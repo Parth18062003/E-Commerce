@@ -21,9 +21,13 @@ import { SearchBox } from "react-instantsearch";
 import { motion } from "motion/react";
 import { Input } from "./ui/input";
 import CartButton from "./Cart/CartButton";
+import { useGlobalSearch } from "@/hooks/useGlobalSearch";
+import GlobalSearchModal from "./Algolia/GlobalSearchModal";
+import GlobalSearchInput from "./Algolia/GlobalSearchInput";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isSearchModalOpen, closeSearchModal } = useGlobalSearch();
 
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const dashboardLink = reduxUser ? `/dashboard/user/${reduxUser.id}` : "/authentication/sign-up";
@@ -74,35 +78,7 @@ const Navbar = () => {
 
         {/* Search Input and Icons on the right */}
         <div className="items-center hidden lg:flex space-x-4 px-4">
-          <div className="relative">
-            <div className="grow max-w-xl">
-              {/* Search Box */}
-{/*               <SearchBox
-                placeholder="Search products..."
-                classNames={{
-                  root: "w-full",
-                  form: "w-full",
-                  input:
-                    "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400",
-                  submit: "hidden",
-                  reset: "hidden",
-                }}
-              /> */}
-              <Input
-                type="search"
-                placeholder="Search products..."
-                className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400"
-              />
-              <div className="absolute inset-y-0 left-3 flex items-center text-zinc-400">
-                <Search />
-                <span className="sr-only">Search</span>
-              </div>
-              <div className="absolute inset-y-0 right-3 flex items-center text-zinc-600 dark:text-zinc-400 cursor-pointer">
-                <Mic />
-                <span className="sr-only">Voice input</span>
-              </div>
-            </div>
-          </div>
+          <GlobalSearchInput />
           <ThemeToggle />
           <TransitionLink
             href="/login"
@@ -166,26 +142,23 @@ const Navbar = () => {
             <TransitionLink href="/cart" onClick={toggleMenu}>
               Cart
             </TransitionLink>
-            {/* Search Box */}
-            {/*             <SearchBox
-              placeholder="Search products..."
-              classNames={{
-                root: "w-full",
-                form: "w-full",
-                input:
-                  "pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400",
-                submit: "hidden",
-                reset: "hidden",
-              }}
-            /> */}
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-10 pr-10 py-2 rounded-full border border-zinc-500 bg-zinc-200 text-black dark:bg-zinc-700 dark:text-white focus:outline-hidden focus:ring-2 transition caret-indigo-400"
-            />
+            {/* Mobile Search Input */}
+            <div className="relative">
+              <GlobalSearchInput 
+                placeholder="Search products..." 
+                className="w-full" 
+                showIcons={false}
+              />
+            </div>
           </div>
         </motion.div>
       )}
+
+      {/* Global Search Modal */}
+      <GlobalSearchModal 
+        isOpen={isSearchModalOpen} 
+        onClose={closeSearchModal}
+      />
     </nav>
   );
 };

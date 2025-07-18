@@ -73,7 +73,7 @@ const useUser = async () => {
 
       try {
         const response = await axios.get(
-          `http://192.168.29.159:8081/api/v1/users/${userId}`,
+          `http://192.168.29.152:8081/api/v1/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

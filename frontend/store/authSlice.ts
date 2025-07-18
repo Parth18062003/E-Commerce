@@ -45,7 +45,7 @@ const initialState: AuthState = {
 export const logoutUser = createAsyncThunk<void, void>(
   'auth/logout',
   async (_, { dispatch }) => {
-    await fetch('http://192.168.29.159:8081/api/v1/auth/logout', {
+    await fetch('http://192.168.29.152:8081/api/v1/auth/logout', {
       method: 'POST',
       credentials: 'include', // Include cookies in the request if necessary
     });

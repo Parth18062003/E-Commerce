@@ -18,8 +18,8 @@ const FilterAndSort = () => {
   const sortOptions = [
     { label: "Featured", value: "products" },
     { label: "Newest", value: "instant_search_newest" },
-    { label: "Price [Low - High]", value: "instant_search_price_asc" },
-    { label: "Price [High - Low]", value: "instant_search_price_desc" },
+    { label: "Price [Low - High]", value: "products_price_asc" },
+    { label: "Price [High - Low]", value: "products_price_desc" },
   ];
 
   const toggleFilterSidebar = () => {

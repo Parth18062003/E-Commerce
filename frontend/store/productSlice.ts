@@ -80,7 +80,7 @@ type AsyncActionTypes =
   | "deleteProduct"
   | "fetchProductsByIds";
 
-const API_BASE_URL = "http://192.168.29.159:8082/api/v1/products";
+const API_BASE_URL = "http://192.168.29.152:8082/api/v1/products";
 const productAPI = {
   fetchProduct: (id: string) => axios.get<Product>(`${API_BASE_URL}/${id}`),
   fetchProducts: (page: number, size: number) =>
@@ -864,7 +864,7 @@ type AsyncActionTypes =
   | "fetchProductsByIds";
 
 // API Configuration
-const API_BASE_URL = "http://192.168.29.159:8082/api/v1/products";
+const API_BASE_URL = "http://192.168.29.152:8082/api/v1/products";
 
 const fetchPaginated = <T>(endpoint: string, params: Record<string, any>) =>
   axios.get<PaginatedResponse<T>>(`${API_BASE_URL}${endpoint}`, { params });

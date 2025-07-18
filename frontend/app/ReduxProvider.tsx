@@ -3,6 +3,7 @@
 import { Provider } from "react-redux";
 import store from "../store/store";
 import AlgoliaSearch from "./AlgoliaSearch";
+import { GlobalSearchProvider } from "@/hooks/useGlobalSearch";
 
 type ReduxProviderProps = {
   children: React.ReactNode;
@@ -10,9 +11,11 @@ type ReduxProviderProps = {
 
 const ReduxProvider = ({ children }: ReduxProviderProps) => {
   return (
-    <AlgoliaSearch>
-      <Provider store={store}>{children}</Provider>
-    </AlgoliaSearch>
+    <GlobalSearchProvider>
+      <AlgoliaSearch>
+        <Provider store={store}>{children}</Provider>
+      </AlgoliaSearch>
+    </GlobalSearchProvider>
   );
 };
 

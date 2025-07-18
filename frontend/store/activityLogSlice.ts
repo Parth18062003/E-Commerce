@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.29.159:8081/api/v1/activity-logs';
+const API_BASE_URL = 'http://192.168.29.152:8081/api/v1/activity-logs';
 
 // Define types for the state
 interface ActivityLog {

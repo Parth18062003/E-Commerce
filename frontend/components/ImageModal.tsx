@@ -58,7 +58,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 <div className="w-full h-full p-2 flex items-center justify-center">
                   <Image
                     src={image}
-                    alt={`Gallery Image ${index + 1}`}
+                    alt={`Product Image ${index + 1}`}
                     className="object-cover max-h-[80vh] w-full rounded-lg"
                     width={512}
                     height={512}
