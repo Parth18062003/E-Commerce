@@ -6,7 +6,6 @@ import com.algolia.search.models.indexing.Query;
 import com.algolia.search.models.indexing.SearchResult;
 import com.hypehouse.common.model.InventoryUpdateMessage;
 import com.hypehouse.product_service.config.RabbitConfig;
-import com.hypehouse.product_service.model.DisplayProductDTO;
 import com.hypehouse.product_service.model.IndexableProduct;
 import com.hypehouse.common.model.ProductDTO;
 import com.hypehouse.product_service.model.UpdateProductDTO;
@@ -130,6 +129,8 @@ public class ProductService {
         log.debug("Saving product with details: {}", product);
         Product savedProduct = productRepository.save(product);
         indexProductAsync(savedProduct);
+        log.debug("Sending product to inventory service: {}", savedProduct);
+        sendProductToInventory(savedProduct);
         return savedProduct;
     }
 

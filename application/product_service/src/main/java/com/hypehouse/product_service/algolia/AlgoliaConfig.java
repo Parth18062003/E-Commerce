@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class AlgoliaConfig {
 
-    @Value("${algolia.application-id}")
+    @Value("")
     private String appId;
 
-    @Value("${algolia.api-key}")
+    @Value("")
     private String apiKey;
 
     @Bean
