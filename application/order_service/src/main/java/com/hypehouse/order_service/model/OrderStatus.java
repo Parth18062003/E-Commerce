@@ -1,9 +1,13 @@
 package com.hypehouse.order_service.model;
 
+/**
+ * Represents the lifecycle status of an order.
+ */
 public enum OrderStatus {
-    PENDING,       // Order is created but not yet processed
-    PROCESSING,    // Order is being processed
-    SHIPPED,       // Order has been shipped
-    DELIVERED,     // Order has been delivered
-    CANCELLED      // Order has been cancelled
+    PENDING,       // Order created, awaiting payment confirmation.
+    CONFIRMED,     // Payment successful, order is ready for fulfillment.
+    SHIPPED,       // Order has been shipped to the customer.
+    DELIVERED,     // Order has been successfully delivered.
+    CANCELLED,     // Order was cancelled by the user or system.
+    FAILED         // Order failed due to payment or processing issues.
 }

@@ -3,84 +3,87 @@ package com.hypehouse.order_service.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
 public class Order {
 
     @Id
+    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(nullable = false)
-    private String userId; // ID of the user who placed the order
+    private UUID userId;
 
-    @Column(nullable = false)
-    private String order_number;
+    @Column(nullable = false, unique = true)
+    private String orderNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status; // Order status (e.g., PENDING, PROCESSING, SHIPPED, etc.)
-
-    @Column(nullable = false)
-    private BigDecimal totalPrice; // Total price of the order
-
-    @Column
-    private Long discount; // Discount applied to the order
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt; // Timestamp when the order was created
-
-    @Column
-    private LocalDateTime updatedAt; // Timestamp when the order was last updated
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id") // Foreign key in the OrderItem table
-    private List<OrderItem> items; // List of items in the order
-
-    @Column
-    private String paymentId; // ID of the payment transaction (from Payment Service)
+    private OrderStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column
-    private PaymentStatus paymentStatus; // Payment status (e.g., PAID, FAILED)
+    @Column(nullable = false)
+    private PaymentStatus paymentStatus;
 
-    @Column
-    private String shippingAddress; // Shipping address for the order
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 
-    @Column
-    private String trackingNumber; // Tracking number for shipping
+    @Column(columnDefinition = "TEXT")
+    private String shippingAddress;
 
-    @Column
-    private LocalDateTime shippedAt; // Timestamp when the order was shipped
+    private String paymentId;
 
-    @Column
-    private LocalDateTime deliveredAt; // Timestamp when the order was delivered
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    // Getters and setters
-    public String getId() {
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    // CascadeType.ALL means operations (persist, merge, remove, etc.) on Order will propagate to OrderItem.
+    // orphanRemoval=true ensures that if an OrderItem is removed from this list, it's also deleted from the database.
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OrderItem> items = new ArrayList<>();
+
+    // JPA lifecycle callbacks to set timestamps automatically
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Getters and Setters
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
-    public String getOrder_number() {
-        return order_number;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setOrder_number(String order_number) {
-        this.order_number = order_number;
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public OrderStatus getStatus() {
@@ -91,6 +94,14 @@ public class Order {
         this.status = status;
     }
 
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
@@ -99,12 +110,20 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public Long getDiscount() {
-        return discount;
+    public String getShippingAddress() {
+        return shippingAddress;
     }
 
-    public void setDiscount(Long discount) {
-        this.discount = discount;
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -129,53 +148,5 @@ public class Order {
 
     public void setItems(List<OrderItem> items) {
         this.items = items;
-    }
-
-    public String getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(String paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    public PaymentStatus getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-
-    public void setTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
-    }
-
-    public LocalDateTime getShippedAt() {
-        return shippedAt;
-    }
-
-    public void setShippedAt(LocalDateTime shippedAt) {
-        this.shippedAt = shippedAt;
-    }
-
-    public LocalDateTime getDeliveredAt() {
-        return deliveredAt;
-    }
-
-    public void setDeliveredAt(LocalDateTime deliveredAt) {
-        this.deliveredAt = deliveredAt;
     }
 }

@@ -3,3 +3,23 @@ spring:
     name: cart_service
   server:
     port: 8085
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order-service
+    username: postgres
+    password: parth
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+product:
+  service:
+    url: "http://localhost:8082"

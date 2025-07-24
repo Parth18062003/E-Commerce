@@ -1,57 +1,81 @@
 package com.hypehouse.order_service.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
 
     @Id
+    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @Column(nullable = false)
-    private String productId; // ID of the product
-
-    @Column(nullable = false)
-    private int quantity; // Quantity of the product
-
-    @Column(nullable = false)
-    private BigDecimal price; // Price of the product at the time of order
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order; // Reference to the parent order
+    private Order order;
 
-    // No-argument constructor
-    public OrderItem() {
-    }
+    @Column(nullable = false)
+    private UUID productId;
 
-    // All-argument constructor
-    public OrderItem(String id, String productId, int quantity, BigDecimal price, Order order) {
-        this.id = id;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.order = order;
-    }
+    @Column(nullable = false)
+    private String variantSku;
 
-    // Getters and setters
-    public String getId() {
+    @Column(nullable = false)
+    private String size;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal priceAtPurchase;
+
+    // JPA requires a no-arg constructor
+    public OrderItem() {}
+
+    // Getters and Setters
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getProductId() {
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
+    }
+
+    public String getVariantSku() {
+        return variantSku;
+    }
+
+    public void setVariantSku(String variantSku) {
+        this.variantSku = variantSku;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
     public int getQuantity() {
@@ -62,19 +86,11 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getPriceAtPurchase() {
+        return priceAtPurchase;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setPriceAtPurchase(BigDecimal priceAtPurchase) {
+        this.priceAtPurchase = priceAtPurchase;
     }
 }
